@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+
+<html lang="fr"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"secondary-fixed-dim":"#bec6e0","surface-container-high":"#dce9ff","tertiary":"#855300","tertiary-fixed-dim":"#ffb95f","on-tertiary-container":"#523200","on-tertiary-fixed-variant":"#653e00","inverse-on-surface":"#eaf1ff","primary-container":"#10b981","on-primary":"#ffffff","tertiary-fixed":"#ffddb8","surface-bright":"#f8f9ff","primary-fixed":"#6ffbbe","on-primary-fixed-variant":"#005236","surface-container-highest":"#d3e4fe","on-error-container":"#93000a","secondary-fixed":"#dae2fd","inverse-surface":"#213145","on-error":"#ffffff","surface-container":"#e5eeff","error-container":"#ffdad6","on-background":"#0b1c30","on-surface-variant":"#3c4a42","surface-tint":"#006c49","on-secondary-container":"#5c647a","surface-container-lowest":"#ffffff","primary":"#006c49","on-secondary-fixed":"#131b2e","inverse-primary":"#4edea3","primary-fixed-dim":"#4edea3","on-primary-fixed":"#002113","on-primary-container":"#00422b","error":"#ba1a1a","tertiary-container":"#e29100","background":"#f8f9ff","surface":"#f8f9ff","surface-container-low":"#eff4ff","surface-dim":"#cbdbf5","secondary":"#565e74","secondary-container":"#dae2fd","surface-variant":"#d3e4fe","outline-variant":"#bbcabf","outline":"#6c7a71","on-secondary":"#ffffff","on-secondary-fixed-variant":"#3f465c","on-surface":"#0b1c30","on-tertiary-fixed":"#2a1700","on-tertiary":"#ffffff"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{margin:"2rem","space-sm":"0.5rem","space-xs":"0.25rem","space-xl":"2.5rem","gutter-mobile":"1rem","space-lg":"1.5rem","margin-mobile":"1rem","space-md":"1rem",gutter:"1.5rem"},fontFamily:{"headline-sm":["Plus Jakarta Sans"],"headline-lg-mobile":["Plus Jakarta Sans"],"display-lg":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"display-lg-mobile":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"label-sm":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"]},fontSize:{"headline-sm":["20px",{lineHeight:"28px",fontWeight:"600"}],"headline-lg-mobile":["26px",{lineHeight:"34px",fontWeight:"700"}],"display-lg":["48px",{lineHeight:"56px",fontWeight:"800"}],"body-lg":["18px",{lineHeight:"28px",fontWeight:"400"}],"label-lg":["14px",{lineHeight:"20px",fontWeight:"600"}],"body-sm":["14px",{lineHeight:"20px",fontWeight:"400"}],"headline-md":["24px",{lineHeight:"32px",fontWeight:"600"}],"display-lg-mobile":["36px",{lineHeight:"44px",fontWeight:"800"}],"headline-lg":["32px",{lineHeight:"40px",fontWeight:"700"}],"label-sm":["11px",{lineHeight:"14px",fontWeight:"700"}],"body-md":["16px",{lineHeight:"24px",fontWeight:"400"}],"label-md":["12px",{lineHeight:"16px",fontWeight:"600"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased min-h-screen flex flex-col justify-between"><header class="fixed top-0 w-full z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 max-w-[1280px] mx-auto px-margin-mobile lg:px-margin flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-sm flex-shrink-0"><a class="flex items-center gap-space-sm focus:outline-none" data-path="accueil" href="#"><img alt="FidelityDZ Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XZxQ4WXB7IivWUJgqrCtkqpk8VzAVWfaQbCgyggmjhFeax3eckR_HoIk59lxDnv4fPq_5kpgu0oTOCO4Qdh6Jio1QzzlxRH9suhbna71WEaQwagxECUDPjegFm5TE2KgfBf8skay-Tk-m4E2G-kz-K5c_BVbfW-2Cnnhsi4RhNkZ43GJ-dF3CCC-_EhMD-2aBse5A4STWOppv-vxliE6c-QetQL-G6eEGZilgSpCyUvpNTrmG_tppLH8I"/><span class="font-headline-sm text-headline-sm tracking-tight text-on-surface">Fidelity<span class="text-primary">DZ</span></span></a><div class="hidden sm:inline-flex items-center gap-space-xs bg-surface-container px-space-sm py-space-xs rounded-full"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-sm text-label-sm text-on-surface-variant font-bold tracking-wide">Algérie 🇩🇿</span></div></div><nav class="hidden xl:flex items-center gap-space-xs" data-active-classes="bg-surface-container-high text-on-surface font-bold rounded-lg"><a class="px-space-sm py-space-xs rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="fonctionnement" href="#">Fonctionnement <span class="font-label-md text-label-md text-secondary">(كيف يعمل)</span></a><a class="px-space-sm py-space-xs rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="demo-interactive" href="#">Démo Interactive <span class="font-label-md text-label-md text-secondary">(تجربة تفاعلية)</span></a><a class="px-space-sm py-space-xs rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="tarif-unique" href="#">Tarif Unique <span class="font-label-md text-label-md text-secondary">(الأسعار)</span></a><a class="px-space-sm py-space-xs rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="studio-carte" href="#">Studio Carte <span class="font-label-md text-label-md text-secondary">(استوديو البطاقات)</span></a><a class="px-space-sm py-space-xs rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="faq" href="#">FAQ</a></nav><div class="flex items-center gap-space-sm flex-shrink-0"><div class="inline-flex items-center bg-surface-container p-space-xs rounded-full"><button class="px-space-sm py-space-xs rounded-full bg-surface-container-lowest shadow-sm font-label-sm text-label-sm text-on-surface font-bold transition-all" type="button">FR</button><span class="text-outline-variant font-label-sm text-label-sm px-0.5">|</span><button class="px-space-sm py-space-xs rounded-full font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-all" type="button">عربي</button></div><a class="hidden md:inline-flex items-center px-space-md py-space-sm rounded-lg bg-inverse-surface text-on-primary hover:bg-on-background transition-colors font-label-lg text-label-lg font-bold" data-path="espace-commercant" href="#">Espace Commerçant <span class="hidden lg:inline ml-1 font-label-md text-label-md text-secondary-fixed-dim">(دخول التجار)</span></a><a class="inline-flex items-center px-space-md py-space-sm rounded-lg bg-primary-container text-on-primary font-label-lg text-label-lg font-bold shadow-sm hover:bg-primary transition-all" data-path="creer-carte" href="#">Créer ma carte <span class="hidden sm:inline ml-1 font-label-md text-label-md text-primary-fixed">(ابدأ مجاناً)</span></a><div class="flex items-center"><a class="focus:outline-none" data-path="mon-profil" href="#"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOnM3CMAGOYSx1m4bIFCJ9vzamzzXPuEzJrs0-g7QUwxCojg5YFIuDIjyGlXZxNGh1B01pkX2epwmEpZqKZCJIGzrgjJ_NxKAvMy7fuyUQgjWtJJkvsMB6OeRk0HifVJ8QCmJZMEdZdH-I-p10XnX_2Gmbz-jZgHzdXshZ2rlRzJApKCAiBW8cMKnYV_oYfAMfguKwuIS8o9kWDgargIOTrqisWlbPvv76Y1VyzENcwwYyIJ19yly2"/></a></div></div></div></header><main class="w-full pt-20 bg-surface"><div class="flex flex-col w-full">
+<!-- HERO SECTION -->
+<section class="relative w-full overflow-hidden bg-surface py-space-xl lg:py-24">
+<!-- Ambient fintech glow circles contained in section -->
+<div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[720px] h-[360px] bg-primary-fixed/30 rounded-full blur-3xl pointer-events-none -z-0"></div>
+<div class="absolute top-1/3 -right-24 w-80 h-80 bg-tertiary-fixed/30 rounded-full blur-3xl pointer-events-none -z-0"></div>
+<div class="relative z-10 max-w-[1280px] mx-auto px-margin-mobile lg:px-margin">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg lg:gap-gutter items-center">
+<!-- Left: Copy & Dual-script Headings -->
+<div class="lg:col-span-7 flex flex-col items-start space-y-space-md text-left">
+<!-- Bilingual Announcement Badge -->
+<div class="inline-flex items-center gap-space-xs bg-surface-container-low px-space-md py-space-xs rounded-full shadow-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container animate-ping"></span>
+<span class="font-label-md text-label-md text-on-surface font-bold tracking-tight">
+              🇩🇿 N°1 de la Fidélité Digitale en Algérie
+            </span>
+<span class="font-label-md text-label-md text-outline-variant">|</span>
+<span class="font-label-md text-label-md text-primary font-bold">
+              منصة بطاقات الولاء الأولى
+            </span>
+</div>
+<!-- Hero Headline (Latin) -->
+<h1 class="font-display-lg text-display-lg text-on-surface tracking-tight font-extrabold max-w-2xl">
+            Fidélisez vos clients en Algérie <span class="text-primary underline decoration-primary-container decoration-4 underline-offset-8">sans application</span> à installer
+          </h1>
+<!-- Arabic Headline Subtitle -->
+<div class="w-full text-right bg-surface-container/60 p-space-md rounded-xl" dir="rtl">
+<p class="font-headline-sm text-headline-sm text-on-surface font-bold leading-relaxed">
+              بطاقة ولاء رقمية لمتجرك في 5 دقائق بدون تطبيق — عبر رمز QR ورقم الهاتف فقط
+            </p>
+</div>
+<!-- Supporting Description -->
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">
+            Remplacez vos cartes de fidélité papier perdues ou oubliées par une carte digitale stockée dans le smartphone du client. <strong class="text-on-surface font-semibold">Zéro application à télécharger</strong> pour vos clients.
+          </p>
+<!-- Dual CTAs -->
+<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-space-md w-full sm:w-auto pt-space-xs">
+<a class="inline-flex items-center justify-center gap-space-xs px-space-lg py-3.5 rounded-lg bg-primary-container text-on-primary font-label-lg text-label-lg shadow-md hover:bg-primary transition-all" data-path="creer-carte" href="#">
+<span>Créer ma carte gratuitement</span>
+<span class="font-label-md text-label-md text-primary-fixed">(تجربة مجانية 14 يوم)</span>
+<span class="material-symbols-outlined text-lg">arrow_forward</span>
+</a>
+<a class="inline-flex items-center justify-center gap-space-xs px-space-lg py-3.5 rounded-lg bg-surface-container-lowest text-on-surface font-label-lg text-label-lg shadow-sm hover:bg-surface-container transition-all" data-path="demo-interactive" href="#">
+<span class="material-symbols-outlined text-primary text-xl">play_circle</span>
+<span>Voir la démo en direct</span>
+<span class="font-label-md text-label-md text-secondary">(شاهد العرض)</span>
+</a>
+</div>
+<!-- Trust Proof Pill -->
+<div class="flex items-center gap-space-sm pt-space-xs">
+<div class="flex items-center text-tertiary-container">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant font-medium">
+<strong class="text-on-surface">4.9/5</strong> • Plus de <span class="text-primary font-bold">850 commerces</span> actifs à Alger, Oran, Constantine, Sétif &amp; Blida
+            </p>
+</div>
+</div>
+<!-- Right: Mobile Device Showcase + Dynamic Hologram Badges -->
+<div class="lg:col-span-5 relative flex justify-center items-center mt-space-lg lg:mt-0">
+<!-- Floating Badge 1 (Top Left) -->
+<div class="absolute -top-4 -left-2 sm:left-4 z-20 bg-surface-container-lowest p-space-sm rounded-xl shadow-lg flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg">bolt</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface font-bold">Inscription en 5 sec chrono</p>
+<p class="font-label-sm text-label-sm text-secondary">Sans téléchargement</p>
+</div>
+</div>
+<!-- Floating Badge 2 (Bottom Right) -->
+<div class="absolute -bottom-6 -right-2 sm:right-2 z-20 bg-surface-container-lowest p-space-sm rounded-xl shadow-lg flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-lg bg-tertiary-container/15 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-lg">trending_up</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface font-bold">+35% de visites récurrentes</p>
+<p class="font-label-sm text-label-sm text-secondary">Mesuré sur 30 jours</p>
+</div>
+</div>
+<!-- Smartphone Shell Frame (Pure CSS Mockup) -->
+<div class="w-full max-w-[340px] bg-inverse-surface rounded-[40px] p-3 shadow-2xl relative">
+<!-- Phone Speaker Bar & Camera -->
+<div class="flex justify-center items-center gap-2 mb-3">
+<div class="w-12 h-1 bg-secondary rounded-full"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-secondary"></div>
+</div>
+<!-- Screen Surface (Digital Pass Mockup) -->
+<div class="bg-surface-container-lowest rounded-[32px] overflow-hidden shadow-inner p-4 space-y-3.5">
+<!-- Store Brand Top Card -->
+<div class="bg-inverse-surface text-on-primary rounded-2xl p-4 relative overflow-hidden shadow-sm">
+<!-- Subtle Emerald Ambient Glow inside card -->
+<div class="absolute -top-6 -right-6 w-24 h-24 bg-primary-container/20 rounded-full blur-xl"></div>
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-tertiary-container flex items-center justify-center text-on-primary font-bold shadow-sm">
+<span class="material-symbols-outlined text-xl">local_cafe</span>
+</div>
+<div>
+<h2 class="font-label-lg text-label-lg font-bold leading-tight">Café El Bahdja</h2>
+<p class="font-label-sm text-label-sm text-primary-fixed">Alger Centre (مقهى البهجة)</p>
+</div>
+</div>
+<span class="bg-primary-container/20 text-primary-fixed text-label-sm font-label-sm px-2 py-0.5 rounded-full font-bold">
+                    VIP DZ
+                  </span>
+</div>
+<div class="flex justify-between items-end pt-2">
+<div>
+<span class="font-label-sm text-label-sm text-secondary-fixed-dim">Progression fidélité</span>
+<p class="font-headline-sm text-headline-sm font-extrabold text-on-primary">8 / 10 <span class="font-label-md text-label-md text-primary-fixed">Tampons</span></p>
+</div>
+<span class="font-label-sm text-label-sm text-secondary-fixed-dim font-bold">8/10 طوابع</span>
+</div>
+</div>
+<!-- Visual Stamp Grid: 10 Circular Slots -->
+<div class="bg-surface-container-low p-3.5 rounded-2xl">
+<div class="flex justify-between items-center mb-2.5">
+<span class="font-label-sm text-label-sm font-bold text-on-surface">Carte à Tampons Digitale</span>
+<span class="font-label-sm text-label-sm text-primary font-bold">80% complété</span>
+</div>
+<div class="grid grid-cols-5 gap-2" id="stampGrid">
+<!-- Stamped 1 to 8 -->
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-base">check</span>
+</div>
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-base">check</span>
+</div>
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-base">check</span>
+</div>
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-base">check</span>
+</div>
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-base">check</span>
+</div>
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-base">check</span>
+</div>
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-base">check</span>
+</div>
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-base">check</span>
+</div>
+<!-- Empty 9th -->
+<div class="w-10 h-10 rounded-full bg-surface-container-high text-secondary flex items-center justify-center font-label-sm text-label-sm font-bold">
+                    9
+                  </div>
+<!-- 10th Milestone Glowing Reward Slot -->
+<div class="w-10 h-10 rounded-full bg-tertiary-container text-on-primary flex items-center justify-center shadow-md animate-pulse">
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">redeem</span>
+</div>
+</div>
+<!-- Reward Banner -->
+<div class="mt-3 p-2 bg-tertiary-fixed rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary text-lg">celebration</span>
+<div class="min-w-0">
+<p class="font-label-sm text-label-sm text-on-tertiary-container font-bold truncate">10ème Café Offert ! (قهوة مجانية)</p>
+<p class="font-label-sm text-label-sm text-on-tertiary-container/80 text-[10px]">Plus que 2 tampons pour savourer</p>
+</div>
+</div>
+</div>
+<!-- Customer QR Identifier & Quick Phone Block -->
+<div class="bg-surface-container-lowest p-3 rounded-2xl shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<!-- Inline SVG QR Sample -->
+<div class="w-12 h-12 bg-on-surface p-1 rounded-lg flex items-center justify-center text-surface-container-lowest">
+<svg class="w-full h-full fill-current" viewbox="0 0 24 24">
+<path d="M2 2h8v8H2V2zm2 2v4h4V4H4zm10-2h8v8h-8V2zm2 2v4h4V4h-4zM2 14h8v8H2v-8zm2 2v4h4v-4H4zm14 0h4v2h-4v-2zm-4 0h2v4h-2v-4zm2 4h4v2h-4v-2zm2-2h2v2h-2v-2zm-6-2h2v2h-2v-2zm2-4h2v2h-2v-2zm2 2h2v2h-2v-2z"></path>
+</svg>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-secondary">N° Client DZ</span>
+<p class="font-label-md text-label-md font-bold text-on-surface tracking-wider">0550 •• •• 82</p>
+<span class="font-label-sm text-label-sm text-primary font-semibold">Vérifié Ooredoo/Djezzy</span>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors" title="Partager" type="button">
+<span class="material-symbols-outlined text-base">share</span>
+</button>
+</div>
+<!-- Quick Action Pills inside Phone -->
+<div class="grid grid-cols-2 gap-2 pt-1">
+<button class="py-2 px-3 bg-inverse-surface text-on-primary rounded-xl font-label-sm text-label-sm font-bold flex items-center justify-center gap-1 shadow-sm" type="button">
+<span class="material-symbols-outlined text-sm">account_balance_wallet</span>
+<span>Wallet iOS / Android</span>
+</button>
+<button class="py-2 px-3 bg-surface-container text-on-surface rounded-xl font-label-sm text-label-sm font-bold flex items-center justify-center gap-1" type="button">
+<span class="material-symbols-outlined text-sm text-primary">notifications_active</span>
+<span>Alertes Offres</span>
+</button>
+</div>
+</div>
+<!-- Home indicator bar -->
+<div class="w-28 h-1 bg-secondary mx-auto mt-3 rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTOR SOCIAL PROOF BAR (ALGERIAN PROXIMITY COMMERCE) -->
+<section class="w-full bg-surface-container-low py-space-md">
+<div class="max-w-[1280px] mx-auto px-margin-mobile lg:px-margin">
+<div class="flex flex-wrap items-center justify-between gap-space-md text-secondary">
+<span class="font-label-md text-label-md font-bold text-on-surface uppercase tracking-wider">
+          Adapté à chaque commerce de proximité en Algérie :
+        </span>
+<div class="flex flex-wrap items-center gap-space-lg font-label-md text-label-md font-semibold">
+<span class="flex items-center gap-1 hover:text-primary transition-colors cursor-default">
+<span class="material-symbols-outlined text-base text-primary">coffee</span> Cafés &amp; Salons de thé (المقاهي)
+          </span>
+<span class="flex items-center gap-1 hover:text-primary transition-colors cursor-default">
+<span class="material-symbols-outlined text-base text-primary">local_pizza</span> Pizzerias &amp; Fast Food (المطاعم)
+          </span>
+<span class="flex items-center gap-1 hover:text-primary transition-colors cursor-default">
+<span class="material-symbols-outlined text-base text-primary">content_cut</span> Barbiers &amp; Salons de beauté (الحلاقة)
+          </span>
+<span class="flex items-center gap-1 hover:text-primary transition-colors cursor-default">
+<span class="material-symbols-outlined text-base text-primary">checkroom</span> Boutiques &amp; Mode (محلات الألبسة)
+          </span>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 2: COMMENT ÇA MARCHE (4 ÉTAPES SIMPLES) -->
+<section class="w-full py-space-xl lg:py-28 bg-surface">
+<div class="max-w-[1280px] mx-auto px-margin-mobile lg:px-margin">
+<!-- Section Header with Dual-Script Parity -->
+<div class="flex flex-col items-center text-center max-w-3xl mx-auto mb-space-xl space-y-space-xs">
+<span class="px-space-md py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-label-sm text-label-sm uppercase tracking-wider font-bold">
+          Processus Simplifié • تجربة سهلة
+        </span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface font-extrabold tracking-tight">
+          Comment ça marche ? En 4 étapes simples
+        </h2>
+<p class="font-headline-sm text-headline-sm text-primary font-bold" dir="rtl">
+          كيف يعمل نظام FidelityDZ في 4 خطوات سهلة وسريعة
+        </p>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xl">
+          Déployez votre programme de fidélité dès aujourd'hui sans matériel coûteux ni contrat d'engagement.
+        </p>
+</div>
+<!-- 4 Bento Step Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<!-- Step 1 -->
+<div class="bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between group">
+<div>
+<div class="flex items-center justify-between mb-space-md">
+<span class="font-display-lg text-display-lg font-extrabold text-surface-container-highest group-hover:text-primary transition-colors">
+                01
+              </span>
+<div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl">palette</span>
+</div>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold mb-1">
+              Créez votre carte
+            </h3>
+<p class="font-label-md text-label-md text-primary font-bold mb-space-sm" dir="rtl">
+              أنشئ بطاقتك المخصصة
+            </p>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+              Personnalisez vos couleurs, votre logo et choisissez entre tampons ou points en 3 minutes chrono.
+            </p>
+</div>
+<div class="pt-space-md">
+<span class="inline-flex items-center text-label-sm font-label-sm text-secondary gap-1">
+<span class="material-symbols-outlined text-sm text-primary">timer</span> 3 min de configuration
+            </span>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between group">
+<div>
+<div class="flex items-center justify-between mb-space-md">
+<span class="font-display-lg text-display-lg font-extrabold text-surface-container-highest group-hover:text-primary transition-colors">
+                02
+              </span>
+<div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl">qr_code_scanner</span>
+</div>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold mb-1">
+              Affichez en caisse
+            </h3>
+<p class="font-label-md text-label-md text-primary font-bold mb-space-sm" dir="rtl">
+              ضع رمز الاستجابة في المحل
+            </p>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+              Téléchargez et imprimez votre chevalet de comptoir A4/A5 haute définition fourni prêt à l'emploi.
+            </p>
+</div>
+<div class="pt-space-md">
+<span class="inline-flex items-center text-label-sm font-label-sm text-secondary gap-1">
+<span class="material-symbols-outlined text-sm text-primary">print</span> Affichette PDF fournie
+            </span>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between group">
+<div>
+<div class="flex items-center justify-between mb-space-md">
+<span class="font-display-lg text-display-lg font-extrabold text-surface-container-highest group-hover:text-primary transition-colors">
+                03
+              </span>
+<div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl">phonelink_ring</span>
+</div>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold mb-1">
+              Client inscrit en 5s
+            </h3>
+<p class="font-label-md text-label-md text-primary font-bold mb-space-sm" dir="rtl">
+              تسجيل الزبون في 5 ثوانٍ
+            </p>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+              Le client scanne avec l'appareil photo et entre son numéro (05, 06 ou 07). Zéro mot de passe exigé.
+            </p>
+</div>
+<div class="pt-space-md">
+<span class="inline-flex items-center text-label-sm font-label-sm text-secondary gap-1">
+<span class="material-symbols-outlined text-sm text-primary">no_accounts</span> Zéro application mobile
+            </span>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between group">
+<div>
+<div class="flex items-center justify-between mb-space-md">
+<span class="font-display-lg text-display-lg font-extrabold text-surface-container-highest group-hover:text-primary transition-colors">
+                04
+              </span>
+<div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl">military_tech</span>
+</div>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold mb-1">
+              Scannez et fidélisez
+            </h3>
+<p class="font-label-md text-label-md text-primary font-bold mb-space-sm" dir="rtl">
+              امسح وكافئ زبائنك بسهولة
+            </p>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+              Validez les tampons en 1 seconde depuis n'importe quel smartphone et relancez par SMS ou WhatsApp.
+            </p>
+</div>
+<div class="pt-space-md">
+<span class="inline-flex items-center text-label-sm font-label-sm text-secondary gap-1">
+<span class="material-symbols-outlined text-sm text-primary">flash_on</span> Validation instantanée
+            </span>
+</div>
+</div>
+</div>
+<!-- Live Micro-Demonstration Widget (Interactive Stamp Simulator) -->
+<div class="mt-space-xl bg-surface-container-low rounded-2xl p-space-lg lg:p-space-xl shadow-sm">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-center">
+<div class="lg:col-span-6 space-y-space-sm">
+<span class="font-label-sm text-label-sm bg-surface-container text-on-surface font-bold px-space-sm py-1 rounded-full uppercase">
+              Simulateur Commerçant en Caisse (تجربة فورية)
+            </span>
+<h4 class="font-headline-md text-headline-md text-on-surface font-bold">
+              Testez la validation d'un tampon en 1 clic
+            </h4>
+<p class="font-body-md text-body-md text-on-surface-variant">
+              Voyez exactement ce que voit votre caissier ou serveur sur sa tablette ou téléphone lors du passage client.
+            </p>
+<div class="flex items-center gap-space-sm pt-space-xs">
+<button class="px-space-md py-2.5 rounded-lg bg-primary-container text-on-primary font-label-lg text-label-lg font-bold shadow-sm hover:bg-primary transition-all flex items-center gap-2" id="btnSimulateStamp" type="button">
+<span class="material-symbols-outlined">add_circle</span>
+<span>Ajouter un tampon (+1 طابع)</span>
+</button>
+<button class="px-space-md py-2.5 rounded-lg bg-surface-container text-on-surface font-label-lg text-label-lg font-bold hover:bg-surface-container-high transition-all" id="btnResetStamp" type="button">
+                Réinitialiser
+              </button>
+</div>
+</div>
+<!-- Dynamic Live Card Output -->
+<div class="lg:col-span-6 bg-surface-container-lowest p-space-md rounded-xl shadow-md">
+<div class="flex justify-between items-center pb-space-sm">
+<span class="font-label-sm text-label-sm font-bold text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-base">storefront</span> Pizzeria Bella Roma - Oran
+              </span>
+<span class="bg-primary/10 text-primary font-bold text-label-sm font-label-sm px-2.5 py-0.5 rounded-full" id="stampCounterBadge">
+                5 / 10 Tampons
+              </span>
+</div>
+<!-- Progress Bar -->
+<div class="w-full bg-surface-container rounded-full h-3 mb-space-md overflow-hidden">
+<div class="bg-primary-container h-3 rounded-full transition-all duration-300" id="stampProgressBar" style="width: 50%;"></div>
+</div>
+<!-- Dynamic Slot Display -->
+<div class="grid grid-cols-5 sm:grid-cols-10 gap-2 text-center" id="simSlotsContainer">
+<!-- Rendered via inline script below -->
+</div>
+<p class="font-label-sm text-label-sm text-primary font-semibold text-center mt-space-sm" id="simFeedbackText">
+              5 visites enregistrées — plus que 5 pour une Pizza Margherita offerte !
+            </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 3: TARIF UNIQUE, TOUT COMPRIS (FINTECH TRANSPARENCY) -->
+<section class="w-full py-space-xl lg:py-28 bg-surface-container-low relative">
+<div class="max-w-[1280px] mx-auto px-margin-mobile lg:px-margin">
+<!-- Section Title & Subtitle -->
+<div class="text-center max-w-2xl mx-auto mb-space-xl space-y-space-xs">
+<span class="px-space-md py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm uppercase tracking-wider font-bold">
+          Transparence Totale • بدون مفاجآت
+        </span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface font-extrabold tracking-tight">
+          Tarif Unique, Tout Compris
+        </h2>
+<p class="font-headline-sm text-headline-sm text-primary font-bold" dir="rtl">
+          سعر واحد شامل بدون أي رسوم خفية أو أجهزة إضافية
+        </p>
+<p class="font-body-md text-body-md text-on-surface-variant">
+          Accédez à la plateforme complète sans mauvaise surprise. Utilisez votre propre téléphone.
+        </p>
+</div>
+<!-- Pricing Card Container (Centered Fintech Focus) -->
+<div class="max-w-2xl mx-auto">
+<div class="bg-surface-container-lowest rounded-3xl p-space-lg lg:p-space-xl shadow-xl relative overflow-hidden">
+<!-- Recommendation Badge -->
+<div class="absolute top-0 right-0 bg-tertiary-container text-on-primary px-space-lg py-1.5 rounded-bl-2xl font-label-sm text-label-sm font-bold tracking-wide shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+<span>OFFRE RECOMMANDÉE • الخيار الأفضل</span>
+</div>
+<div class="pt-2">
+<span class="font-label-lg text-label-lg font-bold text-primary uppercase tracking-wider">
+              Abonnement Mensuel Professionnel
+            </span>
+<h3 class="font-headline-lg text-headline-lg text-on-surface font-extrabold mt-1">
+              Offre Unique FidelityDZ — Tout Illimité
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+              Sans engagement de durée. Annulez ou suspendez quand vous le souhaitez.
+            </p>
+</div>
+<!-- Price Display -->
+<div class="my-space-lg p-space-md rounded-2xl bg-surface-container flex flex-col sm:flex-row sm:items-baseline justify-between gap-space-xs">
+<div>
+<div class="flex items-baseline gap-2">
+<span class="font-display-lg text-display-lg font-extrabold text-on-surface">3 900</span>
+<span class="font-headline-md text-headline-md font-bold text-primary">DZD</span>
+<span class="font-label-lg text-label-lg text-secondary">/ mois</span>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant font-bold mt-1" dir="rtl">
+                3 900 د.ج / شهرياً (فقط 130 دج في اليوم)
+              </p>
+</div>
+<div class="inline-flex items-center gap-1.5 bg-primary-container/15 text-primary-container px-3 py-1 rounded-full font-label-sm text-label-sm font-bold">
+<span class="material-symbols-outlined text-sm">verified_user</span> Essai 14j gratuit inclus
+            </div>
+</div>
+<!-- Features Checkmarks List -->
+<div class="space-y-space-sm mb-space-lg">
+<h4 class="font-label-lg text-label-lg font-bold text-on-surface mb-space-sm">
+              Toutes les fonctionnalités incluses sans surcoût :
+            </h4>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary-container text-xl flex-shrink-0">check_circle</span>
+<div>
+<p class="font-label-md text-label-md font-bold text-on-surface">Cartes clients illimitées</p>
+<p class="font-label-sm text-label-sm text-secondary" dir="rtl">عدد زبائن غير محدود</p>
+</div>
+</div>
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary-container text-xl flex-shrink-0">check_circle</span>
+<div>
+<p class="font-label-md text-label-md font-bold text-on-surface">Tampons ou Points au choix</p>
+<p class="font-label-sm text-label-sm text-secondary" dir="rtl">نظام طوابع ونقاط مرن</p>
+</div>
+</div>
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary-container text-xl flex-shrink-0">check_circle</span>
+<div>
+<p class="font-label-md text-label-md font-bold text-on-surface">Scanner Web Commerçant</p>
+<p class="font-label-sm text-label-sm text-secondary">Compatible smartphone/tablette</p>
+</div>
+</div>
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary-container text-xl flex-shrink-0">check_circle</span>
+<div>
+<p class="font-label-md text-label-md font-bold text-on-surface">Comptes serveurs illimités</p>
+<p class="font-label-sm text-label-sm text-secondary" dir="rtl">حسابات كاشير وموظفين متعددة</p>
+</div>
+</div>
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary-container text-xl flex-shrink-0">check_circle</span>
+<div>
+<p class="font-label-md text-label-md font-bold text-on-surface">Support VIP WhatsApp 7j/7</p>
+<p class="font-label-sm text-label-sm text-secondary">Équipe basée en Algérie 🇩🇿</p>
+</div>
+</div>
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary-container text-xl flex-shrink-0">check_circle</span>
+<div>
+<p class="font-label-md text-label-md font-bold text-on-surface">Affichettes de caisse PDF</p>
+<p class="font-label-sm text-label-sm text-secondary" dir="rtl">تصاميم جاهزة للطباعة مجاناً</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Big Action Button -->
+<a class="w-full py-4 rounded-xl bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-headline-sm font-bold text-center flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all" data-path="creer-carte" href="#">
+<span>Commencer mon essai gratuit de 14 jours</span>
+<span class="font-label-lg text-label-lg text-primary-fixed">(ابدأ تجربتك المجانية)</span>
+</a>
+<p class="font-label-sm text-label-sm text-center text-on-surface-variant mt-2">
+            Pas de carte bancaire requise pour tester. Activation immédiate en 3 minutes.
+          </p>
+<!-- Localized Algerian Payment Methods Bar -->
+<div class="mt-space-lg pt-space-md bg-surface-container-low rounded-2xl p-space-md">
+<p class="font-label-sm text-label-sm font-bold text-on-surface uppercase text-center mb-space-sm">
+              Moyens de Règlement Acceptés en Algérie (100% Sécurisé) :
+            </p>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+<!-- BaridiMob -->
+<div class="bg-surface-container-lowest p-2 rounded-xl shadow-sm flex flex-col items-center justify-center">
+<span class="material-symbols-outlined text-primary text-xl">account_balance</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">BaridiMob</span>
+<span class="font-label-sm text-label-sm text-secondary text-[10px]">Virement RIP direct</span>
+</div>
+<!-- CCP -->
+<div class="bg-surface-container-lowest p-2 rounded-xl shadow-sm flex flex-col items-center justify-center">
+<span class="material-symbols-outlined text-primary text-xl">local_post_office</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">CCP Poste</span>
+<span class="font-label-sm text-label-sm text-secondary text-[10px]">حوالة بريدية</span>
+</div>
+<!-- Edahabia -->
+<div class="bg-surface-container-lowest p-2 rounded-xl shadow-sm flex flex-col items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-xl">credit_card</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">Edahabia</span>
+<span class="font-label-sm text-label-sm text-secondary text-[10px]">البطاقة الذهبية</span>
+</div>
+<!-- CIB Chargily -->
+<div class="bg-surface-container-lowest p-2 rounded-xl shadow-sm flex flex-col items-center justify-center">
+<span class="material-symbols-outlined text-primary text-xl">payments</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">CIB / Chargily</span>
+<span class="font-label-sm text-label-sm text-secondary text-[10px]">الدفع الإلكتروني</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- GUARANTEE & CALL TO ACTION CALLOUT -->
+<section class="w-full bg-surface py-space-xl">
+<div class="max-w-[1280px] mx-auto px-margin-mobile lg:px-margin">
+<div class="bg-inverse-surface rounded-3xl p-space-lg lg:p-space-xl text-on-primary flex flex-col lg:flex-row items-center justify-between gap-space-lg shadow-xl">
+<div class="space-y-space-xs text-center lg:text-left">
+<span class="bg-primary/20 text-primary-fixed text-label-sm font-label-sm px-3 py-1 rounded-full font-bold uppercase">
+            Support Local Dédié 58 Wilayas
+          </span>
+<h3 class="font-headline-lg text-headline-lg font-bold">
+            Besoin d'aide pour configurer votre boutique ?
+          </h3>
+<p class="font-body-md text-body-md text-secondary-fixed-dim max-w-xl">
+            Notre équipe à Alger vous accompagne par téléphone ou WhatsApp pour créer votre première carte et vos QR codes de comptoir.
+          </p>
+</div>
+<div class="flex flex-col sm:flex-row items-center gap-space-sm flex-shrink-0">
+<a class="px-space-lg py-3 rounded-xl bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg font-bold shadow-md flex items-center gap-2" href="https://wa.me/213550000000" rel="noopener noreferrer" target="_blank">
+<span class="material-symbols-outlined">chat</span>
+<span>Contacter sur WhatsApp (دعم واتساب)</span>
+</a>
+<a class="px-space-md py-3 rounded-xl bg-surface-container-highest/20 hover:bg-surface-container-highest/30 text-on-primary font-label-lg text-label-lg font-semibold" data-path="faq" href="#">
+            Consulter la FAQ
+          </a>
+</div>
+</div>
+</div>
+</section>
+<!-- Interactive Client-side Script for Demo Micro-Simulator -->
+<script>
+    (function initFidelitySim() {
+      let currentStamps = 5;
+      const totalStamps = 10;
+      
+      const progressBar = document.getElementById('stampProgressBar');
+      const counterBadge = document.getElementById('stampCounterBadge');
+      const slotsContainer = document.getElementById('simSlotsContainer');
+      const feedbackText = document.getElementById('simFeedbackText');
+      const btnAdd = document.getElementById('btnSimulateStamp');
+      const btnReset = document.getElementById('btnResetStamp');
+
+      function renderSlots() {
+        if (!slotsContainer) return;
+        slotsContainer.innerHTML = '';
+        
+        for (let i = 1; i <= totalStamps; i++) {
+          const slot = document.createElement('div');
+          slot.className = 'w-9 h-9 rounded-full flex items-center justify-center font-label-sm text-label-sm font-bold transition-all';
+          
+          if (i <= currentStamps) {
+            slot.classList.add('bg-primary-container', 'text-on-primary', 'shadow-sm');
+            slot.innerHTML = '<span class="material-symbols-outlined text-sm">check</span>';
+          } else if (i === totalStamps) {
+            slot.classList.add('bg-tertiary-fixed', 'text-on-tertiary-container');
+            slot.innerHTML = '<span class="material-symbols-outlined text-sm">redeem</span>';
+          } else {
+            slot.classList.add('bg-surface-container-high', 'text-secondary');
+            slot.innerText = i;
+          }
+          slotsContainer.appendChild(slot);
+        }
+
+        if (counterBadge) counterBadge.innerText = `${currentStamps} / ${totalStamps} Tampons`;
+        if (progressBar) progressBar.style.width = `${(currentStamps / totalStamps) * 100}%`;
+        
+        if (feedbackText) {
+          if (currentStamps === totalStamps) {
+            feedbackText.innerHTML = '🎉 Félicitations ! Récompense débloquée : 1 Pizza Margherita Offerte ! (مبروك تم فتح المكافأة)';
+            feedbackText.className = 'font-label-sm text-label-sm text-tertiary font-bold text-center mt-space-sm animate-bounce';
+          } else {
+            feedbackText.innerText = `${currentStamps} visites enregistrées — plus que ${totalStamps - currentStamps} pour une Pizza Margherita offerte !`;
+            feedbackText.className = 'font-label-sm text-label-sm text-primary font-semibold text-center mt-space-sm';
+          }
+        }
+      }
+
+      if (btnAdd) {
+        btnAdd.addEventListener('click', () => {
+          if (currentStamps < totalStamps) {
+            currentStamps++;
+            renderSlots();
+          }
+        });
+      }
+
+      if (btnReset) {
+        btnReset.addEventListener('click', () => {
+          currentStamps = 0;
+          renderSlots();
+        });
+      }
+
+      renderSlots();
+    })();
+  </script>
+</div></main><footer class="w-full bg-surface-container-low shadow-[0_-1px_4px_rgba(0,0,0,0.02)] mt-space-xl"><div class="max-w-[1280px] mx-auto px-margin-mobile lg:px-margin py-space-xl"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-lg mb-space-xl"><div><div class="flex items-center gap-space-sm mb-space-sm"><span class="font-headline-sm text-headline-sm text-on-surface">Fidelity<span class="text-primary">DZ</span></span></div><p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md">La première solution de fidélisation digitale par carte Apple Wallet &amp; Google Wallet pour commerces de proximité en Algérie. المنصة الأولى لبطاقات الوفاء الرقمية في الجزائر.</p><div class="inline-flex items-center gap-space-xs bg-surface-container px-space-sm py-space-xs rounded-full"><span class="material-symbols-outlined text-primary text-base">verified</span><span class="font-label-sm text-label-sm text-on-surface font-bold">Couverture Nationale : 58 Wilayas</span></div></div><div><h4 class="font-label-lg text-label-lg text-on-surface font-bold mb-space-sm">Secteurs Commerçants</h4><ul class="space-y-space-xs font-body-sm text-body-sm text-on-surface-variant"><li><a class="hover:text-primary transition-colors" data-path="secteurs-cafes-resto" href="#">Cafés, Salons de thé &amp; Pizzerias</a></li><li><a class="hover:text-primary transition-colors" data-path="secteurs-barbiers" href="#">Barbiers, Salons de coiffure &amp; Beauté</a></li><li><a class="hover:text-primary transition-colors" data-path="secteurs-boutiques" href="#">Boutiques de mode &amp; Prêt-à-porter</a></li><li><a class="hover:text-primary transition-colors" data-path="secteurs-boulangeries" href="#">Boulangeries, Pâtisseries &amp; Snacks</a></li><li><a class="hover:text-primary transition-colors" data-path="secteurs-commerces" href="#">Supérettes &amp; Commerces alimentaires</a></li></ul></div><div><h4 class="font-label-lg text-label-lg text-on-surface font-bold mb-space-sm">Plateforme &amp; Support</h4><ul class="space-y-space-xs font-body-sm text-body-sm text-on-surface-variant"><li><a class="hover:text-primary transition-colors" data-path="fonctionnement" href="#">Comment ça marche (كيف يعمل)</a></li><li><a class="hover:text-primary transition-colors" data-path="studio-carte" href="#">Générateur de Carte Démo</a></li><li><a class="hover:text-primary transition-colors" data-path="tarif-unique" href="#">Tarification sans engagement</a></li><li><a class="hover:text-primary transition-colors" data-path="assistance-dz" href="#">Support Client Alger (+213)</a></li><li><a class="hover:text-primary transition-colors" data-path="faq" href="#">Foire aux questions (FAQ)</a></li></ul></div><div><h4 class="font-label-lg text-label-lg text-on-surface font-bold mb-space-sm">Moyens de Paiement Acceptés</h4><p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">Règlement sécurisé 100% algérien via GIE Monétique &amp; Poste Algérie :</p><div class="flex flex-wrap gap-space-xs items-center"><div class="h-8 px-space-sm bg-surface-container-lowest rounded-lg flex items-center justify-center font-label-sm text-label-sm font-bold text-on-surface shadow-sm">BaridiMob</div><div class="h-8 px-space-sm bg-surface-container-lowest rounded-lg flex items-center justify-center font-label-sm text-label-sm font-bold text-on-surface shadow-sm">Edahabia</div><div class="h-8 px-space-sm bg-surface-container-lowest rounded-lg flex items-center justify-center font-label-sm text-label-sm font-bold text-on-surface shadow-sm">CIB</div><div class="h-8 px-space-sm bg-surface-container-lowest rounded-lg flex items-center justify-center font-label-sm text-label-sm font-bold text-on-surface shadow-sm">Chargily Pay</div><div class="h-8 px-space-sm bg-surface-container-lowest rounded-lg flex items-center justify-center font-label-sm text-label-sm font-bold text-on-surface shadow-sm">CCP</div></div></div></div><div class="pt-space-md bg-surface-container-low flex flex-col md:flex-row items-center justify-between gap-space-md"><p class="font-label-sm text-label-sm text-on-surface-variant text-center md:text-left">© 2025 FidelityDZ. Tous droits réservés. مصمم ومطور بكل فخر للتجار في الجزائر 🇩🇿.</p><div class="flex items-center gap-space-md font-label-sm text-label-sm text-on-surface-variant"><a class="hover:text-primary transition-colors" data-path="mentions-legales" href="#">Mentions Légales</a><a class="hover:text-primary transition-colors" data-path="confidentialite" href="#">Protection des Données</a><a class="hover:text-primary transition-colors" data-path="conditions-utilisation" href="#">CGU / CGV</a></div></div></div></footer></body></html>

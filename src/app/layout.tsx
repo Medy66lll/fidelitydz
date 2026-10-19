@@ -1,0 +1,30 @@
+import type { Metadata } from 'next';
+import './globals.css';
+import { LanguageProvider } from '@/context/LanguageContext';
+import { MerchantProvider } from '@/context/MerchantContext';
+
+export const metadata: Metadata = {
+  title: 'FidelityDZ - Plateforme de Carte de Fidélité Digitale en Algérie',
+  description: 'Fidélisez vos clients en Algérie sans application à installer. Mode tampons ou points, scanner caissier, paiements Chargily Pay et BaridiMob.',
+  icons: {
+    icon: '/favicon.ico',
+  },
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="fr" dir="ltr">
+      <body className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+        <LanguageProvider>
+          <MerchantProvider>
+            {children}
+          </MerchantProvider>
+        </LanguageProvider>
+      </body>
+    </html>
+  );
+}

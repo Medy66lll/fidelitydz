@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+
+<html dir="ltr" lang="fr"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"error-container":"#ffdad6","tertiary-container":"#e29100","outline":"#6c7a71","surface-bright":"#f8f9ff","secondary":"#565e74","on-secondary-fixed-variant":"#3f465c","on-tertiary-fixed-variant":"#653e00","on-background":"#0b1c30","surface-container":"#e5eeff","on-tertiary":"#ffffff","on-primary":"#ffffff","surface":"#f8f9ff","surface-variant":"#d3e4fe","inverse-surface":"#213145","tertiary-fixed":"#ffddb8","surface-dim":"#cbdbf5","on-tertiary-fixed":"#2a1700","error":"#ba1a1a","outline-variant":"#bbcabf","secondary-fixed":"#dae2fd","tertiary-fixed-dim":"#ffb95f","on-error":"#ffffff","inverse-primary":"#4edea3","secondary-fixed-dim":"#bec6e0","primary":"#006c49","on-secondary":"#ffffff","surface-tint":"#006c49","on-surface":"#0b1c30","on-tertiary-container":"#523200","on-primary-fixed-variant":"#005236","surface-container-highest":"#d3e4fe","surface-container-low":"#eff4ff","on-primary-fixed":"#002113","secondary-container":"#dae2fd","on-secondary-container":"#5c647a","on-surface-variant":"#3c4a42","primary-fixed-dim":"#4edea3","surface-container-high":"#dce9ff","tertiary":"#855300","surface-container-lowest":"#ffffff","primary-container":"#10b981","on-error-container":"#93000a","on-primary-container":"#00422b","inverse-on-surface":"#eaf1ff","background":"#f8f9ff","primary-fixed":"#6ffbbe","on-secondary-fixed":"#131b2e"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-lg":"1.5rem","space-sm":"0.5rem","space-xl":"2rem","gutter-lg":"2rem","space-xs":"0.25rem","margin-lg":"2.5rem","margin":"2rem","space-md":"1rem","margin-sm":"1rem","gutter-sm":"1rem","gutter":"1.5rem"},"fontFamily":{"headline-sm":["Plus Jakarta Sans"],"label-sm":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"headline-lg-mobile":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"display-lg-mobile":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"title-md":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"title-sm":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"display-lg":["Plus Jakarta Sans"]},"fontSize":{"headline-sm":["18px",{"lineHeight":"26px","fontWeight":"600"}],"label-sm":["10px",{"lineHeight":"14px","letterSpacing":"0.05em","fontWeight":"700"}],"body-md":["14px",{"lineHeight":"20px","fontWeight":"400"}],"headline-lg-mobile":["24px",{"lineHeight":"32px","fontWeight":"700"}],"body-sm":["12px",{"lineHeight":"18px","fontWeight":"400"}],"headline-md":["22px",{"lineHeight":"30px","letterSpacing":"-0.01em","fontWeight":"600"}],"display-lg-mobile":["28px",{"lineHeight":"36px","fontWeight":"700"}],"label-lg":["13px",{"lineHeight":"18px","letterSpacing":"0.01em","fontWeight":"600"}],"title-md":["16px",{"lineHeight":"24px","fontWeight":"600"}],"label-md":["12px",{"lineHeight":"16px","fontWeight":"500"}],"title-sm":["14px",{"lineHeight":"20px","fontWeight":"600"}],"headline-lg":["28px",{"lineHeight":"36px","letterSpacing":"-0.02em","fontWeight":"700"}],"body-lg":["16px",{"lineHeight":"24px","fontWeight":"400"}],"display-lg":["36px",{"lineHeight":"44px","letterSpacing":"-0.02em","fontWeight":"700"}]}}}}</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-screen w-72 bg-inverse-surface text-inverse-on-surface z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="h-16 px-space-md flex items-center justify-between bg-inverse-surface"><div class="flex items-center gap-space-sm"><img alt="FidelityDZ Super-Admin Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VWKKOMaekQDPCNJfq8Yo7r363OERpTAkJ1i-8vgt6FMTISTx3Ce3EZWifhSDmko-hBEuyfTj6r9HXaGdUJTbCb9csdiSj4ru-ctsq74Ngm4y2W3N0yDd0pP9mLkbHvZP21PiG4fNxoYiwlO-GrlvJhdcVyj69P1d1Klqb1oSF5kznj-gJaA5sUE9JjsFb89Kj_yaTC9FSY353iY3dXsAADf5WafwORXnVgFRNrjGYjDUL6nnpJ_WubfQ"/><div class="flex flex-col"><span class="font-title-sm text-title-sm text-surface-container-lowest font-bold tracking-tight">FidelityDZ</span><span class="font-label-sm text-label-sm text-primary-fixed uppercase tracking-wider">Super-Admin DZ</span></div></div><span class="px-space-xs py-0.5 rounded bg-surface-container-high/20 text-tertiary-fixed font-label-sm text-label-sm">HQ</span></div><div class="px-space-md py-space-sm"><div class="px-space-sm py-space-xs rounded-lg bg-surface-container/10 flex items-center justify-between text-surface-variant font-label-sm text-label-sm"><span>ENV: PRODUCTION DZ</span><span class="inline-block w-2 h-2 rounded-full bg-primary-container animate-pulse"></span></div></div><nav class="flex flex-col gap-1 px-space-sm mt-space-sm" data-active-classes="bg-primary-container text-on-primary-container font-title-sm shadow-sm"><a aria-current="page" class="flex items-center justify-between px-space-sm py-2.5 rounded-lg transition-colors bg-primary-container text-on-primary-container font-title-sm shadow-sm" data-path="baridimob-ccp-validation" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">account_balance_wallet</span><div class="flex flex-col text-left"><span class="font-title-sm text-title-sm leading-tight">BaridiMob & CCP</span><span class="font-label-sm text-label-sm text-outline-variant font-normal">طابور التحقق من الدفع</span></div></div><span class="px-2 py-0.5 rounded-full bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm font-bold">4</span></a><a class="flex items-center px-space-sm py-2.5 rounded-lg text-surface-variant hover:bg-surface-container/10 hover:text-surface-container-lowest transition-colors" data-path="chargily-gateway-configuration" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">payments</span><div class="flex flex-col text-left"><span class="font-title-sm text-title-sm leading-tight">Passerelle Chargily</span><span class="font-label-sm text-label-sm text-outline-variant font-normal">إعدادات الدفع وشارجيلي</span></div></div></a><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-surface-variant hover:bg-surface-container/10 hover:text-surface-container-lowest transition-colors" data-path="merchants-network" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">storefront</span><div class="flex flex-col text-left"><span class="font-title-sm text-title-sm leading-tight">Tous les Commerces</span><span class="font-label-sm text-label-sm text-outline-variant font-normal">قائمة المتاجر المعتمدة</span></div></div><span class="px-2 py-0.5 rounded-full bg-surface-container/10 text-surface-dim font-label-sm text-label-sm">150</span></a><a class="flex items-center px-space-sm py-2.5 rounded-lg text-surface-variant hover:bg-surface-container/10 hover:text-surface-container-lowest transition-colors" data-path="security-audit-ledger" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">shield_person</span><div class="flex flex-col text-left"><span class="font-title-sm text-title-sm leading-tight">Journal d'Audit</span><span class="font-label-sm text-label-sm text-outline-variant font-normal">سجل العمليات والأمان</span></div></div></a></nav></div><div class="p-space-md bg-inverse-surface/90"><div class="p-space-sm rounded-xl bg-surface-container/10 flex flex-col gap-space-sm"><div class="flex items-center gap-space-sm"><div class="relative"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQRkG4j_gnBJTrZHqy4FiR4efWkvAsG3DL1eOa0DCXvVMEXJIYmsJQwLAXEPi5WaXWBZexYuNJe5jgwQL4A3JlwAy-QR2g5dfEmlbJMW9uA-Q0REwoJ4IoGvLJt0O0gRpK6fFPgQYRHcKKqf4Kgif9f8hMrfdqADGE560aaAmUAQ8xeTbOsSqW-wvNLrOYdk3qIW-ngiyxrIVfAG7VTGurFW1Spvq1qWCk6W90Up0fBK8c0X67D65g"/><span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-primary-container rounded-full ring-2 ring-inverse-surface"></span></div><div class="flex flex-col min-w-0"><span class="font-title-sm text-title-sm text-surface-container-lowest truncate">KAZI TANI M. El Mehdi</span><span class="font-label-sm text-label-sm text-surface-dim truncate">Fondateur & Propriétaire (المالك)</span></div></div><div class="flex items-center justify-between pt-space-xs font-label-sm text-label-sm text-surface-variant"><span>🇩🇿 Alger, DZ</span><span class="px-2 py-0.5 rounded bg-primary/30 text-primary-fixed-dim font-bold font-label-sm text-label-sm">Live v2.4</span></div></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-md z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-margin flex items-center justify-between"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs font-body-sm text-body-sm text-on-surface-variant"><span class="hover:text-primary transition-colors cursor-pointer">Super-Admin</span><span class="material-symbols-outlined text-[16px]">chevron_right</span><span class="text-on-surface font-title-sm text-title-sm">Vue Générale</span></div></div><div class="flex items-center gap-space-md"><div class="hidden md:flex items-center gap-space-xs bg-surface-container-low px-space-sm py-1 rounded-lg"><span class="font-label-sm text-label-sm text-secondary uppercase">MRR</span><span class="font-title-sm text-title-sm text-primary font-bold tabular-nums">585 000 DZD</span></div><div class="flex items-center bg-surface-container-low p-0.5 rounded-lg text-body-sm"><button class="px-space-sm py-1 rounded bg-surface-container-lowest font-title-sm text-on-surface shadow-[0_1px_8px_rgba(0,0,0,0.04)]" type="button">FR</button><button class="px-space-sm py-1 rounded font-body-sm text-on-surface-variant hover:text-on-surface transition-colors" type="button">عربي</button></div><div class="hidden lg:flex items-center bg-surface-container-low rounded-lg px-space-sm py-1.5 w-64 text-body-sm"><span class="material-symbols-outlined text-[18px] text-outline mr-2">search</span><input class="bg-transparent border-none outline-none text-on-surface placeholder:text-outline w-full text-body-sm" placeholder="Rechercher / بحث..." type="text"/></div><button class="relative p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error"></span></button><button class="p-2 rounded-lg text-on-surface-variant hover:bg-error-container hover:text-on-error-container transition-colors" title="Déconnexion" type="button"><span class="material-symbols-outlined text-[20px]">logout</span></button><img alt="Profile" class="w-8 h-8 rounded-full object-cover ml-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQRkG4j_gnBJTrZHqy4FiR4efWkvAsG3DL1eOa0DCXvVMEXJIYmsJQwLAXEPi5WaXWBZexYuNJe5jgwQL4A3JlwAy-QR2g5dfEmlbJMW9uA-Q0REwoJ4IoGvLJt0O0gRpK6fFPgQYRHcKKqf4Kgif9f8hMrfdqADGE560aaAmUAQ8xeTbOsSqW-wvNLrOYdk3qIW-ngiyxrIVfAG7VTGurFW1Spvq1qWCk6W90Up0fBK8c0X67D65g"/></div></div></header><main class="w-full pt-16 bg-surface min-h-screen"><div class="flex flex-col w-full">
+<!-- Interactive Top Action & Status Ribbon -->
+<div class="p-space-lg flex flex-col gap-space-lg bg-surface">
+<!-- Breadcrumb & Bilingual Header Section -->
+<div class="flex flex-col xl:flex-row xl:items-center justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary-container/20 text-primary font-label-md">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span>
+            Mode Super-Admin actif
+          </span>
+<span class="text-outline font-label-sm">|</span>
+<span class="font-label-sm text-secondary tracking-wide uppercase">Système de Facturation Souverain DZ</span>
+</div>
+<div class="flex flex-wrap items-baseline gap-x-space-md gap-y-1">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">
+            File d'Attente des Preuves de Paiement
+          </h1>
+<span class="font-headline-sm text-headline-sm text-secondary font-medium tracking-normal" dir="rtl">
+            طابور التحقق من وصولات بريدي موب والحوالات البريدية
+          </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+          Validation manuelle et déblocage instantané de l'abonnement mensuel (3 900 DZD / mois) par compte RIP Algérie Poste.
+        </p>
+</div>
+<!-- Quick Filter Chips & Action Controls -->
+<div class="flex flex-wrap items-center gap-space-xs self-start xl:self-center bg-surface-container-low p-1.5 rounded-xl shadow-sm">
+<button class="px-space-md py-2 rounded-lg bg-inverse-surface text-surface-container-lowest font-title-sm shadow-sm flex items-center gap-2" type="button">
+<span>En attente</span>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm">4</span>
+</button>
+<button class="px-space-md py-2 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container transition-colors font-title-sm flex items-center gap-2" type="button">
+<span>Validés ce mois</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm">146</span>
+</button>
+<button class="px-space-md py-2 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container transition-colors font-title-sm flex items-center gap-2" type="button">
+<span>Rejetés</span>
+<span class="px-1.5 py-0.2 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm">3</span>
+</button>
+<button class="px-space-md py-2 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container transition-colors font-title-sm" type="button">
+          Tous (153)
+        </button>
+<div class="h-6 w-px bg-outline-variant/40 mx-1"></div>
+<button class="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors" title="Actualiser la file" type="button">
+<span class="material-symbols-outlined text-[20px]">refresh</span>
+</button>
+</div>
+</div>
+<!-- 4 High-Contrast KPI Cards Row -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<!-- Card 1: Commerces Actifs -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col justify-between group hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div class="flex flex-col gap-1">
+<span class="font-label-md text-label-md uppercase tracking-wider text-secondary">Commerces Actifs</span>
+<span class="font-display-lg text-display-lg text-on-surface tabular-nums">150</span>
+</div>
+<div class="w-12 h-12 rounded-xl bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[26px]" style="font-variation-settings: 'FILL' 1;">storefront</span>
+</div>
+</div>
+<div class="mt-space-md pt-space-sm flex items-center justify-between border-t border-surface-container-low">
+<div class="flex items-center gap-1.5 text-primary font-title-sm">
+<span class="material-symbols-outlined text-[18px]">trending_up</span>
+<span>+12 cette semaine</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary" dir="rtl">متاجر نشطة</span>
+</div>
+<div class="absolute -right-4 -bottom-4 w-24 h-24 bg-primary-container/5 rounded-full pointer-events-none"></div>
+</div>
+<!-- Card 2: MRR Revenu Mensuel -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col justify-between group hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div class="flex flex-col gap-1">
+<span class="font-label-md text-label-md uppercase tracking-wider text-secondary">MRR Revenu Mensuel</span>
+<div class="flex items-baseline gap-1.5">
+<span class="font-display-lg text-display-lg text-on-surface tabular-nums">585 000</span>
+<span class="font-title-sm text-title-sm text-secondary uppercase font-bold">DZD</span>
+</div>
+</div>
+<div class="w-12 h-12 rounded-xl bg-tertiary-fixed flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[26px]" style="font-variation-settings: 'FILL' 1;">paid</span>
+</div>
+</div>
+<div class="mt-space-md pt-space-sm flex items-center justify-between border-t border-surface-container-low">
+<span class="font-body-sm text-body-sm text-secondary font-medium">3 900 DZD × 150 abonnés</span>
+<span class="font-label-sm text-label-sm text-secondary" dir="rtl">الدخل الشهري المستقر</span>
+</div>
+<div class="absolute -right-4 -bottom-4 w-24 h-24 bg-tertiary-container/10 rounded-full pointer-events-none"></div>
+</div>
+<!-- Card 3: Preuves BaridiMob / CCP en Attente -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col justify-between ring-2 ring-tertiary-container/50 hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md uppercase tracking-wider text-secondary">Preuves en Attente</span>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm font-bold animate-pulse">Action requise</span>
+</div>
+<span class="font-display-lg text-display-lg text-tertiary tabular-nums">4</span>
+</div>
+<div class="w-12 h-12 rounded-xl bg-tertiary-container/20 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[26px]" style="font-variation-settings: 'FILL' 1;">pending_actions</span>
+</div>
+</div>
+<div class="mt-space-md pt-space-sm flex items-center justify-between border-t border-surface-container-low">
+<div class="flex items-center gap-1.5 text-tertiary font-title-sm">
+<span class="material-symbols-outlined text-[18px]">timer</span>
+<span>Attente moy: 14 min</span>
+</div>
+<span class="font-label-sm text-label-sm text-tertiary font-bold" dir="rtl">مطلوب مراجعة</span>
+</div>
+</div>
+<!-- Card 4: Paiements Chargily Pay -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col justify-between group hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div class="flex flex-col gap-1">
+<span class="font-label-md text-label-md uppercase tracking-wider text-secondary">Paiements Chargily Pay</span>
+<div class="flex items-baseline gap-1.5">
+<span class="font-display-lg text-display-lg text-on-surface tabular-nums">98</span>
+<span class="font-body-sm text-body-sm text-secondary">/ 150</span>
+</div>
+</div>
+<div class="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined text-[26px]">credit_card</span>
+</div>
+</div>
+<div class="mt-space-md pt-space-sm flex items-center justify-between border-t border-surface-container-low">
+<span class="font-body-sm text-body-sm text-secondary">Edahabia & CIB direct</span>
+<span class="font-label-sm text-label-sm text-primary font-bold">Auto-Validé (65%)</span>
+</div>
+<div class="absolute -right-4 -bottom-4 w-24 h-24 bg-secondary-container/20 rounded-full pointer-events-none"></div>
+</div>
+</div>
+<!-- Main Content Split Grid: 7 Cols (Table) / 5 Cols (Inspection Drawer) -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-lg items-start">
+<!-- Left Column: Validation Queue Table (7 cols) -->
+<div class="xl:col-span-7 flex flex-col gap-space-md">
+<div class="bg-surface-container-lowest rounded-2xl shadow-sm overflow-hidden">
+<!-- Table Subheader & Filter Tools -->
+<div class="p-space-md bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm border-b border-surface-container">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[22px]">verified_user</span>
+<div class="flex flex-col">
+<h2 class="font-title-md text-title-md text-on-surface">Validation des Paiements Commerçants</h2>
+<span class="font-label-sm text-label-sm text-secondary">Souscription Mensuelle standard 3 900 DZD</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="font-label-sm text-label-sm text-secondary px-2 py-1 rounded bg-surface-container">
+                4 dossiers prêts pour octroi de licence
+              </span>
+</div>
+</div>
+<!-- Queue Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-lowest text-secondary font-label-sm text-label-sm uppercase tracking-wider border-b border-surface-container-low">
+<th class="py-3 px-space-md">Commerce & Gérant</th>
+<th class="py-3 px-space-md">Wilaya / Tél</th>
+<th class="py-3 px-space-md">Méthode & Réf</th>
+<th class="py-3 px-space-md text-right">Montant</th>
+<th class="py-3 px-space-md text-center">Action Rapide</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-low font-body-md text-body-md">
+<!-- Row 1: Selected Item (Café El Bahdja) -->
+<tr class="bg-surface-container-low/80 hover:bg-surface-container-low transition-colors relative cursor-pointer group">
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-2.5 h-10 rounded-full bg-primary-container"></div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-sm text-title-sm text-on-surface font-bold flex items-center gap-1.5">
+                          Café El Bahdja
+                          <span class="px-1.5 py-0.2 rounded bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm">Sélectionné</span>
+</span>
+<span class="font-body-sm text-body-sm text-secondary">Gérant: Yassine B. (Bab El Oued)</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex flex-col">
+<span class="font-title-sm text-title-sm text-on-surface">16 Alger</span>
+<span class="font-body-sm text-body-sm text-secondary tabular-nums">0550 12 34 56</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex flex-col gap-1 items-start">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-inverse-surface text-primary-fixed font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[14px]">smartphone</span>
+                        BaridiMob (RIP)
+                      </span>
+<span class="font-label-sm text-label-sm text-outline font-mono">TRX-BM-948201</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<span class="font-title-sm text-title-sm text-primary font-bold tabular-nums">3 900 DZD</span>
+<span class="block font-label-sm text-label-sm text-secondary">Il y a 14 min</span>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex items-center justify-center gap-1.5">
+<button class="px-3 py-1.5 rounded-lg bg-primary text-on-primary font-label-md hover:bg-on-primary-container transition-colors shadow-sm flex items-center gap-1" title="Valider directement" type="button">
+<span class="material-symbols-outlined text-[16px]">check</span>
+<span>+30j</span>
+</button>
+<button class="p-1.5 rounded-lg text-error hover:bg-error-container transition-colors" title="Refuser le justificatif" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2: Pizzeria Napoli Oran -->
+<tr class="bg-surface-container-lowest hover:bg-surface-container-low/50 transition-colors cursor-pointer">
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-2.5 h-10 rounded-full bg-transparent"></div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-sm text-title-sm text-on-surface">Pizzeria Napoli Oran</span>
+<span class="font-body-sm text-body-sm text-secondary">Gérant: Sofiane M. (Akid Lotfi)</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex flex-col">
+<span class="font-title-sm text-title-sm text-on-surface">31 Oran</span>
+<span class="font-body-sm text-body-sm text-secondary tabular-nums">0770 98 76 54</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex flex-col gap-1 items-start">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-secondary-container text-on-secondary-fixed font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[14px]">receipt_long</span>
+                        Versement CCP (Reçu)
+                      </span>
+<span class="font-label-sm text-label-sm text-outline font-mono">TRX-CCP-110294</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<span class="font-title-sm text-title-sm text-on-surface font-bold tabular-nums">3 900 DZD</span>
+<span class="block font-label-sm text-label-sm text-secondary">Il y a 38 min</span>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex items-center justify-center gap-1.5">
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-high text-on-surface font-label-md hover:bg-primary hover:text-on-primary transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span>Examiner</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3: Barber Club Blida -->
+<tr class="bg-surface-container-lowest hover:bg-surface-container-low/50 transition-colors cursor-pointer">
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-2.5 h-10 rounded-full bg-transparent"></div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-sm text-title-sm text-on-surface">Barber Club Blida</span>
+<span class="font-body-sm text-body-sm text-secondary">Gérant: Karim T. (Ouled Yaïch)</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex flex-col">
+<span class="font-title-sm text-title-sm text-on-surface">09 Blida</span>
+<span class="font-body-sm text-body-sm text-secondary tabular-nums">0661 22 33 44</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex flex-col gap-1 items-start">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-inverse-surface text-primary-fixed font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[14px]">smartphone</span>
+                        BaridiMob (RIP)
+                      </span>
+<span class="font-label-sm text-label-sm text-outline font-mono">TRX-BM-883201</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<span class="font-title-sm text-title-sm text-on-surface font-bold tabular-nums">3 900 DZD</span>
+<span class="block font-label-sm text-label-sm text-secondary">Il y a 1h 05</span>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex items-center justify-center gap-1.5">
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-high text-on-surface font-label-md hover:bg-primary hover:text-on-primary transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span>Examiner</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4: Optique El Manar Sétif -->
+<tr class="bg-surface-container-lowest hover:bg-surface-container-low/50 transition-colors cursor-pointer">
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-2.5 h-10 rounded-full bg-transparent"></div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-sm text-title-sm text-on-surface">Optique El Manar Sétif</span>
+<span class="font-body-sm text-body-sm text-secondary">Gérant: Amina K. (Centre Ville)</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex flex-col">
+<span class="font-title-sm text-title-sm text-on-surface">19 Sétif</span>
+<span class="font-body-sm text-body-sm text-secondary tabular-nums">0555 67 89 01</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex flex-col gap-1 items-start">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[14px]">local_post_office</span>
+                        Mandat CCP Guichet
+                      </span>
+<span class="font-label-sm text-label-sm text-outline font-mono">TRX-CCP-009182</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<span class="font-title-sm text-title-sm text-on-surface font-bold tabular-nums">3 900 DZD</span>
+<span class="block font-label-sm text-label-sm text-secondary">Il y a 2h 12</span>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex items-center justify-center gap-1.5">
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-high text-on-surface font-label-md hover:bg-primary hover:text-on-primary transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span>Examiner</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer Operational Status -->
+<div class="p-space-md bg-surface-container-lowest border-t border-surface-container-low flex flex-col sm:flex-row items-center justify-between text-secondary font-label-sm gap-2">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span>Passerelle d'encaissement direct activée : BaridiMob Instant RIP Algérie Poste</span>
+</div>
+<span class="tabular-nums">Total file d'attente : 15 600 DZD à débloquer</span>
+</div>
+</div>
+<!-- System Safety Ledger Banner -->
+<div class="rounded-xl p-space-md bg-inverse-surface text-surface-container-lowest flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container/10 flex items-center justify-center text-primary-fixed">
+<span class="material-symbols-outlined text-[24px]">verified</span>
+</div>
+<div class="flex flex-col">
+<span class="font-title-sm text-title-sm text-surface-container-lowest">Garantie Souveraine Super-Admin</span>
+<span class="font-body-sm text-body-sm text-surface-variant">L'approbation génère automatiquement une facture fiscale avec QR Code et réactive le Terminal Point de Vente du commerçant.</span>
+</div>
+</div>
+<div class="hidden sm:flex flex-col text-right font-label-sm text-tertiary-fixed">
+<span>Algérie Poste CCP</span>
+<span class="text-surface-dim font-mono">00799999004172668994</span>
+</div>
+</div>
+</div>
+<!-- Right Column: Dedicated Inspection & Cross-Match Audit Drawer (5 cols) -->
+<div class="xl:col-span-5 flex flex-col gap-space-md">
+<div class="bg-surface-container-lowest rounded-2xl shadow-md overflow-hidden">
+<!-- Inspection Header Framed with Midnight Slate -->
+<div class="bg-inverse-surface p-space-md text-surface-container-lowest flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary-fixed text-[24px]">fact_check</span>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<h3 class="font-title-md text-title-md text-surface-container-lowest font-bold">Vérification en 1-Clic</h3>
+<span class="px-2 py-0.5 rounded bg-primary-container text-on-primary-container font-label-sm text-label-sm font-bold">DIRECT</span>
+</div>
+<span class="font-label-sm text-label-sm text-surface-variant" dir="rtl">مطابقة الدفع والتحقق السريع</span>
+</div>
+</div>
+<button class="p-1 rounded text-surface-variant hover:text-surface-container-lowest transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">open_in_full</span>
+</button>
+</div>
+<!-- Merchant Header Summary -->
+<div class="p-space-md bg-surface-container-low flex items-center justify-between border-b border-surface-container">
+<div class="flex items-center gap-space-sm">
+<div class="w-12 h-12 rounded-xl bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm font-headline-sm">
+                ☕
+              </div>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-on-surface font-bold">Café El Bahdja</span>
+<span class="font-body-sm text-body-sm text-secondary">Bab El Oued, Alger — 0550 12 34 56</span>
+</div>
+</div>
+<div class="flex flex-col text-right">
+<span class="font-label-sm text-label-sm text-secondary uppercase font-bold">Montant Dû</span>
+<span class="font-headline-sm text-headline-sm text-primary font-bold tabular-nums">3 900 DZD</span>
+</div>
+</div>
+<div class="p-space-lg flex flex-col gap-space-md">
+<!-- Reference Account Comparison Box -->
+<div class="rounded-xl bg-surface-container-low p-space-md flex flex-col gap-space-sm">
+<div class="flex items-center justify-between text-secondary font-label-sm">
+<span class="uppercase tracking-wider font-bold">Compte Bénéficiaire (Vos coordonnées)</span>
+<span class="text-primary font-bold">Titulaire Officiel DZ</span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-lowest flex flex-col gap-1 shadow-sm">
+<div class="flex items-center justify-between text-on-surface">
+<span class="font-label-md text-label-md text-secondary">Nom du Bénéficiaire:</span>
+<span class="font-title-sm text-title-sm font-bold uppercase tracking-tight text-primary">KAZI TANI MOHAMMED EL MEHDI</span>
+</div>
+<div class="flex items-center justify-between text-on-surface">
+<span class="font-label-md text-label-md text-secondary">Numéro RIP (20 chiffres):</span>
+<span class="font-body-md text-body-md font-mono font-bold text-on-surface tracking-wider tabular-nums">00799999004172668994</span>
+</div>
+<div class="flex items-center justify-between text-on-surface">
+<span class="font-label-md text-label-md text-secondary">CCP / Clé:</span>
+<span class="font-body-md text-body-md font-mono font-medium text-secondary tabular-nums">41726689 Clé 87</span>
+</div>
+</div>
+</div>
+<!-- Preuve Téléversée: Realistic BaridiMob Receipt Card Mockup -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-secondary uppercase tracking-wider font-bold">Preuve BaridiMob Téléversée</span>
+<span class="font-label-sm text-label-sm text-primary flex items-center gap-1 font-bold">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                  RIP Correspondant à 100%
+                </span>
+</div>
+<!-- BaridiMob App Screenshot Style Container -->
+<div class="rounded-2xl p-space-md bg-gradient-to-b from-inverse-surface to-on-background text-surface-container-lowest shadow-lg relative overflow-hidden flex flex-col gap-space-md">
+<!-- Mockup Status Bar & Header -->
+<div class="flex items-center justify-between border-b border-surface-variant/20 pb-space-sm">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-lg bg-tertiary-container flex items-center justify-center text-on-tertiary-container font-bold text-xs shadow-sm">
+                      📮
+                    </div>
+<div class="flex flex-col">
+<span class="font-title-sm text-title-sm text-surface-container-lowest font-bold leading-tight">Algérie Poste</span>
+<span class="font-label-sm text-label-sm text-tertiary-fixed font-semibold">BaridiMob App Virement</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-primary-container/20 text-primary-fixed-dim font-label-sm text-label-sm font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+                    Virement Réussi
+                  </span>
+</div>
+<!-- Transaction Big Amount -->
+<div class="flex flex-col items-center justify-center py-space-xs text-center">
+<span class="font-label-sm text-label-sm text-surface-variant uppercase tracking-widest">Montant Transféré</span>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-display-lg text-display-lg text-primary-fixed font-bold tabular-nums">3 900,00</span>
+<span class="font-headline-sm text-headline-sm text-surface-container-lowest font-bold">DZD</span>
+</div>
+<span class="font-body-sm text-body-sm text-surface-variant mt-1">Aujourd'hui à 11:42 • Reçu officiel n° 9842104</span>
+</div>
+<!-- Receipt Detail Breakdown -->
+<div class="p-space-sm rounded-xl bg-surface-container-low/10 flex flex-col gap-2 font-body-sm">
+<div class="flex items-center justify-between">
+<span class="text-surface-dim font-label-md">Compte Débiteur:</span>
+<span class="font-mono text-surface-container-lowest">00799999008819201411 (Yassine B.)</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-surface-dim font-label-md">Vers le compte RIP:</span>
+<span class="font-mono text-primary-fixed font-bold">00799999004172668994</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-surface-dim font-label-md">Bénéficiaire reçu:</span>
+<span class="text-surface-container-lowest font-semibold">KAZI TANI MOHAMMED EL MEHDI</span>
+</div>
+<div class="flex items-center justify-between pt-1 border-t border-surface-variant/10">
+<span class="text-surface-dim font-label-md">ID Transaction:</span>
+<span class="font-mono text-tertiary-fixed">DZ-BM-2024-9842104</span>
+</div>
+</div>
+<!-- Decorative Postal Stamp Overlay -->
+<div class="flex items-center justify-between pt-1 text-surface-variant font-label-sm">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">fingerprint</span>
+                    Signature Numérique AP Validée
+                  </span>
+<button class="text-primary-fixed underline hover:text-surface-container-lowest transition-colors" type="button">
+                    Télécharger l'original (.PDF)
+                  </button>
+</div>
+</div>
+</div>
+<!-- Internal Audit Note Input -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-secondary font-medium flex items-center justify-between" for="audit-note">
+<span>Note d'audit interne (optionnel)</span>
+<span class="font-label-sm text-label-sm text-outline">Visible uniquement Super-Admin</span>
+</label>
+<div class="relative">
+<input class="w-full h-10 px-3 py-2 rounded-lg bg-surface-container-low text-on-surface font-body-sm placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary transition-all" id="audit-note" placeholder="Ex: Reçu vérifié sur application BaridiMob DZ à 11h45..." type="text" value="RIP et montant conformes au tarif 3900 DZD. Déblocage valide."/>
+<span class="absolute right-2.5 top-2.5 material-symbols-outlined text-primary text-[18px]">verified</span>
+</div>
+</div>
+<!-- Quick Action Decision Buttons -->
+<div class="flex flex-col gap-space-sm pt-space-xs">
+<!-- Primary Emerald Action Button -->
+<button class="w-full py-3.5 px-space-md rounded-xl bg-primary hover:bg-on-primary-container text-on-primary font-title-md font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-space-sm group" type="button">
+<span class="material-symbols-outlined text-[24px] group-hover:scale-110 transition-transform">lock_open</span>
+<div class="flex flex-col items-center">
+<span class="leading-tight">Confirmer la Réception & Activer 30 Jours</span>
+<span class="font-label-sm text-label-sm text-primary-fixed-dim" dir="rtl">تأكيد استلام المبلغ وتفعيل الاشتراك (30 يوم)</span>
+</div>
+</button>
+<!-- Secondary Row: Reject & Quick Contact -->
+<div class="grid grid-cols-2 gap-space-sm">
+<!-- Reject Dropdown/Action -->
+<button class="py-2.5 px-space-sm rounded-xl bg-error-container text-on-error-container hover:bg-error hover:text-on-error transition-colors font-title-sm flex items-center justify-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[18px]">block</span>
+<span>Rejeter avec Motif</span>
+</button>
+<!-- WhatsApp / Call Merchant -->
+<a class="py-2.5 px-space-sm rounded-xl bg-surface-container-low text-on-surface hover:bg-surface-container transition-colors font-title-sm flex items-center justify-center gap-1.5" href="tel:0550123456">
+<span class="material-symbols-outlined text-[18px] text-primary">call</span>
+<span>Appeler Gérant</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Drawer Footer Safety Checklist -->
+<div class="p-space-md bg-surface-container-low/60 border-t border-surface-container flex items-center justify-between text-secondary font-label-sm">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-[16px]">check</span>
+              Notification SMS Commerçant prête
+            </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-[16px]">check</span>
+              Reçu Fiscal N° #DZ-2024-0194
+            </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></main></div></body></html>

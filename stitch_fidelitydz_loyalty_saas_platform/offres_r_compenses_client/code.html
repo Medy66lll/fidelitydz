@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+
+<html dir="ltr" lang="fr"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#f8f9ff;}body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 0.75rem);}.pt-safe{padding-top:env(safe-area-inset-top, 0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface": "#f8f9ff", "on-secondary-fixed-variant": "#3f465c", "secondary-fixed": "#dae2fd", "inverse-surface": "#213145", "on-primary-fixed": "#002113", "surface-container-highest": "#d3e4fe", "surface-bright": "#f8f9ff", "on-secondary-container": "#5c647a", "on-error": "#ffffff", "surface-container": "#e5eeff", "inverse-on-surface": "#eaf1ff", "tertiary": "#855300", "on-error-container": "#93000a", "error": "#ba1a1a", "on-surface-variant": "#3c4a42", "on-primary": "#ffffff", "on-tertiary": "#ffffff", "tertiary-fixed-dim": "#ffb95f", "on-tertiary-fixed": "#2a1700", "on-primary-fixed-variant": "#005236", "on-surface": "#0b1c30", "on-secondary-fixed": "#131b2e", "primary": "#006c49", "surface-container-lowest": "#ffffff", "error-container": "#ffdad6", "on-tertiary-container": "#523200", "inverse-primary": "#4edea3", "surface-container-low": "#eff4ff", "primary-fixed": "#6ffbbe", "on-primary-container": "#00422b", "secondary-fixed-dim": "#bec6e0", "primary-container": "#10b981", "surface-tint": "#006c49", "surface-container-high": "#dce9ff", "surface-dim": "#cbdbf5", "tertiary-fixed": "#ffddb8", "primary-fixed-dim": "#4edea3", "outline": "#6c7a71", "surface-variant": "#d3e4fe", "secondary": "#565e74", "tertiary-container": "#e29100", "on-secondary": "#ffffff", "on-tertiary-fixed-variant": "#653e00", "outline-variant": "#bbcabf", "on-background": "#0b1c30", "secondary-container": "#dae2fd", "background": "#f8f9ff" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-md": "1rem", "space-xs": "0.25rem", "space-xl": "2rem", "margin-sm": "0.75rem", "margin-lg": "1.5rem", "gutter": "1rem", "margin": "1rem", "gutter-mobile": "0.75rem", "space-sm": "0.5rem", "space-lg": "1.5rem" }, fontFamily: { "label-md": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "display-hero": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "code-scanner-data": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "title-card": ["Plus Jakarta Sans"], "label-stamp-number": ["Plus Jakarta Sans"], "display-hero-mobile": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"] }, fontSize: { "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "600" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600" }], "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-sm": ["16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "600" }], "display-hero": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "800" }], "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400" }], "code-scanner-data": ["15px", { "lineHeight": "20px", "letterSpacing": "0.08em", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }], "title-card": ["18px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "label-stamp-number": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "700" }], "display-hero-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "800" }], "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400" }], "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[22px]">loyalty</span></div><div class="flex flex-col min-w-0"><span class="font-headline-sm text-headline-sm text-on-surface truncate leading-tight">FidelityDZ</span><span class="font-body-sm text-body-sm text-on-surface-variant truncate">Recompenses</span></div></div><div class="flex items-center gap-space-sm shrink-0"><div aria-label="Language Selector" class="flex items-center bg-surface-container rounded-full p-0.5" role="group"><button class="px-2.5 py-1 rounded-full bg-surface-container-lowest text-on-surface shadow-[0_1px_3px_rgba(0,0,0,0.08)] font-label-md text-label-md transition-all" type="button">FR</button><button class="px-2.5 py-1 rounded-full text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all" type="button">عربي</button></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-24 bg-surface max-w-[440px] mx-auto px-margin"><div class="flex flex-col w-full gap-space-lg">
+<!-- Top Bilingual Banner & Segmented Switcher -->
+<div class="flex flex-col gap-space-sm pt-space-xs">
+<div class="flex items-center justify-between gap-space-sm">
+<div class="flex flex-col min-w-0">
+<h1 class="font-headline-md text-headline-md text-on-surface truncate">Mes Offres &amp; Cadeaux</h1>
+<p class="font-label-md text-label-md text-primary font-bold">عروضي والهدايا المتاحة</p>
+</div>
+<!-- Local Bilingual Quick Selector -->
+<div class="inline-flex bg-surface-container p-0.5 rounded-full shadow-sm shrink-0" id="langToggle">
+<button class="px-3 py-1 rounded-full bg-surface-container-lowest text-primary font-label-md text-label-md shadow-sm transition-all" id="btnFR" type="button">FR</button>
+<button class="px-3 py-1 rounded-full text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all" id="btnAR" type="button">عربي</button>
+</div>
+</div>
+<!-- Alert Pill: 1 Ready Reward -->
+<div class="relative overflow-hidden rounded-xl bg-tertiary-fixed text-on-tertiary-fixed p-space-sm flex items-center gap-space-sm shadow-sm">
+<div class="w-9 h-9 rounded-full bg-tertiary-container text-on-tertiary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">celebration</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<span class="font-label-lg text-label-lg font-bold leading-tight lang-fr">1 Récompense débloquée en caisse !</span>
+<span class="font-label-sm text-body-sm text-tertiary leading-tight lang-ar hidden" dir="rtl">مكافأة واحدة جاهزة للاستلام فوراً!</span>
+<span class="font-body-sm text-body-sm text-tertiary truncate">Présentez votre QR au serveur</span>
+</div>
+<span class="material-symbols-outlined text-tertiary text-[20px] shrink-0">arrow_forward_ios</span>
+</div>
+</div>
+<!-- Hero Highlight: Ready Reward Golden Card -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest shadow-md p-space-md flex flex-col gap-space-md">
+<!-- Visual Corner Ribbons / Accents -->
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-12 h-12 rounded-xl bg-tertiary-fixed-dim/40 text-tertiary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">local_cafe</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-tertiary uppercase tracking-wider font-bold">Tampon 10/10 Débloqué</span>
+<h2 class="font-title-card text-title-card text-on-surface leading-snug">1 Café Spécial + Croissant Offert</h2>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium mt-0.5" dir="rtl">قهوة مميزة + كرواسون مجاناً</span>
+</div>
+</div>
+</div>
+<!-- Micro Photo Showcase of the reward -->
+<div class="relative w-full h-32 rounded-lg overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Artisanal freshly brewed cappuccino with delicate rosetta latte art served beside a flaky golden butter croissant on a dark ceramic saucer in an elegant Algiers cafe interior, warm morning sunlight, deep emerald and amber ambient tones, high editorial food photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDptzO8WBHZgeP2IFh5dAE1FkqiCluy7R0ihpymxTVAIDJHniZS6ebUFyGYiWR47tNbmk4mZUcvns60WKnjT1Hlz_NWK_h4tcJRHzsg0Jp6IHO3opmqoaC2A0j5g9XD6DXs2hJkHXo7sFzVk-yhmVfXibCTZKgXDUhVRSj47Aupaljx5LJFBE1pFf9uj1PuRS0atkPhsA1hjZhLKkO_k3idZVCFFyIFs9Sd75-0_1e1FyCQYo2Xw0wS"/>
+<div class="absolute bottom-2 left-2 px-2.5 py-1 rounded-full bg-inverse-surface/85 backdrop-blur-md text-inverse-on-surface font-label-md text-label-md flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-tertiary-fixed-dim">schedule</span>
+<span>Valable encore 12 jours</span>
+</div>
+</div>
+<!-- Action Bar & QR Trigger -->
+<div class="flex flex-col gap-space-sm pt-space-xs">
+<button class="w-full h-12 rounded-lg bg-primary text-on-primary font-label-lg text-label-lg flex items-center justify-center gap-space-sm shadow-md active:scale-[0.98] transition-transform" id="openRewardModalBtn" type="button">
+<span class="material-symbols-outlined text-[20px]">qr_code_scanner</span>
+<span class="lang-fr">Utiliser maintenant en caisse</span>
+<span class="lang-ar hidden" dir="rtl">استلام المكافأة الآن</span>
+</button>
+<p class="font-body-sm text-body-sm text-center text-on-surface-variant">Code à présenter au barista avant l'encaissement</p>
+</div>
+</div>
+<!-- Active Merchant Flash Offers Section -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Offres Flash du Commerce</h3>
+</div>
+<span class="font-label-md text-label-md text-primary font-semibold">2 En cours</span>
+</div>
+<div class="flex flex-col gap-space-sm">
+<!-- Offer 1: Happy Hour Bakery -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-space-sm relative overflow-hidden">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs mb-1">
+<span class="px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-md text-label-md font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">local_fire_department</span>
+                -20%
+              </span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-md text-label-md">Happy Hour</span>
+</div>
+<h4 class="font-title-card text-title-card text-on-surface">Tous les gâteaux de 14h à 17h</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant font-medium mt-0.5" dir="rtl">تخفيض 20% على جميع الحلويات والمعجنات اليوم</p>
+</div>
+<div class="w-16 h-16 rounded-lg bg-surface-container shrink-0 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Selection of luxurious French pastries and Algerian almond patisserie displayed in a modern marble pastry counter, soft natural window light, pistachio and raspberry toppings, warm golden crusts, commercial food style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJ28mcPwylMFoh0JenVWIjkp9aCgzzOWVIUOxteS7DGWMEWS3cn94So4AHQx1Kx8GVyQ4ReWwqj19t-TEEu-C2EEX7JRvuMTeCmys1I4aDHzw4SJG1zSwHP39aF4sgZAYtoY3F1A_pnT-gNS56xkhIBD2jL0NN3lChEPklaPfY7l7gMDT0YutMLe7iA6Rt1Nfjxj8fYUMWjtQtT58LjcwRDNg_cBv_ajYWILZBJEZbS-hPwZRfZt3P"/>
+</div>
+</div>
+<div class="flex items-center justify-between pt-space-xs bg-surface-container-low p-2 rounded-lg">
+<div class="flex items-center gap-1 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[16px] text-tertiary-container">timer</span>
+<span>Expire dans <strong class="text-on-surface">3 heures</strong></span>
+</div>
+<button class="px-3 py-1 rounded-md bg-secondary-container text-on-secondary-container font-label-md text-label-md hover:bg-secondary-fixed transition-colors" type="button">
+            Activer
+          </button>
+</div>
+</div>
+<!-- Offer 2: Double Stamps Thursday -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-11 h-11 rounded-xl bg-primary-fixed text-on-primary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">stars</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed-dim/50 text-on-primary-fixed font-label-md text-label-md font-bold">Aujourd'hui</span>
+</div>
+<h4 class="font-title-card text-title-card text-on-surface">Double Tampons le Jeudi Soir</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant font-medium" dir="rtl">نقاط مضاعفة على كل طلب كل خميس ابتداءً من 17:00</p>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between text-body-sm font-body-sm text-on-surface-variant px-1">
+<span>Dès 17h00 jusqu'à la fermeture</span>
+<span class="font-label-md text-label-md text-primary font-bold">Automatique</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Visit & Stamp History Timeline -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary text-[20px]">history</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Historique des Visites</h3>
+</div>
+<button class="font-label-md text-label-md text-primary font-semibold hover:underline" type="button">Voir tout</button>
+</div>
+<div class="rounded-xl bg-surface-container-lowest shadow-sm p-space-md flex flex-col gap-space-md">
+<!-- Item 1 -->
+<div class="flex items-start gap-space-sm relative">
+<div class="w-8 h-8 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center shrink-0 z-10 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add_task</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">+1 Tampon validé</span>
+<span class="font-label-md text-label-md text-primary font-bold bg-primary-fixed/30 px-2 py-0.5 rounded-full">+20 pts</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Hier à 16:30 — Caisse Principale</span>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex items-start gap-space-sm relative">
+<div class="w-8 h-8 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center shrink-0 z-10 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add_task</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">+1 Tampon validé</span>
+<span class="font-label-md text-label-md text-primary font-bold bg-primary-fixed/30 px-2 py-0.5 rounded-full">+20 pts</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">18 Oct à 12:15 — Caisse 2 (Terrasse)</span>
+</div>
+</div>
+<!-- Item 3 (Reward Redeemed) -->
+<div class="flex items-start gap-space-sm relative">
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center shrink-0 z-10 shadow-sm">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">redeem</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">10ème Café réclamé</span>
+<span class="font-label-md text-label-md text-tertiary font-bold bg-tertiary-fixed/40 px-2 py-0.5 rounded-full">Cadeau</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">12 Oct à 09:40 — Comptoir Bar</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Store Counter Info Card -->
+<div class="rounded-xl bg-surface-container-low p-space-md flex flex-col gap-space-sm shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[22px]">storefront</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-card text-title-card text-on-surface truncate">Café El-Djazair Central</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Rue Didouche Mourad, Alger</span>
+</div>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-lowest px-2.5 py-1 rounded-full text-on-surface shadow-sm">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-label-md text-label-md font-bold">Ouvert</span>
+</div>
+</div>
+<!-- Opening Hours & Contact row -->
+<div class="flex items-center justify-between pt-space-xs text-body-sm font-body-sm text-on-surface-variant">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span>Aujourd'hui : <strong class="text-on-surface">7h00 - 22h00</strong></span>
+</div>
+<a class="flex items-center gap-1 text-primary font-label-md text-label-md font-semibold" href="tel:+21321000000">
+<span class="material-symbols-outlined text-[16px]">call</span>
+        Appeler
+      </a>
+</div>
+</div>
+<!-- Redemption QR Modal Overlay (Interactive Drawer) -->
+<div class="fixed inset-0 z-50 bg-inverse-surface/80 backdrop-blur-md hidden flex-col justify-end p-margin" id="rewardModal">
+<div class="w-full max-w-[408px] mx-auto bg-surface-container-lowest rounded-xl shadow-2xl p-space-lg flex flex-col items-center text-center gap-space-md animate-in slide-in-from-bottom duration-200">
+<div class="w-12 h-1.5 rounded-full bg-outline-variant"></div>
+<div class="flex flex-col items-center gap-1">
+<span class="font-label-md text-label-md text-tertiary uppercase font-bold tracking-wider">Coupon de Fidélité Actif</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">1 Café Spécial + Croissant</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Présentez ce QR Code directement sous le lecteur caisse</p>
+</div>
+<!-- Contrast-Rich QR Code Container -->
+<div class="relative p-space-md bg-white rounded-xl shadow-sm flex flex-col items-center justify-center">
+<!-- Stylized SVG QR Simulation -->
+<svg class="w-48 h-48" fill="none" viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<!-- Top Left Finder Pattern -->
+<rect fill="#006C49" height="26" rx="4" width="26" x="5" y="5"></rect>
+<rect fill="#FFFFFF" height="18" rx="2" width="18" x="9" y="9"></rect>
+<rect fill="#006C49" height="10" rx="1" width="10" x="13" y="13"></rect>
+<!-- Top Right Finder Pattern -->
+<rect fill="#006C49" height="26" rx="4" width="26" x="69" y="5"></rect>
+<rect fill="#FFFFFF" height="18" rx="2" width="18" x="73" y="9"></rect>
+<rect fill="#006C49" height="10" rx="1" width="10" x="77" y="13"></rect>
+<!-- Bottom Left Finder Pattern -->
+<rect fill="#006C49" height="26" rx="4" width="26" x="5" y="69"></rect>
+<rect fill="#FFFFFF" height="18" rx="2" width="18" x="9" y="73"></rect>
+<rect fill="#006C49" height="10" rx="1" width="10" x="13" y="77"></rect>
+<!-- Data Pixels Simulation -->
+<rect fill="#0B1C30" height="6" width="6" x="36" y="8"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="46" y="8"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="56" y="8"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="36" y="18"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="46" y="24"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="56" y="18"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="10" y="38"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="20" y="38"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="36" y="38"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="46" y="38"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="60" y="38"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="70" y="38"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="84" y="38"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="36" y="48"></rect>
+<rect fill="#006C49" height="6" width="6" x="48" y="48"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="60" y="48"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="74" y="48"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="10" y="56"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="22" y="56"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="36" y="58"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="48" y="58"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="66" y="58"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="80" y="58"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="36" y="70"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="48" y="70"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="62" y="70"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="76" y="70"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="36" y="82"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="48" y="82"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="60" y="82"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="74" y="82"></rect>
+<rect fill="#0B1C30" height="6" width="6" x="86" y="82"></rect>
+</svg>
+</div>
+<div class="flex items-center gap-2 text-on-surface font-code-scanner-data text-code-scanner-data">
+<span>FDZ-REW-8839-ALG</span>
+<button class="text-primary hover:text-on-primary-container" type="button"><span class="material-symbols-outlined text-[18px]">content_copy</span></button>
+</div>
+<div class="flex items-center gap-2 p-2 rounded-lg bg-surface-container text-on-surface-variant font-body-sm text-body-sm w-full justify-center">
+<span class="material-symbols-outlined text-[18px] text-tertiary-container">light_mode</span>
+<span>Luminosité maximale recommandée</span>
+</div>
+<button class="w-full h-11 rounded-lg bg-surface-container text-on-surface font-label-lg text-label-lg hover:bg-surface-container-high transition-colors" id="closeRewardModalBtn" type="button">
+        Fermer
+      </button>
+</div>
+</div>
+</div>
+<script>
+  (function () {
+    const btnFR = document.getElementById('btnFR');
+    const btnAR = document.getElementById('btnAR');
+    const frElements = document.querySelectorAll('.lang-fr');
+    const arElements = document.querySelectorAll('.lang-ar');
+    const modal = document.getElementById('rewardModal');
+    const openBtn = document.getElementById('openRewardModalBtn');
+    const closeBtn = document.getElementById('closeRewardModalBtn');
+
+    if (btnFR && btnAR) {
+      btnFR.addEventListener('click', function () {
+        btnFR.classList.add('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+        btnFR.classList.remove('text-on-surface-variant');
+        btnAR.classList.remove('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+        btnAR.classList.add('text-on-surface-variant');
+
+        frElements.forEach(el => el.classList.remove('hidden'));
+        arElements.forEach(el => el.classList.add('hidden'));
+      });
+
+      btnAR.addEventListener('click', function () {
+        btnAR.classList.add('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+        btnAR.classList.remove('text-on-surface-variant');
+        btnFR.classList.remove('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+        btnFR.classList.add('text-on-surface-variant');
+
+        arElements.forEach(el => el.classList.remove('hidden'));
+        frElements.forEach(el => el.classList.add('hidden'));
+      });
+    }
+
+    if (openBtn && modal) {
+      openBtn.addEventListener('click', function () {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      });
+    }
+
+    if (closeBtn && modal) {
+      closeBtn.addEventListener('click', function () {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      });
+    }
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/85 backdrop-blur-xl shadow-[0_-2px_12px_rgba(15,23,42,0.06)]" data-active-classes="text-primary font-bold"><div class="max-w-[440px] mx-auto h-16 flex items-center justify-around px-margin"><a class="flex flex-col items-center justify-center w-16 h-12 text-on-surface-variant hover:text-on-surface transition-colors" data-path="mes-cartes" href="#"><span class="material-symbols-outlined text-[24px]">wallet</span><span class="font-label-md text-label-md mt-0.5">Cartes</span></a><a class="flex flex-col items-center justify-center w-16 h-12 text-on-surface-variant hover:text-on-surface transition-colors" data-path="tampons" href="#"><span class="material-symbols-outlined text-[24px]">verified</span><span class="font-label-md text-label-md mt-0.5">Tampons</span></a><a class="flex flex-col items-center justify-center w-14 h-14 -mt-5 rounded-full bg-primary text-on-primary shadow-[0_6px_16px_rgba(0,108,73,0.35)] transition-transform active:scale-95" data-path="scan-qr" href="#"><span class="material-symbols-outlined text-[28px]">qr_code_scanner</span></a><a aria-current="page" class="flex flex-col items-center justify-center w-16 h-12 transition-colors text-primary font-bold" data-path="recompenses" href="#"><span class="material-symbols-outlined text-[24px]">featured_seasonal_and_gifts</span><span class="font-label-md text-label-md mt-0.5">Cadeaux</span></a><a class="flex flex-col items-center justify-center w-16 h-12 text-on-surface-variant hover:text-on-surface transition-colors" data-path="commerces" href="#"><span class="material-symbols-outlined text-[24px]">storefront</span><span class="font-label-md text-label-md mt-0.5">Boutiques</span></a></div></nav></body></html>

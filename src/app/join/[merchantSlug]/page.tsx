@@ -1,0 +1,214 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { db } from '@/lib/db';
+import { Merchant, LoyaltyProgram } from '@/lib/types';
+import { useLanguage } from '@/context/LanguageContext';
+import LanguageToggle from '@/components/LanguageToggle';
+import { QrCode, Phone, User, Sparkles, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
+
+export default function CustomerJoinPage() {
+  const params = useParams();
+  const router = useRouter();
+  const { t, language } = useLanguage();
+  const isAr = language === 'ar';
+
+  const merchantSlug = params?.merchantSlug as string;
+
+  const [merchant, setMerchant] = useState<Merchant | null>(null);
+  const [program, setProgram] = useState<LoyaltyProgram | null>(null);
+  const [phone, setPhone] = useState('');
+  const [name, setName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (merchantSlug) {
+      const found = db.getMerchantBySlug(merchantSlug);
+      if (found) {
+        setMerchant(found);
+        setProgram(db.getProgramByMerchantId(found.id));
+      } else {
+        setError(`Le commerce "${merchantSlug}" n'a pas été trouvé.`);
+      }
+    }
+  }, [merchantSlug]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    // Validation du numéro de téléphone algérien (05, 06 ou 07, 10 chiffres)
+    const cleaned = phone.replace(/\s+/g, '');
+    if (!/^(0)(5|6|7)[0-9]{8}$/.test(cleaned)) {
+      setError(
+        isAr
+          ? 'يرجى إدخال رقم هاتف جزائري صحيح يبدأ بـ 05 أو 06 أو 07 (10 أرقام)'
+          : 'Veuillez saisir un numéro de mobile algérien valide commençant par 05, 06 ou 07 (10 chiffres).'
+      );
+      return;
+    }
+
+    if (!name.trim()) {
+      setError(isAr ? 'يرجى كتابة اسمك أو لقبك' : 'Veuillez renseigner votre prénom.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Inscription zéro friction : crée ou retrouve instantanément la carte
+      const result = db.getOrCreateCustomerCard(merchantSlug, cleaned, name);
+      // Redirection directe vers la carte du client
+      router.push(`/card/${result.card.qr_token}`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Erreur lors de l\'accès à la carte';
+      setError(msg);
+      setLoading(false);
+    }
+  };
+
+  if (!merchant && !error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 text-white flex flex-col justify-between p-4 sm:p-6">
+      {/* Top Header */}
+      <header className="max-w-md mx-auto w-full flex items-center justify-between py-2">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-slate-950 font-black">
+            <QrCode className="w-5 h-5" />
+          </div>
+          <span className="font-extrabold text-base tracking-tight text-white">
+            Fidelity<span className="text-emerald-400">DZ</span>
+          </span>
+        </div>
+        <LanguageToggle />
+      </header>
+
+      {/* Main Join Container */}
+      <main className="max-w-md mx-auto w-full my-auto py-6">
+        <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
+          {/* Merchant Profile */}
+          <div className="text-center space-y-2 pb-6 border-b border-slate-800">
+            {merchant?.logo_url && (
+              <img
+                src={merchant.logo_url}
+                alt={merchant.business_name}
+                className="w-16 h-16 rounded-2xl mx-auto object-cover border-2 border-emerald-500 shadow-lg"
+              />
+            )}
+            <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+              {merchant?.business_name}
+            </h1>
+            <p className="text-xs text-slate-400 font-medium">
+              {merchant?.wilaya} • {merchant?.category}
+            </p>
+
+            {/* Welcome Bonus Callout */}
+            <div className="inline-flex items-center gap-2 bg-emerald-950/80 border border-emerald-800/80 px-3.5 py-1.5 rounded-full text-emerald-400 text-xs font-bold mt-2">
+              <Sparkles className="w-4 h-4" />
+              <span>
+                {isAr
+                  ? `هدية ترحيبية: ختم مجاني فور تسجيلك !`
+                  : `1er tampon offert automatiquement !`}
+              </span>
+            </div>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+            {error && (
+              <div className="bg-red-950/60 border border-red-800 text-red-200 text-xs p-3 rounded-xl">
+                {error}
+              </div>
+            )}
+
+            {/* Phone Input */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-300 block">
+                {t('customer_phone_label')} <span className="text-emerald-400">*</span>
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 rtl:left-auto rtl:right-0 pl-3 rtl:pr-3 flex items-center pointer-events-none text-slate-500">
+                  <Phone className="w-4 h-4" />
+                </div>
+                <input
+                  type="tel"
+                  required
+                  placeholder="0555 12 34 56"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl py-3.5 pl-10 rtl:pl-3 rtl:pr-10 text-white text-base placeholder-slate-600 font-mono tracking-wider tabular-nums outline-none transition-all"
+                />
+              </div>
+              <p className="text-[11px] text-slate-500">{t('phone_hint')}</p>
+            </div>
+
+            {/* Name Input */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-300 block">
+                {t('customer_name_label')} <span className="text-emerald-400">*</span>
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 rtl:left-auto rtl:right-0 pl-3 rtl:pr-3 flex items-center pointer-events-none text-slate-500">
+                  <User className="w-4 h-4" />
+                </div>
+                <input
+                  type="text"
+                  required
+                  placeholder={isAr ? 'مثال: أمين أو سارة' : 'Ex: Amine ou Sara'}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl py-3.5 pl-10 rtl:pl-3 rtl:pr-10 text-white text-base placeholder-slate-600 outline-none transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-[0.99] text-slate-950 font-black text-base shadow-lg shadow-emerald-500/25 transition-all disabled:opacity-50"
+              >
+                {loading ? (
+                  <span>{isAr ? 'جاري التحميل...' : 'Accès en cours...'}</span>
+                ) : (
+                  <>
+                    <span>{t('join_submit_btn')}</span>
+                    <ArrowRight className="w-5 h-5 rtl:rotate-180" />
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+
+          {/* Zero Friction Reassurance */}
+          <div className="mt-6 pt-5 border-t border-slate-800 text-center space-y-2">
+            <div className="flex items-center justify-center gap-1.5 text-xs text-slate-400">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <span>{t('no_app_required')}</span>
+            </div>
+            <p className="text-[11px] text-slate-500">
+              {isAr
+                ? 'إذا كان لديك حساب مسبقاً، سيتم فتح بطاقتك ونقاطك الحالية مباشرة.'
+                : 'Si vous avez déjà une carte, vos tampons actuels seront chargés immédiatement.'}
+            </p>
+          </div>
+        </div>
+      </main>
+
+      {/* Footer minimal */}
+      <footer className="text-center py-2 text-[11px] text-slate-500">
+        Propulsé par FidelityDZ SaaS • Algérie 🇩🇿
+      </footer>
+    </div>
+  );
+}

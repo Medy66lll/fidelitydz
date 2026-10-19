@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+
+<html dir="ltr" lang="fr"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#f8f9ff;}body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 0.75rem);}.pt-safe{padding-top:env(safe-area-inset-top, 0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface": "#f8f9ff", "on-secondary-fixed-variant": "#3f465c", "secondary-fixed": "#dae2fd", "inverse-surface": "#213145", "on-primary-fixed": "#002113", "surface-container-highest": "#d3e4fe", "surface-bright": "#f8f9ff", "on-secondary-container": "#5c647a", "on-error": "#ffffff", "surface-container": "#e5eeff", "inverse-on-surface": "#eaf1ff", "tertiary": "#855300", "on-error-container": "#93000a", "error": "#ba1a1a", "on-surface-variant": "#3c4a42", "on-primary": "#ffffff", "on-tertiary": "#ffffff", "tertiary-fixed-dim": "#ffb95f", "on-tertiary-fixed": "#2a1700", "on-primary-fixed-variant": "#005236", "on-surface": "#0b1c30", "on-secondary-fixed": "#131b2e", "primary": "#006c49", "surface-container-lowest": "#ffffff", "error-container": "#ffdad6", "on-tertiary-container": "#523200", "inverse-primary": "#4edea3", "surface-container-low": "#eff4ff", "primary-fixed": "#6ffbbe", "on-primary-container": "#00422b", "secondary-fixed-dim": "#bec6e0", "primary-container": "#10b981", "surface-tint": "#006c49", "surface-container-high": "#dce9ff", "surface-dim": "#cbdbf5", "tertiary-fixed": "#ffddb8", "primary-fixed-dim": "#4edea3", "outline": "#6c7a71", "surface-variant": "#d3e4fe", "secondary": "#565e74", "tertiary-container": "#e29100", "on-secondary": "#ffffff", "on-tertiary-fixed-variant": "#653e00", "outline-variant": "#bbcabf", "on-background": "#0b1c30", "secondary-container": "#dae2fd", "background": "#f8f9ff" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-md": "1rem", "space-xs": "0.25rem", "space-xl": "2rem", "margin-sm": "0.75rem", "margin-lg": "1.5rem", "gutter": "1rem", "margin": "1rem", "gutter-mobile": "0.75rem", "space-sm": "0.5rem", "space-lg": "1.5rem" }, fontFamily: { "label-md": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "display-hero": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "code-scanner-data": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "title-card": ["Plus Jakarta Sans"], "label-stamp-number": ["Plus Jakarta Sans"], "display-hero-mobile": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"] }, fontSize: { "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "600" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600" }], "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-sm": ["16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "600" }], "display-hero": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "800" }], "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400" }], "code-scanner-data": ["15px", { "lineHeight": "20px", "letterSpacing": "0.08em", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }], "title-card": ["18px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "label-stamp-number": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "700" }], "display-hero-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "800" }], "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400" }], "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[22px]">loyalty</span></div><div class="flex flex-col min-w-0"><span class="font-headline-sm text-headline-sm text-on-surface truncate leading-tight">FidelityDZ</span><span class="font-body-sm text-body-sm text-on-surface-variant truncate">Mes Cartes</span></div></div><div class="flex items-center gap-space-sm shrink-0"><div aria-label="Language Selector" class="flex items-center bg-surface-container rounded-full p-0.5" role="group"><button class="px-2.5 py-1 rounded-full bg-surface-container-lowest text-on-surface shadow-[0_1px_3px_rgba(0,0,0,0.08)] font-label-md text-label-md transition-all" type="button">FR</button><button class="px-2.5 py-1 rounded-full text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all" type="button">عربي</button></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-24 bg-surface max-w-[440px] mx-auto px-margin"><div class="flex flex-col w-full gap-space-lg">
+<!-- Store Identity & Status Banner -->
+<div class="flex items-center justify-between bg-surface-container-low px-space-md py-space-sm rounded-xl shadow-sm">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0 shadow-sm text-on-primary">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">local_cafe</span>
+</div>
+<div class="flex flex-col min-w-0">
+<h2 class="font-headline-sm text-headline-sm text-on-surface truncate leading-tight">Café El Bahdja</h2>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Alger Centre • قهوة البهجة</span>
+</div>
+</div>
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-lowest shadow-sm shrink-0">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-label-md text-label-md text-primary leading-none">Actif • حيّ</span>
+</div>
+</div>
+<!-- Loyalty Pass Centerpiece (Level 2 Elevation) -->
+<div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-primary-container via-primary to-on-primary-fixed-variant text-on-primary p-space-md shadow-xl">
+<!-- Decorative Watermark Graphic -->
+<div class="absolute -right-10 -bottom-10 opacity-15 pointer-events-none select-none">
+<svg fill="currentColor" height="180" viewbox="0 0 100 100" width="180">
+<circle cx="50" cy="50" fill="none" r="45" stroke="currentColor" stroke-dasharray="6,4" stroke-width="3"></circle>
+<path d="M30 65 Q50 80 70 65 L70 40 L30 40 Z" fill="currentColor"></path>
+<path d="M70 45 Q82 45 82 52 Q82 60 70 60" fill="none" stroke="currentColor" stroke-width="4"></path>
+</svg>
+</div>
+<!-- Gold Sparkle / Ambient Shimmer -->
+<div class="absolute top-3 right-4 flex items-center gap-1 text-tertiary-fixed bg-on-secondary-fixed/30 backdrop-blur-md px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-[16px] text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">stars</span>
+<span class="font-label-md text-label-md text-tertiary-fixed font-bold tracking-wide">FIDÈLE GOLD</span>
+</div>
+<!-- Card Brand & Tier Details -->
+<div class="flex flex-col gap-space-xs relative z-10 mb-space-md">
+<div class="flex items-center gap-1 text-primary-fixed">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+<span class="font-label-md text-label-md uppercase tracking-wider text-primary-fixed">Carte Privilège</span>
+</div>
+<div class="flex items-baseline justify-between mt-1">
+<div>
+<h3 class="font-headline-md text-headline-md font-bold text-on-primary tracking-tight leading-snug">Amine Benali</h3>
+<p class="font-body-sm text-body-sm text-primary-fixed-dim font-medium tracking-wide">أمين بن علي</p>
+</div>
+<div class="text-right">
+<p class="font-code-scanner-data text-code-scanner-data text-surface-bright tracking-wider">0550 •• •• 42</p>
+<span class="font-body-sm text-body-sm text-primary-fixed-dim">ID: #DZ-7890</span>
+</div>
+</div>
+</div>
+<!-- Stamped Progress Pill -->
+<div class="flex items-center justify-between bg-on-secondary-fixed/40 backdrop-blur-md rounded-lg px-space-md py-2.5 mb-space-md relative z-10">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-tertiary-container flex items-center justify-center text-on-tertiary shadow-sm">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">award_star</span>
+</div>
+<span class="font-title-card text-title-card font-extrabold text-surface-bright tracking-normal">8 / 10 Tampons</span>
+</div>
+<span class="font-label-md text-label-md text-primary-fixed bg-primary/60 px-2 py-0.5 rounded-full">80% validé</span>
+</div>
+<!-- 10 Stamps Tactile Interactive Grid (2x5 Grid) -->
+<div class="grid grid-cols-5 gap-2.5 relative z-10 mb-space-sm" id="stampGrid">
+<!-- Stamp 1 -->
+<div class="flex flex-col items-center justify-center aspect-square rounded-full bg-surface-container-lowest text-primary shadow-md relative transform transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">local_cafe</span>
+<span class="font-label-stamp-number text-label-stamp-number text-primary font-bold">1</span>
+</div>
+<!-- Stamp 2 -->
+<div class="flex flex-col items-center justify-center aspect-square rounded-full bg-surface-container-lowest text-primary shadow-md relative transform transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">local_cafe</span>
+<span class="font-label-stamp-number text-label-stamp-number text-primary font-bold">2</span>
+</div>
+<!-- Stamp 3 -->
+<div class="flex flex-col items-center justify-center aspect-square rounded-full bg-surface-container-lowest text-primary shadow-md relative transform transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">local_cafe</span>
+<span class="font-label-stamp-number text-label-stamp-number text-primary font-bold">3</span>
+</div>
+<!-- Stamp 4 -->
+<div class="flex flex-col items-center justify-center aspect-square rounded-full bg-surface-container-lowest text-primary shadow-md relative transform transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">local_cafe</span>
+<span class="font-label-stamp-number text-label-stamp-number text-primary font-bold">4</span>
+</div>
+<!-- Stamp 5 -->
+<div class="flex flex-col items-center justify-center aspect-square rounded-full bg-surface-container-lowest text-primary shadow-md relative transform transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">local_cafe</span>
+<span class="font-label-stamp-number text-label-stamp-number text-primary font-bold">5</span>
+</div>
+<!-- Stamp 6 -->
+<div class="flex flex-col items-center justify-center aspect-square rounded-full bg-surface-container-lowest text-primary shadow-md relative transform transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">local_cafe</span>
+<span class="font-label-stamp-number text-label-stamp-number text-primary font-bold">6</span>
+</div>
+<!-- Stamp 7 -->
+<div class="flex flex-col items-center justify-center aspect-square rounded-full bg-surface-container-lowest text-primary shadow-md relative transform transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">local_cafe</span>
+<span class="font-label-stamp-number text-label-stamp-number text-primary font-bold">7</span>
+</div>
+<!-- Stamp 8 -->
+<div class="flex flex-col items-center justify-center aspect-square rounded-full bg-surface-container-lowest text-primary shadow-md relative transform transition-transform active:scale-95 ring-2 ring-tertiary-fixed">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">local_cafe</span>
+<span class="font-label-stamp-number text-label-stamp-number text-primary font-bold">8</span>
+</div>
+<!-- Stamp 9 (Unstamped) -->
+<div class="flex flex-col items-center justify-center aspect-square rounded-full bg-on-secondary-fixed/20 text-surface-variant backdrop-blur-sm shadow-inner relative">
+<span class="material-symbols-outlined text-[18px] opacity-40">radio_button_unchecked</span>
+<span class="font-label-stamp-number text-label-stamp-number opacity-50">9</span>
+</div>
+<!-- Stamp 10 (Target Reward Node) -->
+<div class="flex flex-col items-center justify-center aspect-square rounded-full bg-gradient-to-tr from-tertiary-container to-tertiary-fixed text-on-tertiary-fixed shadow-lg relative transform scale-105 animate-pulse">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">redeem</span>
+<span class="font-label-stamp-number text-label-stamp-number font-black">10</span>
+</div>
+</div>
+</div>
+<!-- Celebratory Reward Banner -->
+<div class="flex items-center gap-space-sm p-space-md rounded-xl bg-tertiary-fixed text-on-tertiary-fixed shadow-md">
+<div class="w-10 h-10 rounded-full bg-tertiary-container text-on-tertiary flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[22px]">featured_seasonal_and_gifts</span>
+</div>
+<div class="flex flex-col min-w-0">
+<p class="font-headline-sm text-headline-sm text-on-tertiary-fixed font-bold leading-tight">
+        Plus que 2 passages pour : 1 Menu Offert 🎁
+      </p>
+<p class="font-body-sm text-body-sm text-on-tertiary-container mt-0.5 leading-snug">
+        بقي زيارتان فقط للحصول على وجبة مجانية ومشروب ساخن
+      </p>
+</div>
+</div>
+<!-- Cashier QR Code Section (Contrast-Rich White Canvas) -->
+<div class="flex flex-col items-center bg-surface-container-lowest p-space-lg rounded-xl shadow-md text-center">
+<div class="flex items-center justify-between w-full mb-space-sm">
+<div class="flex items-center gap-1.5 text-on-surface">
+<span class="material-symbols-outlined text-primary text-[20px]">qr_code_scanner</span>
+<span class="font-title-card text-title-card font-bold">Pass Cashier Direct</span>
+</div>
+<button class="flex items-center gap-1 text-on-secondary-container bg-surface-container px-2.5 py-1 rounded-full text-label-md font-label-md active:bg-secondary-fixed transition-colors" id="brightnessBtn" type="button">
+<span class="material-symbols-outlined text-[16px]">brightness_high</span>
+<span>Luminosité max</span>
+</button>
+</div>
+<!-- QR Code with Centered Merchant Logo Stamp -->
+<div class="relative p-space-md bg-surface-bright rounded-xl shadow-inner mt-space-xs mb-space-sm flex items-center justify-center">
+<svg class="w-52 h-52 text-on-surface" fill="none" viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<!-- Top Left Corner Finder -->
+<rect height="24" rx="4" stroke="currentColor" stroke-width="4" width="24" x="6" y="6"></rect>
+<rect fill="#006c49" height="12" rx="2" width="12" x="12" y="12"></rect>
+<!-- Top Right Corner Finder -->
+<rect height="24" rx="4" stroke="currentColor" stroke-width="4" width="24" x="70" y="6"></rect>
+<rect fill="#006c49" height="12" rx="2" width="12" x="76" y="12"></rect>
+<!-- Bottom Left Corner Finder -->
+<rect height="24" rx="4" stroke="currentColor" stroke-width="4" width="24" x="6" y="70"></rect>
+<rect fill="#006c49" height="12" rx="2" width="12" x="12" y="76"></rect>
+<!-- QR Matrix Patterns -->
+<rect fill="currentColor" height="6" rx="1" width="6" x="36" y="8"></rect>
+<rect fill="currentColor" height="6" rx="1" width="8" x="46" y="8"></rect>
+<rect fill="currentColor" height="6" rx="1" width="6" x="58" y="8"></rect>
+<rect fill="currentColor" height="6" rx="1" width="10" x="36" y="18"></rect>
+<rect fill="currentColor" height="6" rx="1" width="12" x="52" y="18"></rect>
+<rect fill="currentColor" height="10" rx="1" width="6" x="8" y="36"></rect>
+<rect fill="currentColor" height="12" rx="1" width="6" x="8" y="52"></rect>
+<rect fill="currentColor" height="6" rx="1" width="8" x="20" y="38"></rect>
+<rect fill="currentColor" height="8" rx="1" width="8" x="20" y="50"></rect>
+<rect fill="currentColor" height="8" rx="1" width="8" x="34" y="34"></rect>
+<rect fill="currentColor" height="8" rx="1" width="8" x="58" y="34"></rect>
+<rect fill="currentColor" height="6" rx="1" width="10" x="70" y="38"></rect>
+<rect fill="currentColor" height="18" rx="1" width="6" x="86" y="38"></rect>
+<rect fill="currentColor" height="14" rx="1" width="8" x="72" y="50"></rect>
+<rect fill="currentColor" height="8" rx="1" width="14" x="34" y="58"></rect>
+<rect fill="currentColor" height="6" rx="1" width="10" x="54" y="58"></rect>
+<rect fill="currentColor" height="8" rx="1" width="8" x="36" y="72"></rect>
+<rect fill="currentColor" height="14" rx="1" width="6" x="48" y="72"></rect>
+<rect fill="currentColor" height="6" rx="1" width="8" x="60" y="72"></rect>
+<rect fill="currentColor" height="6" rx="1" width="6" x="36" y="86"></rect>
+<rect fill="currentColor" height="8" rx="1" width="18" x="58" y="84"></rect>
+<rect fill="currentColor" height="8" rx="1" width="10" x="82" y="72"></rect>
+</svg>
+<!-- Center Emblem Badge -->
+<div class="absolute w-12 h-12 rounded-full bg-surface-container-lowest shadow-md flex items-center justify-center p-1">
+<div class="w-full h-full rounded-full bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">coffee</span>
+</div>
+</div>
+</div>
+<!-- Explicit Dual Language Scanner Prompt -->
+<div class="flex flex-col gap-1 px-space-sm mt-1">
+<p class="font-body-md text-body-md text-on-surface font-semibold leading-snug">
+        Présentez ce QR code à la caisse pour recevoir vos tampons
+      </p>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-tight">
+        أظهر هذا الرمز للكاشير عند الدفع لاحتساب الزيارة
+      </p>
+</div>
+<!-- Numerical Backup for Cashier Manual Keying -->
+<div class="mt-space-md pt-space-sm w-full flex items-center justify-center gap-space-sm bg-surface-container-low rounded-lg py-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">N° Client:</span>
+<span class="font-code-scanner-data text-code-scanner-data text-primary font-bold tracking-widest select-all">0550 12 34 42</span>
+<button class="text-secondary hover:text-primary active:scale-90 transition-transform" onclick="navigator.clipboard.writeText('0550123442')" title="Copier le numéro" type="button">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Quick Action & Wallet Provisioning Buttons -->
+<div class="flex flex-col gap-space-sm">
+<!-- PWA Install Direct Trigger -->
+<button class="w-full h-12 rounded-lg bg-primary-container text-on-primary flex items-center justify-center gap-space-sm font-label-lg text-label-lg shadow-md active:translate-y-0.5 transition-all" id="pwaInstallBtn" type="button">
+<span class="material-symbols-outlined text-[22px]">add_to_home_screen</span>
+<div class="flex items-center gap-1.5">
+<span>Ajouter à l'écran d'accueil</span>
+<span class="opacity-60 text-xs">•</span>
+<span class="font-medium text-xs">إضافة للشاشة</span>
+</div>
+</button>
+<!-- Native Apple & Google Wallet Pass Storage -->
+<button class="w-full h-12 rounded-lg bg-inverse-surface text-inverse-on-surface flex items-center justify-center gap-space-sm font-label-lg text-label-lg shadow-md active:translate-y-0.5 transition-all" id="walletAddBtn" type="button">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[20px] text-tertiary-fixed">account_balance_wallet</span>
+</div>
+<span>Ajouter à Apple / Google Wallet</span>
+</button>
+</div>
+<!-- Visit Audit Log Pill Link -->
+<a class="flex items-center justify-between p-space-md rounded-xl bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface" href="#">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[18px]">history</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm leading-tight text-on-surface font-semibold">Historique des visites</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">8 passages enregistrés • Dernier le 12 Mai</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant">chevron_right</span>
+</a>
+<!-- Store Information & Loyalty Terms Accordion Note -->
+<div class="flex items-center gap-space-sm p-space-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] text-secondary">info</span>
+<span class="font-body-sm text-body-sm leading-tight">1 boisson achetée = 1 tampon. Les récompenses sont valables 90 jours dans tout le réseau Café El Bahdja.</span>
+</div>
+</div>
+<script>
+  // Interactive micro-feedback for Brightness lock simulation
+  const brightnessBtn = document.getElementById('brightnessBtn');
+  if (brightnessBtn) {
+    brightnessBtn.addEventListener('click', () => {
+      brightnessBtn.classList.toggle('bg-primary');
+      brightnessBtn.classList.toggle('text-on-primary');
+      const textSpan = brightnessBtn.querySelector('span:last-child');
+      if (textSpan.innerText.includes('100%')) {
+        textSpan.innerText = 'Luminosité max';
+      } else {
+        textSpan.innerText = '100% Activé';
+      }
+    });
+  }
+
+  // Tactile micro-animation on active stamps
+  const stampGrid = document.getElementById('stampGrid');
+  if (stampGrid) {
+    const stampedNodes = stampGrid.querySelectorAll('.aspect-square');
+    stampedNodes.forEach(node => {
+      node.addEventListener('click', () => {
+        node.classList.add('scale-110');
+        setTimeout(() => node.classList.remove('scale-110'), 200);
+      });
+    });
+  }
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/85 backdrop-blur-xl shadow-[0_-2px_12px_rgba(15,23,42,0.06)]" data-active-classes="text-primary font-bold"><div class="max-w-[440px] mx-auto h-16 flex items-center justify-around px-margin"><a aria-current="page" class="flex flex-col items-center justify-center w-16 h-12 transition-colors text-primary font-bold" data-path="mes-cartes" href="#"><span class="material-symbols-outlined text-[24px]">wallet</span><span class="font-label-md text-label-md mt-0.5">Cartes</span></a><a class="flex flex-col items-center justify-center w-16 h-12 text-on-surface-variant hover:text-on-surface transition-colors" data-path="tampons" href="#"><span class="material-symbols-outlined text-[24px]">verified</span><span class="font-label-md text-label-md mt-0.5">Tampons</span></a><a class="flex flex-col items-center justify-center w-14 h-14 -mt-5 rounded-full bg-primary text-on-primary shadow-[0_6px_16px_rgba(0,108,73,0.35)] transition-transform active:scale-95" data-path="scan-qr" href="#"><span class="material-symbols-outlined text-[28px]">qr_code_scanner</span></a><a class="flex flex-col items-center justify-center w-16 h-12 text-on-surface-variant hover:text-on-surface transition-colors" data-path="recompenses" href="#"><span class="material-symbols-outlined text-[24px]">featured_seasonal_and_gifts</span><span class="font-label-md text-label-md mt-0.5">Cadeaux</span></a><a class="flex flex-col items-center justify-center w-16 h-12 text-on-surface-variant hover:text-on-surface transition-colors" data-path="commerces" href="#"><span class="material-symbols-outlined text-[24px]">storefront</span><span class="font-label-md text-label-md mt-0.5">Boutiques</span></a></div></nav></body></html>

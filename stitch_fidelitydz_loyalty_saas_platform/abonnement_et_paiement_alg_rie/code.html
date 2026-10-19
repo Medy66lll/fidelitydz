@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+
+<html lang="fr"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-primary-container":"#00422b","error":"#ba1a1a","on-surface-variant":"#3c4a42","surface-container-high":"#dce9ff","secondary":"#565e74","on-tertiary-fixed":"#2a1700","secondary-container":"#dae2fd","on-surface":"#0b1c30","primary":"#006c49","on-error-container":"#93000a","tertiary":"#855300","outline-variant":"#bbcabf","on-tertiary-fixed-variant":"#653e00","primary-fixed-dim":"#4edea3","on-error":"#ffffff","on-secondary-fixed":"#131b2e","on-secondary":"#ffffff","surface-container-lowest":"#ffffff","surface":"#f8f9ff","surface-container":"#e5eeff","surface-container-highest":"#d3e4fe","on-primary-fixed":"#002113","on-tertiary-container":"#523200","surface-container-low":"#eff4ff","on-secondary-container":"#5c647a","tertiary-container":"#e29100","error-container":"#ffdad6","surface-variant":"#d3e4fe","tertiary-fixed":"#ffddb8","tertiary-fixed-dim":"#ffb95f","surface-dim":"#cbdbf5","outline":"#6c7a71","secondary-fixed-dim":"#bec6e0","inverse-primary":"#4edea3","surface-bright":"#f8f9ff","primary-fixed":"#6ffbbe","inverse-surface":"#213145","surface-tint":"#006c49","primary-container":"#10b981","on-tertiary":"#ffffff","on-secondary-fixed-variant":"#3f465c","inverse-on-surface":"#eaf1ff","on-background":"#0b1c30","background":"#f8f9ff","secondary-fixed":"#dae2fd","on-primary":"#ffffff","on-primary-fixed-variant":"#005236"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"space-xs":"0.25rem","space-sm":"0.5rem","space-md":"1rem","space-lg":"1.5rem","margin-desktop":"2rem","gutter-desktop":"1.5rem","margin":"1rem","space-xl":"2rem","gutter":"1rem","margin-tablet":"1.5rem"},fontFamily:{"body-md":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"display-lg":["Plus Jakarta Sans"],"display-lg-mobile":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"label-sm":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"currency-numeral":["Plus Jakarta Sans"]},fontSize:{"body-md":["14px",{"lineHeight":"20px","fontWeight":"400"}],"headline-md":["22px",{"lineHeight":"28px","fontWeight":"600"}],"display-lg":["36px",{"lineHeight":"44px","letterSpacing":"-0.02em","fontWeight":"700"}],"display-lg-mobile":["28px",{"lineHeight":"36px","letterSpacing":"-0.01em","fontWeight":"700"}],"headline-lg":["28px",{"lineHeight":"36px","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-sm":["18px",{"lineHeight":"24px","fontWeight":"600"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.02em","fontWeight":"600"}],"label-sm":["11px",{"lineHeight":"14px","letterSpacing":"0.03em","fontWeight":"700"}],"body-sm":["12px",{"lineHeight":"16px","fontWeight":"400"}],"label-lg":["14px",{"lineHeight":"20px","letterSpacing":"0.01em","fontWeight":"600"}],"body-lg":["16px",{"lineHeight":"24px","fontWeight":"400"}],"currency-numeral":["16px",{"lineHeight":"20px","letterSpacing":"-0.01em","fontWeight":"700"}]}}}};</script></head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-inverse-surface z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="p-space-lg"><div class="bg-surface-container-lowest/10 rounded-xl p-space-md"><div class="flex items-center justify-between mb-space-xs"><span class="font-label-lg text-label-lg text-inverse-on-surface">Café El Bahdja</span><span class="h-2 w-2 rounded-full bg-primary-fixed"></span></div><div class="flex items-center justify-between text-on-surface-variant"><span class="font-label-sm text-label-sm text-primary-fixed-dim">Plan Actif</span><span class="font-currency-numeral text-currency-numeral text-inverse-on-surface">3 900 DZD<span class="font-body-sm text-body-sm text-secondary-fixed-dim">/mois</span></span></div></div></div><nav class="px-space-md space-y-space-xs" data-active-classes="bg-primary-container text-on-primary-container font-label-lg"><a class="flex items-center gap-3 px-space-md py-space-sm rounded-lg text-inverse-on-surface hover:bg-surface-container-lowest/10 hover:text-surface-bright transition-colors" data-path="tableau-de-bord" href="#"><span class="material-symbols-outlined text-lg">dashboard</span><span class="font-label-lg text-label-lg">Tableau de bord</span></a><a class="flex items-center gap-3 px-space-md py-space-sm rounded-lg text-inverse-on-surface hover:bg-surface-container-lowest/10 hover:text-surface-bright transition-colors" data-path="ma-carte-et-affiche-qr" href="#"><span class="material-symbols-outlined text-lg">qr_code_2</span><span class="font-label-lg text-label-lg">Ma Carte &amp; Affiche QR</span></a><a class="flex items-center gap-3 px-space-md py-space-sm rounded-lg text-inverse-on-surface hover:bg-surface-container-lowest/10 hover:text-surface-bright transition-colors" data-path="scanner-caisse" href="#"><span class="material-symbols-outlined text-lg">barcode_scanner</span><span class="font-label-lg text-label-lg">Scanner Caisse</span></a><a class="flex items-center gap-3 px-space-md py-space-sm rounded-lg text-inverse-on-surface hover:bg-surface-container-lowest/10 hover:text-surface-bright transition-colors" data-path="clients" href="#"><span class="material-symbols-outlined text-lg">group</span><span class="font-label-lg text-label-lg">Clients (05/06/07)</span></a><a class="flex items-center gap-3 px-space-md py-space-sm rounded-lg text-inverse-on-surface hover:bg-surface-container-lowest/10 hover:text-surface-bright transition-colors" data-path="offres-personnalisees" href="#"><span class="material-symbols-outlined text-lg">loyalty</span><span class="font-label-lg text-label-lg">Offres Personnalisées</span></a><a class="flex items-center gap-3 px-space-md py-space-sm rounded-lg text-inverse-on-surface hover:bg-surface-container-lowest/10 hover:text-surface-bright transition-colors" data-path="equipe" href="#"><span class="material-symbols-outlined text-lg">badge</span><span class="font-label-lg text-label-lg">Équipe (Caissiers)</span></a><a aria-current="page" class="flex items-center gap-3 px-space-md py-space-sm rounded-lg transition-colors bg-primary-container text-on-primary-container font-label-lg" data-path="abonnement" href="#"><span class="material-symbols-outlined text-lg">credit_card</span><span class="font-label-lg text-label-lg">Abonnement (3 900 DZD)</span></a></nav></div><div class="p-space-lg space-y-space-md"><div class="bg-surface-container-lowest/10 rounded-xl p-space-md"><div class="flex items-center justify-between mb-space-xs"><span class="font-label-md text-label-md text-primary-fixed">Abonnement Actif</span><span class="font-label-sm text-label-sm text-inverse-on-surface">24 jours restants</span></div><p class="font-body-sm text-body-sm text-secondary-fixed-dim mb-space-sm">Renouvellement: 3 900 DZD (BaridiMob/Edahabia)</p><div class="w-full bg-surface-container-lowest/20 h-1.5 rounded-full overflow-hidden"><div class="bg-primary-container h-full w-3/4 rounded-full"></div></div></div><a class="flex items-center justify-between px-space-md py-space-sm bg-surface-container-lowest/10 hover:bg-surface-container-lowest/20 rounded-lg text-inverse-on-surface transition-colors" href="https://wa.me/213550123456" target="_blank"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-primary-fixed text-lg">chat</span><div class="flex flex-col"><span class="font-label-sm text-label-sm">Support Algérie</span><span class="font-body-sm text-body-sm text-secondary-fixed-dim">+213 550 12 34 56</span></div></div><span class="material-symbols-outlined text-sm text-secondary-fixed-dim">arrow_outward</span></a></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-margin-desktop"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-sm"><img alt="FidelityDZ Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1W4jwp7JwKJYfwe-2DQM4OHRJU2_mJ6PNCHUOR8GXYkZD8Z-_5iCaA7e_8nCh5p5toM4qUy3rYKFA0-rmbj8uFvfUVl8x30y5uNKZkoAcaNuHIBfMb6ku_E1k9S1bC1QSC7eOKB8Mx5-1CEIws4soQLFYXfVYg-raVYqGRXYv9kuykkPliWcaF2Yz0de0CTaQS39x2ifboK1gcC7fJ1FLmgM3y-snhglXRmo1nVcyac4GnSRMNuSdalYaQ"/><span class="font-headline-sm text-headline-sm text-primary font-bold">FidelityDZ</span></div><div class="hidden xl:flex items-center gap-1.5 px-space-sm py-1 bg-primary-container/15 rounded-full"><span class="h-2 w-2 rounded-full bg-primary-container"></span><span class="font-label-sm text-label-sm text-on-primary-container">Espace Commerçant / فضاء التاجر</span></div></div><div class="hidden md:flex items-center gap-2 px-space-md py-1.5 bg-surface-container-low rounded-full"><span class="h-2 w-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-md text-label-md text-on-surface">Commerce: Café &amp; Restaurant El Bahdja (Kouba, Alger - 16)</span></div><div class="flex items-center gap-space-md"><div class="flex items-center bg-surface-container p-0.5 rounded-full"><button class="px-space-sm py-1 rounded-full bg-surface-container-lowest font-label-md text-label-md text-on-surface shadow-[0_1px_8px_rgba(0,0,0,0.04)]" type="button">FR</button><button class="px-space-sm py-1 rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface font-['Cairo']" type="button">عربي</button></div><a class="hidden lg:flex items-center gap-2 px-space-md py-1.5 rounded-lg bg-surface-container-lowest text-primary hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-[0_1px_8px_rgba(0,0,0,0.04)]" data-path="scanner-caisse" href="#"><span class="material-symbols-outlined text-lg">qr_code_scanner</span><span class="font-label-md text-label-md">Scanner Caisse / ماسح الكاسة</span></a><button class="relative p-2 rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-xl">notifications</span><span class="absolute top-1 right-1 h-4 w-4 rounded-full bg-error text-on-error font-label-sm text-label-sm flex items-center justify-center">2</span></button><div class="flex items-center gap-space-sm pl-space-xs"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCt3wusjTSw3V1WbvKSow7glP4NRuzROkb7kfchDWoMNN0c5GHL9iEOjt2iudg8FiUx-mmxcqSlI8kpm43XQusRCnlGhuKhEmxPQBVYHTOC7jEgt22bATbOThjsttgsSVf70K9W7YFi7MBYuagmzRcCYR6obt-yV4YFkcytP57o6gxihXYfXT27DTuUZfVKYfWXgc-FwHoQ_5PScDuZxXDmS_iqM_xDAkREkmKI4eKpk6W0Gir9n-Gj"/><div class="hidden 2xl:flex flex-col text-left"><span class="font-label-md text-label-md text-on-surface leading-tight">Mehdi Kazi Tani</span><span class="font-body-sm text-body-sm text-on-surface-variant leading-tight">Gérant / Propriétaire</span></div><span class="material-symbols-outlined text-secondary text-sm">expand_more</span></div></div></header><main class="relative pt-16 bg-surface p-margin-desktop min-h-screen"><div class="flex flex-col w-full space-y-space-lg">
+<!-- TOP HEADER CARD: Midnight Slate Aesthetic with Subtle Emerald Glow & Gold Accents -->
+<div class="relative overflow-hidden rounded-xl bg-inverse-surface text-inverse-on-surface shadow-xl p-space-lg md:p-space-xl">
+<!-- Ambient glow decorative layers -->
+<div class="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-primary-container/20 blur-3xl"></div>
+<div class="pointer-events-none absolute -bottom-24 -left-16 h-80 w-80 rounded-full bg-tertiary-container/15 blur-3xl"></div>
+<div class="relative z-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-space-lg">
+<div class="space-y-space-sm max-w-3xl">
+<div class="flex flex-wrap items-center gap-space-sm">
+<span class="inline-flex items-center gap-1.5 px-space-md py-1 rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md">
+<span class="material-symbols-outlined text-base">verified</span>
+            Abonnement Pro FidelityDZ Tout Compris
+          </span>
+<span class="inline-flex items-center gap-1 px-space-sm py-1 rounded-full bg-surface-container-lowest/10 text-primary-fixed font-label-sm text-label-sm">
+<span class="h-2 w-2 rounded-full bg-primary-fixed animate-ping"></span>
+            Renouvellement Mensuel / تجديد شهري
+          </span>
+</div>
+<div class="flex flex-wrap items-baseline gap-x-space-md gap-y-1">
+<span class="font-display-lg text-display-lg font-bold text-surface-bright tracking-tight">3 900 DZD</span>
+<span class="font-headline-sm text-headline-sm text-secondary-fixed-dim">/ mois</span>
+<span class="font-['Cairo'] text-headline-md text-tertiary-fixed font-bold pl-space-sm" dir="rtl">(3 900 د.ج / شهرياً)</span>
+</div>
+<p class="font-body-md text-body-md text-secondary-fixed-dim leading-relaxed">
+          Statut : <span class="text-tertiary-fixed font-label-lg">Période d'essai terminée</span> — Effectuez votre virement pour maintenir l'accès à votre QR Code comptoir, la fidélité client et le scan caisse instantané.
+        </p>
+<!-- Feature Checklist -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-sm pt-space-xs">
+<div class="flex items-center gap-2 text-inverse-on-surface/90">
+<span class="material-symbols-outlined text-primary-fixed text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-body-sm text-body-sm font-semibold">Cartes fidélité illimitées</span>
+</div>
+<div class="flex items-center gap-2 text-inverse-on-surface/90">
+<span class="material-symbols-outlined text-primary-fixed text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-body-sm text-body-sm font-semibold">Scanner Caisse sans matériel</span>
+</div>
+<div class="flex items-center gap-2 text-inverse-on-surface/90">
+<span class="material-symbols-outlined text-primary-fixed text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-body-sm text-body-sm font-semibold">Base clients (05/06/07)</span>
+</div>
+<div class="flex items-center gap-2 text-inverse-on-surface/90">
+<span class="material-symbols-outlined text-primary-fixed text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-body-sm text-body-sm font-semibold">Support WhatsApp Alger 7j/7</span>
+</div>
+</div>
+</div>
+<!-- Quick Summary Card / Invoice Badge -->
+<div class="flex flex-col justify-center bg-surface-container-lowest/10 backdrop-blur-md p-space-md rounded-xl space-y-space-xs min-w-[240px]">
+<span class="font-label-sm text-label-sm text-secondary-fixed-dim uppercase tracking-wider">Facturation Actuelle</span>
+<div class="flex items-center justify-between">
+<span class="font-body-md text-body-md text-surface-bright">Cycle</span>
+<span class="font-label-md text-label-md text-surface-bright">30 Jours</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="font-body-md text-body-md text-surface-bright">Montant Net TTC</span>
+<span class="font-currency-numeral text-currency-numeral text-primary-fixed font-bold">3 900,00 DZD</span>
+</div>
+<div class="pt-space-xs">
+<div class="w-full bg-surface-container-lowest/20 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full w-full"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- PAYMENT METHODS TAB CONTAINER -->
+<div class="space-y-space-md">
+<!-- Tab Selector Navigation -->
+<div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-space-sm bg-surface-container-low p-1.5 rounded-xl">
+<div class="flex items-center gap-2 flex-1">
+<button class="flex-1 flex items-center justify-center gap-2 px-space-md py-2.5 rounded-lg bg-surface-container-lowest text-on-surface font-label-lg text-label-lg shadow-sm transition-all duration-150" id="tab-baridimob-btn" onclick="switchPaymentTab('baridimob')" type="button">
+<span class="material-symbols-outlined text-tertiary-container text-xl">account_balance</span>
+<span class="truncate">BaridiMob (RIP) &amp; Versement CCP</span>
+<span class="hidden md:inline-block px-1.5 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm">Recommandé</span>
+</button>
+<button class="flex-1 flex items-center justify-center gap-2 px-space-md py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-lg text-label-lg transition-all duration-150" id="tab-chargily-btn" onclick="switchPaymentTab('chargily')" type="button">
+<span class="material-symbols-outlined text-primary text-xl">credit_card</span>
+<span class="truncate">Edahabia / CIB (Chargily Pay)</span>
+<span class="hidden md:inline-block px-1.5 py-0.5 rounded bg-primary-container/20 text-on-primary-container font-label-sm text-label-sm">Instantané</span>
+</button>
+</div>
+<div class="hidden lg:flex items-center gap-2 px-space-md py-1 bg-surface-container rounded-lg">
+<span class="material-symbols-outlined text-primary text-base">lock</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Transaction sécurisée GIE Monétique</span>
+</div>
+</div>
+<!-- TAB 1 CONTENT: BaridiMob & Algérie Poste (Active) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg" id="tab-baridimob-panel">
+<!-- LEFT COLUMN: Official Postal & Bank Credentials (7 Cols) -->
+<div class="lg:col-span-7 flex flex-col space-y-space-md">
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm space-y-space-md">
+<!-- Postal Verification Tag -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm p-space-md rounded-xl bg-surface-container-low">
+<div class="flex items-center gap-space-sm">
+<div class="h-10 w-10 rounded-xl bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed">
+<span class="material-symbols-outlined text-2xl font-bold">markunread_mailbox</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Algérie Poste / بريد الجزائر</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant font-['Cairo']">الحساب الرسمي للمؤسسة — BaridiMob &amp; CCP</p>
+</div>
+</div>
+<div class="flex items-center gap-1.5 px-space-sm py-1 rounded-full bg-primary-container/15 text-on-primary-container font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-sm">verified</span>
+              Compte Professionnel Certifié
+            </div>
+</div>
+<!-- Account Holder Field -->
+<div class="p-space-md rounded-xl bg-surface-container-low space-y-1">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Titulaire du compte (Nom &amp; Prénom) / صاحب الحساب</span>
+<span class="font-label-sm text-label-sm text-primary font-semibold">Gérant Agréé</span>
+</div>
+<div class="flex items-center justify-between gap-space-sm">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold tracking-wide select-all">KAZI TANI MOHAMMED EL MEHDI</span>
+<span class="material-symbols-outlined text-on-surface-variant text-lg">badge</span>
+</div>
+</div>
+<!-- BaridiMob RIP (20 Chiffres) -->
+<div class="p-space-md rounded-xl bg-surface-container-low space-y-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Numéro RIP BaridiMob (20 chiffres) / رقم الحساب البريدي الجاري</span>
+<span class="font-label-sm text-label-sm text-tertiary font-bold font-['Cairo']">بريدي موب</span>
+</div>
+<div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-space-sm p-space-sm rounded-lg bg-surface-container-lowest">
+<span class="font-mono font-currency-numeral text-currency-numeral text-on-surface font-bold tracking-wider select-all" id="rip-value">00799999004172668994</span>
+<button class="flex items-center justify-center gap-2 px-space-md py-2 rounded-lg bg-primary text-on-primary hover:bg-primary/90 font-label-md text-label-md transition-all active:scale-95" onclick="copyToClipboard('00799999004172668994', this, 'RIP')" type="button">
+<span class="material-symbols-outlined text-base">content_copy</span>
+<span>Copier le RIP</span>
+</button>
+</div>
+</div>
+<!-- CCP & Clé Box -->
+<div class="p-space-md rounded-xl bg-surface-container-low space-y-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Numéro de Compte CCP &amp; Clé / رقم ص.ب.ج والمفتاح</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Bordereau guichet</span>
+</div>
+<div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-space-sm p-space-sm rounded-lg bg-surface-container-lowest">
+<div class="flex items-baseline gap-space-md">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block">Compte CCP</span>
+<span class="font-mono font-headline-sm text-headline-sm font-bold text-on-surface select-all" id="ccp-num-value">41726689</span>
+</div>
+<div class="h-6 w-px bg-outline-variant/40"></div>
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block">Clé</span>
+<span class="font-mono font-headline-sm text-headline-sm font-bold text-on-surface select-all" id="ccp-key-value">87</span>
+</div>
+</div>
+<button class="flex items-center justify-center gap-2 px-space-md py-2 rounded-lg bg-surface-container-high text-on-surface hover:bg-surface-container-highest font-label-md text-label-md transition-all active:scale-95" onclick="copyToClipboard('41726689 87', this, 'CCP')" type="button">
+<span class="material-symbols-outlined text-base">content_copy</span>
+<span>Copier le CCP</span>
+</button>
+</div>
+</div>
+<!-- Montant Exact Card -->
+<div class="flex items-center justify-between p-space-md rounded-xl bg-primary-container/10">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-2xl">payments</span>
+<div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block">Montant exact à virer</span>
+<span class="font-body-sm text-body-sm text-on-surface">Sans frais supplémentaires</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-display-lg text-display-lg font-bold text-primary">3 900 DZD</span>
+<span class="block font-label-sm text-label-sm text-on-surface-variant font-['Cairo']">ثلاثة آلاف وتسعمائة دينار</span>
+</div>
+</div>
+</div>
+<!-- 3-Step Instruction Guide -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm space-y-space-md">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">format_list_numbered</span>
+            Guide étape par étape (BaridiMob / مكتب البريد)
+          </h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- Step 1 -->
+<div class="flex flex-col p-space-md rounded-xl bg-surface-container-low relative">
+<span class="inline-flex items-center justify-center h-7 w-7 rounded-full bg-primary text-on-primary font-label-md text-label-md font-bold mb-space-sm">1</span>
+<h4 class="font-label-lg text-label-lg text-on-surface font-bold mb-1">Ouvrez BaridiMob</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                Rendez-vous dans la rubrique <strong>Virement</strong> &gt; <strong>Par RIP</strong> sur votre application.
+              </p>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col p-space-md rounded-xl bg-surface-container-low relative">
+<span class="inline-flex items-center justify-center h-7 w-7 rounded-full bg-primary text-on-primary font-label-md text-label-md font-bold mb-space-sm">2</span>
+<h4 class="font-label-lg text-label-lg text-on-surface font-bold mb-1">Collez le RIP</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                Insérez le RIP copié ci-dessus puis saisissez le montant exact de <strong>3 900 DZD</strong>.
+              </p>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col p-space-md rounded-xl bg-surface-container-low relative">
+<span class="inline-flex items-center justify-center h-7 w-7 rounded-full bg-primary text-on-primary font-label-md text-label-md font-bold mb-space-sm">3</span>
+<h4 class="font-label-lg text-label-lg text-on-surface font-bold mb-1">Capture &amp; Envoi</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                Capturez le reçu du virement ou prenez en photo le récépissé papier CCP et téléversez-le.
+              </p>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN: Proof Submission Form (5 Cols) -->
+<div class="lg:col-span-5 flex flex-col space-y-space-md">
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm space-y-space-md">
+<div class="space-y-1">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Formulaire de Confirmation</h3>
+<span class="px-2 py-0.5 rounded-full bg-primary-container/20 text-on-primary-container font-label-sm text-label-sm">Validation 15-30 min</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant font-['Cairo']" dir="rtl">
+              أرسل إثبات الدفع وسيقوم فريقنا بالتحقق وتفعيل اشتراكك فوراً
+            </p>
+</div>
+<form class="space-y-space-md" id="payment-proof-form" onsubmit="handleProofSubmit(event)">
+<!-- Transaction Reference -->
+<div class="space-y-1.5">
+<label class="block font-label-md text-label-md text-on-surface font-semibold" for="tx-ref">
+                N° Transaction BaridiMob ou Réf. Reçu CCP <span class="text-error">*</span>
+</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-lg">receipt_long</span>
+<input class="w-full pl-10 pr-3 py-2 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md placeholder:text-on-surface-variant/50 focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary transition-all" id="tx-ref" placeholder="ex: 20250314093845 ou 4172-XXXX" required="" type="text"/>
+</div>
+</div>
+<!-- Phone Number Used -->
+<div class="space-y-1.5">
+<label class="block font-label-md text-label-md text-on-surface font-semibold" for="phone-sender">
+                N° de Téléphone lié au virement (05 / 06 / 07) <span class="text-error">*</span>
+</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-lg">smartphone</span>
+<input class="w-full pl-10 pr-3 py-2 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md placeholder:text-on-surface-variant/50 focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary transition-all" id="phone-sender" pattern="^(05|06|07)[0-9]{8}$" placeholder="0550 12 34 56 ou 06 / 07..." required="" type="tel"/>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Numéro algérien utilisé pour tracer l'opération Mobilis, Djezzy ou Ooredoo.</span>
+</div>
+<!-- Upload Dropzone -->
+<div class="space-y-1.5">
+<label class="block font-label-md text-label-md text-on-surface font-semibold">
+                Capture d'écran BaridiMob ou Reçu CCP Papier <span class="text-error">*</span>
+</label>
+<div class="cursor-pointer group flex flex-col items-center justify-center p-space-lg rounded-xl bg-surface-container-low hover:bg-surface-container transition-all text-center space-y-space-xs" id="dropzone" onclick="document.getElementById('file-input').click()">
+<input accept="image/png,image/jpeg,application/pdf" class="hidden" id="file-input" onchange="handleFileSelect(this)" type="file"/>
+<div class="h-12 w-12 rounded-full bg-primary-container/20 group-hover:bg-primary-container/30 flex items-center justify-center text-primary transition-all">
+<span class="material-symbols-outlined text-2xl">cloud_upload</span>
+</div>
+<div class="space-y-0.5">
+<span class="font-label-lg text-label-lg text-on-surface block font-semibold" id="upload-status-text">Cliquez ou déposez votre capture ici</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant block">Format JPG, PNG ou PDF (Max 5 Mo)</span>
+</div>
+</div>
+</div>
+<!-- Validation Note -->
+<div class="flex items-start gap-2.5 p-space-sm rounded-lg bg-surface-container-high/40 text-on-surface">
+<span class="material-symbols-outlined text-primary text-lg mt-0.5">schedule</span>
+<p class="font-body-sm text-body-sm leading-tight text-on-surface-variant">
+<strong class="text-on-surface">Validation rapide :</strong> Vérification manuelle effectuée sous 15 à 30 minutes 7j/7 (8h00 - 23h00) par nos agents de facturation à Kouba, Alger.
+              </p>
+</div>
+<!-- Submit Button -->
+<button class="w-full flex items-center justify-center gap-2 py-3 px-space-md rounded-lg bg-primary-container text-on-primary-container font-label-lg text-label-lg font-bold shadow-md hover:bg-primary-container/90 active:scale-[0.99] transition-all" id="submit-btn" type="submit">
+<span class="material-symbols-outlined text-xl">send</span>
+<span>Envoyer ma preuve de paiement / إرسال إثبات الدفع</span>
+</button>
+</form>
+<!-- WhatsApp Direct Validation Alternative -->
+<div class="pt-space-xs text-center">
+<span class="font-body-sm text-body-sm text-on-surface-variant block mb-2">Besoin d'une activation d'urgence ?</span>
+<a class="inline-flex items-center gap-2 px-space-md py-2 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors font-label-md text-label-md" href="https://wa.me/213550123456?text=Bonjour%20FidelityDZ,%20voici%20ma%20preuve%20de%20virement%20de%203900%20DZD%20pour%20Café%20El%20Bahdja" target="_blank">
+<span class="material-symbols-outlined text-primary-container text-lg">chat</span>
+<span>Envoyer directement par WhatsApp (+213 550 12 34 56)</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+<!-- TAB 2 CONTENT: Edahabia / CIB via Chargily Pay (Hidden by default, switchable) -->
+<div class="hidden grid grid-cols-1 lg:grid-cols-12 gap-space-lg" id="tab-chargily-panel">
+<div class="lg:col-span-8 bg-surface-container-lowest p-space-lg rounded-xl shadow-sm space-y-space-md">
+<div class="flex flex-wrap items-center justify-between gap-space-sm p-space-md rounded-xl bg-surface-container-low">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">Paiement Électronique Sécurisé</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-container/20 text-on-primary-container font-label-sm text-label-sm font-semibold">24h/24 Instantané</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Passerelle nationale certifiée par le GIE Monétique et SATIM Algérie via Chargily Pay.
+            </p>
+</div>
+<div class="flex items-center gap-2">
+<!-- Simulated Payment Badges -->
+<div class="px-3 py-1.5 rounded-lg bg-surface-container-highest text-on-surface font-label-md text-label-md font-bold">
+              EDAHABIA <span class="font-['Cairo']">الذهبية</span>
+</div>
+<div class="px-3 py-1.5 rounded-lg bg-surface-container-highest text-on-surface font-label-md text-label-md font-bold">
+              CIB <span class="font-['Cairo']">بنكية</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<div class="p-space-md rounded-xl bg-surface-container-low space-y-space-xs">
+<div class="flex items-center gap-2 text-primary font-bold">
+<span class="material-symbols-outlined">bolt</span>
+<span class="font-label-lg text-label-lg">Activation Zéro Délai</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Dès la confirmation par code OTP SMS sur votre téléphone, votre compte est instantanément débloqué. Pas besoin d'envoyer de reçu.
+            </p>
+</div>
+<div class="p-space-md rounded-xl bg-surface-container-low space-y-space-xs">
+<div class="flex items-center gap-2 text-primary font-bold">
+<span class="material-symbols-outlined">receipt</span>
+<span class="font-label-lg text-label-lg">Facture Automatique</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Votre reçu fiscal officiel avec timbre fiscal et mention TTC est généré et envoyé immédiatement par e-mail.
+            </p>
+</div>
+</div>
+<div class="p-space-md rounded-xl bg-primary-container/10 flex flex-col sm:flex-row items-center justify-between gap-space-md">
+<div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block">Total de la transaction</span>
+<span class="font-display-lg text-display-lg font-bold text-primary">3 900 DZD</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant block">Renouvellement 30 jours (Café El Bahdja)</span>
+</div>
+<button class="w-full sm:w-auto flex items-center justify-center gap-2 px-space-xl py-3 rounded-xl bg-primary text-on-primary hover:bg-primary/90 font-label-lg text-label-lg font-bold shadow-md transition-all active:scale-95" onclick="triggerChargilyModal()" type="button">
+<span class="material-symbols-outlined text-xl">credit_card</span>
+<span>Payer 3 900 DZD avec Edahabia / CIB</span>
+</button>
+</div>
+</div>
+<div class="lg:col-span-4 bg-surface-container-lowest p-space-lg rounded-xl shadow-sm space-y-space-md">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Sécurité Monétique</h3>
+<ul class="space-y-space-sm text-on-surface-variant font-body-sm text-body-sm">
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-primary text-base mt-0.5">check_circle</span>
+<span>Protocole 3D Secure avec code de validation SMS de votre banque.</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-primary text-base mt-0.5">check_circle</span>
+<span>Aucune donnée bancaire n'est stockée sur nos serveurs.</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-primary text-base mt-0.5">check_circle</span>
+<span>Support client en cas d'échec de débit bancaire.</span>
+</li>
+</ul>
+<div class="p-space-md rounded-xl bg-surface-container-low text-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant block">Partenaire technique officiel</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">Chargily Pay DZ</span>
+</div>
+</div>
+</div>
+</div>
+<!-- BILLING HISTORY & INVOICES TABLE (Facturation & Historique) -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm space-y-space-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Historique des Paiements &amp; Factures PDF</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Consultez et téléchargez vos factures conformes à la réglementation algérienne (TTC en Dinars).</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-space-md py-1 rounded-full bg-surface-container text-on-surface font-label-md text-label-md">Total Réglé : 11 700 DZD</span>
+</div>
+</div>
+<!-- Responsive Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+<th class="py-3 px-space-md rounded-l-lg">Réf. Facture</th>
+<th class="py-3 px-space-md">Période Couverte</th>
+<th class="py-3 px-space-md">Méthode</th>
+<th class="py-3 px-space-md">Montant</th>
+<th class="py-3 px-space-md">Statut</th>
+<th class="py-3 px-space-md text-right rounded-r-lg">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y-0 text-on-surface font-body-sm text-body-sm">
+<!-- Row 1: Current Pending -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3.5 px-space-md font-mono font-bold text-on-surface">INV-2025-003</td>
+<td class="py-3.5 px-space-md">15 Mars 2025 → 14 Avr 2025</td>
+<td class="py-3.5 px-space-md">
+<span class="inline-flex items-center gap-1 text-on-surface">
+<span class="material-symbols-outlined text-base text-tertiary">account_balance</span>
+                BaridiMob RIP
+              </span>
+</td>
+<td class="py-3.5 px-space-md font-currency-numeral text-currency-numeral font-bold">3 900 DZD</td>
+<td class="py-3.5 px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-semibold">
+<span class="h-1.5 w-1.5 rounded-full bg-tertiary"></span>
+                En attente de preuve
+              </span>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm transition-colors" onclick="alert('Facture proforma disponible une fois le virement validé.')" type="button">
+<span class="material-symbols-outlined text-base">download</span>
+                Proforma PDF
+              </button>
+</td>
+</tr>
+<!-- Row 2: Past Validated -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3.5 px-space-md font-mono font-bold text-on-surface">INV-2025-002</td>
+<td class="py-3.5 px-space-md">13 Fév 2025 → 14 Mar 2025</td>
+<td class="py-3.5 px-space-md">
+<span class="inline-flex items-center gap-1 text-on-surface">
+<span class="material-symbols-outlined text-base text-primary">credit_card</span>
+                Edahabia (Chargily)
+              </span>
+</td>
+<td class="py-3.5 px-space-md font-currency-numeral text-currency-numeral font-bold">3 900 DZD</td>
+<td class="py-3.5 px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary-container/20 text-on-primary-container font-label-sm text-label-sm font-semibold">
+<span class="h-1.5 w-1.5 rounded-full bg-primary"></span>
+                Payé &amp; Validé
+              </span>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container-high text-on-surface hover:bg-surface-container-highest font-label-sm text-label-sm transition-colors" onclick="downloadInvoiceMock('INV-2025-002')" type="button">
+<span class="material-symbols-outlined text-base">picture_as_pdf</span>
+                Télécharger PDF
+              </button>
+</td>
+</tr>
+<!-- Row 3: Past Validated -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3.5 px-space-md font-mono font-bold text-on-surface">INV-2025-001</td>
+<td class="py-3.5 px-space-md">14 Jan 2025 → 12 Fév 2025</td>
+<td class="py-3.5 px-space-md">
+<span class="inline-flex items-center gap-1 text-on-surface">
+<span class="material-symbols-outlined text-base text-tertiary">markunread_mailbox</span>
+                Bordereau CCP
+              </span>
+</td>
+<td class="py-3.5 px-space-md font-currency-numeral text-currency-numeral font-bold">3 900 DZD</td>
+<td class="py-3.5 px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary-container/20 text-on-primary-container font-label-sm text-label-sm font-semibold">
+<span class="h-1.5 w-1.5 rounded-full bg-primary"></span>
+                Payé &amp; Validé
+              </span>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container-high text-on-surface hover:bg-surface-container-highest font-label-sm text-label-sm transition-colors" onclick="downloadInvoiceMock('INV-2025-001')" type="button">
+<span class="material-symbols-outlined text-base">picture_as_pdf</span>
+                Télécharger PDF
+              </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- TOAST NOTIFICATION COMPONENT -->
+<div class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-3 px-space-md py-3 rounded-xl bg-inverse-surface text-inverse-on-surface shadow-2xl" id="toast">
+<span class="material-symbols-outlined text-primary-fixed text-xl" id="toast-icon">check_circle</span>
+<span class="font-body-md text-body-md font-medium" id="toast-msg">Action effectuée</span>
+</div>
+</div>
+<!-- INTERACTIVE SCRIPT LOGIC -->
+<script>
+  function switchPaymentTab(tab) {
+    const baridiBtn = document.getElementById('tab-baridimob-btn');
+    const chargilyBtn = document.getElementById('tab-chargily-btn');
+    const baridiPanel = document.getElementById('tab-baridimob-panel');
+    const chargilyPanel = document.getElementById('tab-chargily-panel');
+
+    if (tab === 'baridimob') {
+      baridiBtn.className = "flex-1 flex items-center justify-center gap-2 px-space-md py-2.5 rounded-lg bg-surface-container-lowest text-on-surface font-label-lg text-label-lg shadow-sm transition-all duration-150";
+      chargilyBtn.className = "flex-1 flex items-center justify-center gap-2 px-space-md py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-lg text-label-lg transition-all duration-150";
+      baridiPanel.classList.remove('hidden');
+      chargilyPanel.classList.add('hidden');
+    } else {
+      chargilyBtn.className = "flex-1 flex items-center justify-center gap-2 px-space-md py-2.5 rounded-lg bg-surface-container-lowest text-on-surface font-label-lg text-label-lg shadow-sm transition-all duration-150";
+      baridiBtn.className = "flex-1 flex items-center justify-center gap-2 px-space-md py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-lg text-label-lg transition-all duration-150";
+      chargilyPanel.classList.remove('hidden');
+      baridiPanel.classList.add('hidden');
+    }
+  }
+
+  function showToast(msg, icon = 'check_circle') {
+    const toast = document.getElementById('toast');
+    const msgEl = document.getElementById('toast-msg');
+    const iconEl = document.getElementById('toast-icon');
+
+    msgEl.textContent = msg;
+    iconEl.textContent = icon;
+
+    toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+    toast.classList.add('translate-y-0', 'opacity-100');
+
+    setTimeout(() => {
+      toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+      toast.classList.remove('translate-y-0', 'opacity-100');
+    }, 3200);
+  }
+
+  function copyToClipboard(text, btnElement, typeLabel) {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(typeLabel + ' copié avec succès ! (' + text + ')', 'content_copy');
+        const originalHtml = btnElement.innerHTML;
+        btnElement.innerHTML = '<span class="material-symbols-outlined text-base">done</span><span>Copié !</span>';
+        setTimeout(() => {
+          btnElement.innerHTML = originalHtml;
+        }, 2000);
+      });
+    } else {
+      showToast(typeLabel + ' : ' + text);
+    }
+  }
+
+  function handleFileSelect(input) {
+    if (input.files && input.files[0]) {
+      const fileName = input.files[0].name;
+      const statusText = document.getElementById('upload-status-text');
+      statusText.innerHTML = '<span class="text-primary font-bold">Fichier sélectionné :</span> ' + fileName;
+      showToast('Capture sélectionnée : ' + fileName, 'attachment');
+    }
+  }
+
+  function handleProofSubmit(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-xl">progress_activity</span><span>Envoi en cours à Alger...</span>';
+
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.innerHTML = '<span class="material-symbols-outlined text-xl">check_circle</span><span>Reçu transmis avec succès !</span>';
+      showToast('Preuve envoyée ! Traitement par l\'équipe sous 15-30 min.', 'verified');
+      document.getElementById('payment-proof-form').reset();
+      document.getElementById('upload-status-text').textContent = 'Cliquez ou déposez votre capture ici';
+      setTimeout(() => {
+        btn.innerHTML = '<span class="material-symbols-outlined text-xl">send</span><span>Envoyer ma preuve de paiement / إرسال إثبات الدفع</span>';
+      }, 4000);
+    }, 1200);
+  }
+
+  function triggerChargilyModal() {
+    showToast('Redirection vers la passerelle sécurisée Chargily Pay (Edahabia/CIB)...', 'lock');
+  }
+
+  function downloadInvoiceMock(invoiceId) {
+    showToast('Génération du PDF officiel ' + invoiceId + ' (TTC DZD)...', 'download');
+  }
+</script></main></div></body></html>
