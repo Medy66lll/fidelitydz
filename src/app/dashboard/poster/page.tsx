@@ -3,16 +3,13 @@
 import React, { useRef } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useMerchant } from '@/context/MerchantContext';
-import { QRCodeSVG } from 'qrcode.react';
+import { QRCodeCanvas, QRCodeSVG } from 'qrcode.react';
 import jsPDF from 'jspdf';
 import {
   Printer,
   Download,
   QrCode,
   Sparkles,
-  Smartphone,
-  ShieldCheck,
-  CheckCircle2
 } from 'lucide-react';
 
 export default function CounterPosterPage() {
@@ -21,6 +18,7 @@ export default function CounterPosterPage() {
   const isAr = language === 'ar';
 
   const posterRef = useRef<HTMLDivElement>(null);
+  const qrCanvasWrapRef = useRef<HTMLDivElement>(null);
 
   const joinUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/join/${currentMerchant?.slug || 'el-bahdja'}`
@@ -40,49 +38,77 @@ export default function CounterPosterPage() {
     });
 
     const bName = currentMerchant?.business_name || 'Commerce';
+    const rewardText = program?.reward_title_fr || '10eme Offert';
 
     // Header color banner
     doc.setFillColor(15, 23, 42); // #0F172A
-    doc.rect(0, 0, 210, 45, 'F');
+    doc.rect(0, 0, 210, 48, 'F');
 
     // Title
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(22);
     doc.text('FidelityDZ - Club Fidelite', 105, 20, { align: 'center' });
-    doc.setFontSize(14);
+    doc.setFontSize(15);
     doc.text(bName, 105, 32, { align: 'center' });
+    doc.setFontSize(10);
+    doc.setTextColor(16, 185, 129);
+    doc.text(`${currentMerchant?.wilaya || 'Algerie'} - Sans application a installer`, 105, 41, { align: 'center' });
 
     // Main Announcement
     doc.setTextColor(15, 23, 42);
     doc.setFontSize(18);
-    doc.text('Rejoignez notre programme de fidelite !', 105, 60, { align: 'center' });
+    doc.text('Rejoignez notre programme de fidelite !', 105, 62, { align: 'center' });
     doc.setFontSize(12);
     doc.setTextColor(100, 116, 139);
-    doc.text('Scannez ce QR Code pour ouvrir votre carte de fidelite', 105, 70, { align: 'center' });
+    doc.text('Scannez ce QR Code et entrez votre numero 05 / 06 / 07', 105, 71, { align: 'center' });
 
-    // QR Code note
-    doc.setFontSize(11);
+    // Embed actual QRCodeCanvas PNG into the PDF
+    const canvasEl = qrCanvasWrapRef.current?.querySelector('canvas');
+    if (canvasEl) {
+      try {
+        const qrDataUrl = canvasEl.toDataURL('image/png');
+        doc.setDrawColor(226, 232, 240);
+        doc.roundedRect(62, 78, 86, 86, 6, 6, 'S');
+        doc.addImage(qrDataUrl, 'PNG', 67, 83, 76, 76);
+      } catch (err) {
+        console.warn('Could not embed QR canvas in PDF:', err);
+      }
+    }
+
+    // Reward & Bonus
+    doc.setFontSize(12);
     doc.setTextColor(16, 185, 129); // #10B981
-    doc.text(`1er tampon offert des aujourd'hui !`, 105, 160, { align: 'center' });
+    doc.text(`1er tampon offert des aujourd'hui !`, 105, 174, { align: 'center' });
+    doc.setFontSize(13);
+    doc.setTextColor(217, 119, 6); // Amber reward
+    doc.text(`Recompense : ${rewardText}`, 105, 184, { align: 'center' });
 
     // URL fallback
     doc.setFontSize(10);
     doc.setTextColor(71, 85, 105);
-    doc.text(`Ou rendez-vous sur : ${joinUrl}`, 105, 175, { align: 'center' });
+    doc.text(`Lien direct : ${joinUrl}`, 105, 195, { align: 'center' });
 
     // Step by step
     doc.setFontSize(11);
     doc.setTextColor(15, 23, 42);
-    doc.text('1. Scannez avec l\'appareil photo de votre smartphone', 25, 200);
-    doc.text('2. Entrez votre numero de telephone mobile (05/06/07)', 25, 212);
-    doc.text('3. Cumulez des tampons et debloquez vos recompenses !', 25, 224);
+    doc.text('1. Scannez ce QR Code avec l\'appareil photo de votre telephone', 25, 215);
+    doc.text('2. Entrez uniquement votre numero de telephone (05 / 06 / 07)', 25, 227);
+    doc.text('3. Presentez votre carte digitale en caisse pour gagner vos cadeaux !', 25, 239);
 
-    // Save
+    doc.setFontSize(9);
+    doc.setTextColor(148, 163, 184);
+    doc.text('Propulse par FidelityDZ - Plateforme de Fidelite Digitale en Algerie', 105, 280, { align: 'center' });
+
     doc.save(`Affiche_Fidelite_${currentMerchant?.slug || 'comptoir'}.pdf`);
   };
 
   return (
     <div className="max-w-5xl mx-auto space-y-8">
+      {/* Hidden high-res QR Canvas for PDF export */}
+      <div ref={qrCanvasWrapRef} className="hidden" aria-hidden="true">
+        <QRCodeCanvas value={joinUrl} size={420} level="H" includeMargin={true} />
+      </div>
+
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
@@ -187,7 +213,7 @@ export default function CounterPosterPage() {
               <span className="w-5 h-5 rounded-full bg-slate-900 text-white font-bold flex items-center justify-center text-[10px] flex-shrink-0">
                 2
               </span>
-              <span>Saisissez votre prénom et votre numéro de mobile (05/06/07)</span>
+              <span>Saisissez uniquement votre numéro de mobile (05/06/07)</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-5 h-5 rounded-full bg-emerald-500 text-slate-950 font-bold flex items-center justify-center text-[10px] flex-shrink-0">

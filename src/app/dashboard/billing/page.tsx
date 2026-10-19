@@ -6,21 +6,16 @@ import { useLanguage } from '@/context/LanguageContext';
 import { useMerchant } from '@/context/MerchantContext';
 import AlgerianPaymentBadges from '@/components/AlgerianPaymentBadges';
 import { db, defaultPlatformSettings } from '@/lib/db';
-import { SubscriptionPayment } from '@/lib/types';
+import { SubscriptionPayment, PaymentMethod } from '@/lib/types';
 import confetti from 'canvas-confetti';
 import {
   CreditCard,
   CheckCircle2,
   Copy,
-  UploadCloud,
-  Clock,
   Sparkles,
   ArrowRight,
-  ShieldCheck,
   Send,
-  AlertCircle,
   Building2,
-  FileCheck
 } from 'lucide-react';
 
 function BillingContent() {
@@ -30,9 +25,12 @@ function BillingContent() {
   const isAr = language === 'ar';
 
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('BARIDIMOB');
   const [transactionRef, setTransactionRef] = useState('');
-  const [receiptFile, setReceiptFile] = useState<string | null>(null);
+  const [receiptDataUrl, setReceiptDataUrl] = useState<string | null>(null);
+  const [receiptFileName, setReceiptFileName] = useState<string | null>(null);
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [isProcessingChargily, setIsProcessingChargily] = useState(false);
   const [chargilyMessage, setChargilyMessage] = useState<string | null>(null);
 
@@ -66,11 +64,25 @@ function BillingContent() {
     }
   };
 
+  const handleReceiptFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setReceiptFileName(file.name);
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        setReceiptDataUrl(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   // Launch Chargily Pay V2 Checkout
   const handleChargilyCheckout = async () => {
     if (!currentMerchant) return;
     setIsProcessingChargily(true);
     setChargilyMessage(null);
+    setFormError(null);
 
     try {
       const res = await fetch('/api/chargily/checkout', {
@@ -86,7 +98,7 @@ function BillingContent() {
       if (data.success && data.checkout_url) {
         window.location.href = data.checkout_url;
       } else {
-        alert(data.error || 'Erreur lors de l\'initialisation de Chargily Pay');
+        setFormError(data.error || 'Erreur lors de l\'initialisation de Chargily Pay');
         setIsProcessingChargily(false);
       }
     } catch (err: unknown) {
@@ -98,10 +110,11 @@ function BillingContent() {
   // Soumettre reçu BaridiMob ou CCP
   const handleSubmitReceipt = (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError(null);
     if (!currentMerchant) return;
 
     if (!transactionRef.trim()) {
-      alert('Veuillez renseigner le numéro de transaction ou la référence BaridiMob / CCP.');
+      setFormError('Veuillez renseigner le numéro de transaction ou la référence BaridiMob / CCP.');
       return;
     }
 
@@ -110,9 +123,9 @@ function BillingContent() {
       merchant_id: currentMerchant.id,
       merchant_name: currentMerchant.business_name,
       amount_dzd: 3900,
-      payment_method: 'BARIDIMOB',
+      payment_method: paymentMethod,
       transaction_reference: transactionRef.trim(),
-      receipt_url: receiptFile || 'recu_baridimob_preuve.png',
+      receipt_url: receiptDataUrl || receiptFileName || 'recu_baridimob_preuve.png',
       status: 'PENDING',
       created_at: new Date().toISOString(),
     };
@@ -144,6 +157,12 @@ function BillingContent() {
         <div className="bg-emerald-50 border border-emerald-300 text-emerald-900 p-5 rounded-2xl flex items-center gap-3 shadow-md animate-fade-in font-bold text-sm">
           <CheckCircle2 className="w-6 h-6 text-emerald-600 flex-shrink-0" />
           <span>{chargilyMessage}</span>
+        </div>
+      )}
+
+      {formError && (
+        <div className="bg-red-50 border border-red-300 text-red-800 p-4 rounded-2xl text-xs font-bold">
+          {formError}
         </div>
       )}
 
@@ -259,7 +278,7 @@ function BillingContent() {
           <div className="space-y-1">
             <div className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-full">
               <Building2 className="w-3.5 h-3.5 text-slate-500" />
-              <span>{isAr ? 'تحويل يدوي' : 'Virement Manuel'}</span>
+              <span>{isAr ? 'تحويل يدوي' : 'Virement BaridiMob / CCP'}</span>
             </div>
             <h3 className="text-xl font-extrabold text-slate-900">
               {t('baridimob_ccp_title')}
@@ -322,15 +341,38 @@ function BillingContent() {
 
           {/* Submission Form */}
           {submissionSuccess ? (
-            <div className="bg-emerald-50 border border-emerald-300 text-emerald-800 p-4 rounded-2xl text-xs font-bold flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-              <span>{t('receipt_submitted_success')}</span>
+            <div className="space-y-3">
+              <div className="bg-emerald-50 border border-emerald-300 text-emerald-800 p-4 rounded-2xl text-xs font-bold flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                <span>{t('receipt_submitted_success')}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSubmissionSuccess(false)}
+                className="text-xs font-bold text-emerald-700 hover:underline"
+              >
+                Envoyer un autre reçu
+              </button>
             </div>
           ) : (
             <form onSubmit={handleSubmitReceipt} className="space-y-3 pt-2">
               <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-700 block">
-                  Numéro de transaction / Référence BaridiMob
+                  Méthode utilisée
+                </label>
+                <select
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-bold outline-none focus:border-emerald-500"
+                >
+                  <option value="BARIDIMOB">📱 Virement BaridiMob (RIP)</option>
+                  <option value="CCP_RECEIPT">🏦 Versement / Mandat CCP</option>
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-700 block">
+                  Numéro de transaction / Référence BaridiMob ou CCP
                 </label>
                 <input
                   type="text"
@@ -344,17 +386,23 @@ function BillingContent() {
 
               <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-700 block">
-                  Capture d&apos;écran du reçu BaridiMob
+                  Capture d&apos;écran du reçu BaridiMob ou photo du reçu CCP
                 </label>
                 <input
                   type="file"
-                  accept="image/*,.pdf"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) setReceiptFile(file.name);
-                  }}
+                  accept="image/*"
+                  onChange={handleReceiptFileChange}
                   className="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
                 />
+                {receiptDataUrl && (
+                  <div className="pt-2">
+                    <img
+                      src={receiptDataUrl}
+                      alt="Aperçu du reçu"
+                      className="h-24 rounded-xl border border-slate-200 object-cover"
+                    />
+                  </div>
+                )}
               </div>
 
               <button

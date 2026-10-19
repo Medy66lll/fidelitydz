@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { db } from '@/lib/db';
-import { Merchant, LoyaltyProgram } from '@/lib/types';
+import { Merchant, LoyaltyProgram, CustomerCard } from '@/lib/types';
 import { useLanguage } from '@/context/LanguageContext';
 import LanguageToggle from '@/components/LanguageToggle';
 import { QrCode, Phone, User, Sparkles, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
@@ -14,32 +14,62 @@ export default function CustomerJoinPage() {
   const { t, language } = useLanguage();
   const isAr = language === 'ar';
 
-  const merchantSlug = params?.merchantSlug as string;
+  const rawSlug = params?.merchantSlug;
+  const merchantSlug = decodeURIComponent(Array.isArray(rawSlug) ? rawSlug[0] : rawSlug || '').trim();
 
   const [merchant, setMerchant] = useState<Merchant | null>(null);
   const [program, setProgram] = useState<LoyaltyProgram | null>(null);
   const [phone, setPhone] = useState('');
   const [name, setName] = useState('');
+  const [existingCustomer, setExistingCustomer] = useState<CustomerCard | null>(null);
   const [loading, setLoading] = useState(false);
+  const [checkingStore, setCheckingStore] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (merchantSlug) {
-      const found = db.getMerchantBySlug(merchantSlug);
-      if (found) {
-        setMerchant(found);
-        setProgram(db.getProgramByMerchantId(found.id));
+    let mounted = true;
+    async function loadMerchant() {
+      if (!merchantSlug) {
+        setCheckingStore(false);
+        return;
+      }
+      setCheckingStore(true);
+      const { merchant: foundM, program: foundP } = await db.fetchMerchantBySlugAsync(merchantSlug);
+      if (!mounted) return;
+
+      if (foundM) {
+        setMerchant(foundM);
+        setProgram(foundP || db.getProgramByMerchantId(foundM.id));
+        setError('');
       } else {
         setError(`Le commerce "${merchantSlug}" n'a pas été trouvé.`);
       }
+      setCheckingStore(false);
     }
+    loadMerchant();
+    return () => {
+      mounted = false;
+    };
   }, [merchantSlug]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handlePhoneChange = (val: string) => {
+    setPhone(val);
+    const cleaned = val.replace(/\s+/g, '');
+    if (merchant && /^(0)(5|6|7)[0-9]{8}$/.test(cleaned)) {
+      const foundCard = db.getCardByPhone(merchant.id, cleaned);
+      if (foundCard) {
+        setExistingCustomer(foundCard);
+        setName(foundCard.customer_name);
+        return;
+      }
+    }
+    setExistingCustomer(null);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    // Validation du numéro de téléphone algérien (05, 06 ou 07, 10 chiffres)
     const cleaned = phone.replace(/\s+/g, '');
     if (!/^(0)(5|6|7)[0-9]{8}$/.test(cleaned)) {
       setError(
@@ -50,29 +80,27 @@ export default function CustomerJoinPage() {
       return;
     }
 
-    if (!name.trim()) {
-      setError(isAr ? 'يرجى كتابة اسمك أو لقبك' : 'Veuillez renseigner votre prénom.');
-      return;
-    }
-
     setLoading(true);
 
     try {
-      // Inscription zéro friction : crée ou retrouve instantanément la carte
-      const result = db.getOrCreateCustomerCard(merchantSlug, cleaned, name);
-      // Redirection directe vers la carte du client
+      const finalName = name.trim() || existingCustomer?.customer_name || `Client ${cleaned.slice(-4)}`;
+      const result = await db.getOrCreateCustomerCardAsync(merchantSlug, cleaned, finalName);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('fidelitydz_last_card_token', result.card.qr_token);
+      }
       router.push(`/card/${result.card.qr_token}`);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Erreur lors de l\'accès à la carte';
+      const msg = err instanceof Error ? err.message : "Erreur lors de l'accès à la carte";
       setError(msg);
       setLoading(false);
     }
   };
 
-  if (!merchant && !error) {
+  if (checkingStore) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-950 text-white gap-3">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-400"></div>
+        <p className="text-xs text-slate-400">Ouverture du programme de fidélité...</p>
       </div>
     );
   }
@@ -95,7 +123,6 @@ export default function CustomerJoinPage() {
       {/* Main Join Container */}
       <main className="max-w-md mx-auto w-full my-auto py-6">
         <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
-          {/* Merchant Profile */}
           <div className="text-center space-y-2 pb-6 border-b border-slate-800">
             {merchant?.logo_url && (
               <img
@@ -105,28 +132,39 @@ export default function CustomerJoinPage() {
               />
             )}
             <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
-              {merchant?.business_name}
+              {merchant?.business_name || merchantSlug}
             </h1>
-            <p className="text-xs text-slate-400 font-medium">
-              {merchant?.wilaya} • {merchant?.category}
-            </p>
+            {merchant && (
+              <p className="text-xs text-slate-400 font-medium">
+                {merchant.wilaya} • {merchant.category}
+              </p>
+            )}
 
-            {/* Welcome Bonus Callout */}
             <div className="inline-flex items-center gap-2 bg-emerald-950/80 border border-emerald-800/80 px-3.5 py-1.5 rounded-full text-emerald-400 text-xs font-bold mt-2">
               <Sparkles className="w-4 h-4" />
               <span>
                 {isAr
                   ? `هدية ترحيبية: ختم مجاني فور تسجيلك !`
-                  : `1er tampon offert automatiquement !`}
+                  : `🎁 ${program?.reward_title_fr || '1er tampon offert automatiquement !'}`}
               </span>
             </div>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             {error && (
               <div className="bg-red-950/60 border border-red-800 text-red-200 text-xs p-3 rounded-xl">
                 {error}
+              </div>
+            )}
+
+            {existingCustomer && (
+              <div className="bg-emerald-950/80 border border-emerald-700 text-emerald-200 text-xs p-3 rounded-xl flex items-center gap-2 font-bold">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <span>
+                  {isAr
+                    ? `مرحباً بعودتك ${existingCustomer.customer_name} ! لديك ${existingCustomer.stamps_balance} أختام.`
+                    : `Bon retour ${existingCustomer.customer_name} ! Vous avez ${existingCustomer.stamps_balance} tampon(s).`}
+                </span>
               </div>
             )}
 
@@ -144,7 +182,7 @@ export default function CustomerJoinPage() {
                   required
                   placeholder="0555 12 34 56"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => handlePhoneChange(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl py-3.5 pl-10 rtl:pl-3 rtl:pr-10 text-white text-base placeholder-slate-600 font-mono tracking-wider tabular-nums outline-none transition-all"
                 />
               </div>
@@ -154,7 +192,7 @@ export default function CustomerJoinPage() {
             {/* Name Input */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-300 block">
-                {t('customer_name_label')} <span className="text-emerald-400">*</span>
+                {t('customer_name_label')} <span className="text-slate-500 font-normal">(optionnel si déjà inscrit)</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 rtl:left-auto rtl:right-0 pl-3 rtl:pr-3 flex items-center pointer-events-none text-slate-500">
@@ -162,7 +200,6 @@ export default function CustomerJoinPage() {
                 </div>
                 <input
                   type="text"
-                  required
                   placeholder={isAr ? 'مثال: أمين أو سارة' : 'Ex: Amine ou Sara'}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -171,18 +208,17 @@ export default function CustomerJoinPage() {
               </div>
             </div>
 
-            {/* Submit Button */}
             <div className="pt-2">
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !merchant}
                 className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-[0.99] text-slate-950 font-black text-base shadow-lg shadow-emerald-500/25 transition-all disabled:opacity-50"
               >
                 {loading ? (
-                  <span>{isAr ? 'جاري التحميل...' : 'Accès en cours...'}</span>
+                  <span>{isAr ? 'جاري التحميل...' : 'Ouverture de votre carte...'}</span>
                 ) : (
                   <>
-                    <span>{t('join_submit_btn')}</span>
+                    <span>{existingCustomer ? (isAr ? 'فتح بطاقتي الحالية' : 'Ouvrir ma carte existante') : t('join_submit_btn')}</span>
                     <ArrowRight className="w-5 h-5 rtl:rotate-180" />
                   </>
                 )}
@@ -190,7 +226,6 @@ export default function CustomerJoinPage() {
             </div>
           </form>
 
-          {/* Zero Friction Reassurance */}
           <div className="mt-6 pt-5 border-t border-slate-800 text-center space-y-2">
             <div className="flex items-center justify-center gap-1.5 text-xs text-slate-400">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
@@ -205,7 +240,6 @@ export default function CustomerJoinPage() {
         </div>
       </main>
 
-      {/* Footer minimal */}
       <footer className="text-center py-2 text-[11px] text-slate-500">
         Propulsé par FidelityDZ SaaS • Algérie 🇩🇿
       </footer>

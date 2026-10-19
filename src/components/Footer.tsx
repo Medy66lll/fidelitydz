@@ -42,8 +42,8 @@ export default function Footer() {
             <ul className="space-y-2 text-xs text-slate-400">
               <li><Link href="/#fonctionnement" className="hover:text-emerald-400 transition-colors">{isAr ? 'برنامج الأختام الرقمية' : 'Mode Tampons Digitaux'}</Link></li>
               <li><Link href="/#fonctionnement" className="hover:text-emerald-400 transition-colors">{isAr ? 'برنامج النقاط والمشتريات' : 'Mode Points de Fidélité'}</Link></li>
-              <li><Link href="/dashboard/poster" className="hover:text-emerald-400 transition-colors">{isAr ? 'ملصق QR للطاولة والكاونتر' : 'Affiche QR de Comptoir'}</Link></li>
-              <li><Link href="/scanner" className="hover:text-emerald-400 transition-colors">{isAr ? 'ماسح الكاشير السريع' : 'Scanner Caisse Caissier'}</Link></li>
+              <li><Link href="/login" className="hover:text-emerald-400 transition-colors">{isAr ? 'ملصق QR للطاولة والكاونتر' : 'Affiche QR de Comptoir'}</Link></li>
+              <li><Link href="/login" className="hover:text-emerald-400 transition-colors">{isAr ? 'ماسح الكاشير السريع' : 'Scanner Caisse Caissier'}</Link></li>
             </ul>
           </div>
 
@@ -54,8 +54,8 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2 text-xs text-slate-400">
               <li><Link href="/register" className="hover:text-emerald-400 transition-colors">{isAr ? 'ابدأ تجربة مجانية 14 يوماً' : 'Essai Gratuit 14 Jours'}</Link></li>
-              <li><Link href="/dashboard" className="hover:text-emerald-400 transition-colors">{isAr ? 'دخول لوحة تحكم التاجر' : 'Espace Commerçant'}</Link></li>
-              <li><Link href="/admin" className="hover:text-emerald-400 transition-colors">{isAr ? 'إدارة دفعات بريدي موب / CCP' : 'Super Admin Vérification'}</Link></li>
+              <li><Link href="/login" className="hover:text-emerald-400 transition-colors">{isAr ? 'دخول لوحة تحكم التاجر' : 'Connexion Commerçant'}</Link></li>
+              <li><Link href="/admin" className="hover:text-emerald-400 transition-colors">{isAr ? 'إدارة المنصة (المالك)' : 'Accès Propriétaire (Super-Admin)'}</Link></li>
               <li><Link href="/#tarif" className="hover:text-emerald-400 transition-colors">{isAr ? 'اشتراك 3900 دج شهرياً' : 'Tarif Unique 3 900 DZD'}</Link></li>
             </ul>
           </div>
