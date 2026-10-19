@@ -40,7 +40,7 @@ function buildHeaders(key: string, preferRepresentation = true): Record<string, 
 // Convertit n'importe quel identifiant en UUID v4 valide (compatible colonnes UUID et TEXT dans PostgreSQL)
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export function ensureUuid(val?: string): string {
+function ensureUuid(val?: string): string {
   const s = String(val || '').trim();
   if (UUID_REGEX.test(s)) return s.toLowerCase();
 
