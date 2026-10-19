@@ -20,6 +20,7 @@ import {
   KeyRound,
   AlertTriangle,
   LogOut,
+  Save,
 } from 'lucide-react';
 
 export default function SuperAdminPage() {
@@ -31,15 +32,19 @@ export default function SuperAdminPage() {
 
   const [payments, setPayments] = useState<SubscriptionPayment[]>([]);
   const [merchants, setMerchants] = useState<Merchant[]>([]);
+  const [ownerWaInput, setOwnerWaInput] = useState('0550000000');
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
   const [previewReceipt, setPreviewReceipt] = useState<SubscriptionPayment | null>(null);
   const [loadingSync, setLoadingSync] = useState(false);
+  const [supabaseConnected, setSupabaseConnected] = useState(true);
 
   const loadData = async () => {
     setLoadingSync(true);
-    await db.syncFromSupabase();
+    const connected = await db.syncFromSupabase();
+    setSupabaseConnected(connected);
     setPayments([...db.getPayments()]);
     setMerchants([...db.getMerchants()]);
+    setOwnerWaInput(db.getOwnerWhatsapp());
     setLoadingSync(false);
   };
 
@@ -52,6 +57,13 @@ export default function SuperAdminPage() {
       }
     }
   }, []);
+
+  const handleSaveWhatsapp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await db.saveOwnerWhatsapp(ownerWaInput);
+    setActionSuccess(`Numéro WhatsApp Propriétaire (${ownerWaInput}) enregistré sur Supabase !`);
+    setTimeout(() => setActionSuccess(null), 3500);
+  };
 
   const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,7 +101,7 @@ export default function SuperAdminPage() {
 
   const handleApprove = (paymentId: string) => {
     db.approvePayment(paymentId);
-    loadData();
+    setTimeout(() => loadData(), 400);
     confetti({ particleCount: 70, spread: 50 });
     setActionSuccess("Paiement de 3 900 DZD approuvé ! L'abonnement du commerçant a été activé pour +30 jours sur Supabase.");
     setTimeout(() => setActionSuccess(null), 4000);
@@ -97,7 +109,7 @@ export default function SuperAdminPage() {
 
   const handleReject = (paymentId: string) => {
     db.rejectPayment(paymentId);
-    loadData();
+    setTimeout(() => loadData(), 400);
     setActionSuccess('Paiement rejeté.');
     setTimeout(() => setActionSuccess(null), 3500);
   };
@@ -119,8 +131,8 @@ export default function SuperAdminPage() {
       subscription_status: nextStatus,
       subscription_ends_at: nextExpiry,
     });
-    loadData();
-    setActionSuccess(`Commerce "${merchant.business_name}" mis à jour : ${nextStatus}.`);
+    setTimeout(() => loadData(), 400);
+    setActionSuccess(`Commerce "${merchant.business_name}" mis à jour sur Supabase : ${nextStatus}.`);
     setTimeout(() => setActionSuccess(null), 3500);
   };
 
@@ -134,8 +146,8 @@ export default function SuperAdminPage() {
       ...merchant,
       password: newPass.trim(),
     });
-    loadData();
-    setActionSuccess(`Mot de passe de "${merchant.business_name}" mis à jour avec succès.`);
+    setTimeout(() => loadData(), 400);
+    setActionSuccess(`Mot de passe de "${merchant.business_name}" mis à jour sur Supabase.`);
     setTimeout(() => setActionSuccess(null), 3500);
   };
 
@@ -146,7 +158,6 @@ export default function SuperAdminPage() {
     return `213${clean}`;
   };
 
-  // ÉCRAN DE CONNEXION SUPER-ADMIN VERROUILLÉ
   if (!adminAuthenticated) {
     return (
       <div className="min-h-screen bg-slate-950 text-white flex flex-col justify-between p-4">
@@ -286,7 +297,7 @@ export default function SuperAdminPage() {
 
       {/* Top Header */}
       <header className="bg-slate-900 text-white px-6 py-4 sticky top-0 z-40 shadow-md">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <Link
               href="/"
@@ -299,9 +310,20 @@ export default function SuperAdminPage() {
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <div>
-                <h1 className="font-extrabold text-base sm:text-lg tracking-tight">
-                  Super-Admin FidelityDZ
-                </h1>
+                <div className="flex items-center gap-2">
+                  <h1 className="font-extrabold text-base sm:text-lg tracking-tight">
+                    Super-Admin FidelityDZ
+                  </h1>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                      supabaseConnected
+                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                        : 'bg-red-500/20 text-red-300 border border-red-500/40'
+                    }`}
+                  >
+                    {supabaseConnected ? '● Cloud Supabase Connecté (PC ↔ Mobile)' : '⚠️ Supabase non connecté'}
+                  </span>
+                </div>
                 <p className="text-[11px] text-amber-300 font-medium">
                   Propriétaire : {defaultPlatformSettings.owner_account_name}
                 </p>
@@ -309,14 +331,14 @@ export default function SuperAdminPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <button
               type="button"
               onClick={loadData}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-emerald-400"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loadingSync ? 'animate-spin' : ''}`} />
-              <span>Synchroniser Supabase</span>
+              <span>Actualiser Cloud</span>
             </button>
             <LanguageToggle />
             <button
@@ -370,9 +392,41 @@ export default function SuperAdminPage() {
             <div className="text-2xl font-black text-slate-900 mt-1">
               {merchants.length} / {totalCardsCount}
             </div>
-            <span className="text-[11px] text-emerald-600 font-bold">Synchronisé sur Supabase</span>
+            <span className="text-[11px] text-emerald-600 font-bold">Synchronisé PC & Téléphone</span>
           </div>
         </div>
+
+        {/* OWNER WHATSAPP CONFIGURATION BAR */}
+        <form
+          onSubmit={handleSaveWhatsapp}
+          className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+        >
+          <div className="space-y-1">
+            <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+              <MessageCircle className="w-4 h-4 text-emerald-600" />
+              <span>Votre Numéro WhatsApp Propriétaire (Réception des nouveaux commerces & reçus de paiement)</span>
+            </h3>
+            <p className="text-xs text-slate-500">
+              RIP : <strong className="font-mono">{defaultPlatformSettings.owner_rip_number}</strong> • CCP : <strong className="font-mono">{defaultPlatformSettings.owner_ccp_number} Clé {defaultPlatformSettings.owner_ccp_key}</strong>
+            </p>
+          </div>
+          <div className="flex items-center gap-2 w-full md:w-auto">
+            <input
+              type="tel"
+              value={ownerWaInput}
+              onChange={(e) => setOwnerWaInput(e.target.value)}
+              placeholder="Ex: 0550123456"
+              className="px-3.5 py-2 rounded-xl border border-slate-300 text-xs font-mono font-bold w-full md:w-44"
+            />
+            <button
+              type="submit"
+              className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs inline-flex items-center gap-1.5 whitespace-nowrap"
+            >
+              <Save className="w-3.5 h-3.5" />
+              <span>Enregistrer N° WhatsApp</span>
+            </button>
+          </div>
+        </form>
 
         {/* SECTION 1: NOUVEAUX ESSAIS 14 JOURS & RELANCE WHATSAPP */}
         <section className="bg-amber-50/70 rounded-3xl p-6 border-2 border-amber-300/80 space-y-4">
@@ -384,7 +438,7 @@ export default function SuperAdminPage() {
               </h2>
             </div>
             <span className="text-xs font-bold text-amber-900">
-              Dès que les 14 jours se terminent, leur session est bloquée automatiquement jusqu&apos;au paiement de 3 900 DZD.
+              Dès que les 14 jours se terminent, leur session se bloque automatiquement jusqu&apos;au paiement de 3 900 DZD.
             </span>
           </div>
 
@@ -407,7 +461,7 @@ export default function SuperAdminPage() {
                       <div>
                         <h3 className="font-extrabold text-sm text-slate-900">{m.business_name}</h3>
                         <p className="text-xs text-slate-500">
-                          {m.wilaya} • Tél : <strong className="font-mono text-slate-800">{m.phone}</strong>
+                          {m.wilaya} • Tél : <strong className="font-mono text-slate-800">{m.phone}</strong> • MDP : <strong className="font-mono text-slate-800">{m.password || '123456'}</strong>
                         </p>
                         <p className="text-[11px] text-slate-400">
                           Inscrit le : {new Date(m.created_at).toLocaleDateString('fr-DZ')} • Fin essai : {new Date(m.subscription_ends_at).toLocaleDateString('fr-DZ')}
@@ -538,89 +592,95 @@ export default function SuperAdminPage() {
         {/* SECTION 3: GESTION COMPLÈTE DE TOUS LES COMMERCES */}
         <section className="space-y-4">
           <h2 className="text-xl font-extrabold text-slate-900">
-            Tous les commerces inscrits ({merchants.length}) — Gestion Abonnements & Accès
+            Tous les commerces inscrits sur Supabase ({merchants.length})
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {merchants.map((m) => {
-              const isExpired =
-                m.subscription_status === 'EXPIRED' || new Date(m.subscription_ends_at).getTime() < Date.now();
-              const daysLeft = Math.max(
-                0,
-                Math.ceil((new Date(m.subscription_ends_at).getTime() - Date.now()) / 86400000)
-              );
+          {merchants.length === 0 ? (
+            <div className="bg-white rounded-3xl p-8 border border-slate-200 text-center text-slate-500 text-sm">
+              Aucun commerce inscrit pour le moment. Créez un compte sur <Link href="/register" className="text-emerald-600 font-bold underline">/register</Link> pour le voir apparaître ici sur tous vos appareils.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {merchants.map((m) => {
+                const isExpired =
+                  m.subscription_status === 'EXPIRED' || new Date(m.subscription_ends_at).getTime() < Date.now();
+                const daysLeft = Math.max(
+                  0,
+                  Math.ceil((new Date(m.subscription_ends_at).getTime() - Date.now()) / 86400000)
+                );
 
-              return (
-                <div
-                  key={m.id}
-                  className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3 flex flex-col justify-between"
-                >
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-500">{m.category}</span>
-                      <span
-                        className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full ${
-                          isExpired
-                            ? 'bg-red-100 text-red-800 border border-red-200'
-                            : m.subscription_status === 'ACTIVE'
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                            : 'bg-amber-50 text-amber-800 border border-amber-200'
-                        }`}
-                      >
-                        {isExpired ? 'EXPIRÉ / BLOQUÉ' : `${m.subscription_status} (${daysLeft}j)`}
-                      </span>
+                return (
+                  <div
+                    key={m.id}
+                    className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3 flex flex-col justify-between"
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-slate-500">{m.category}</span>
+                        <span
+                          className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full ${
+                            isExpired
+                              ? 'bg-red-100 text-red-800 border border-red-200'
+                              : m.subscription_status === 'ACTIVE'
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                              : 'bg-amber-50 text-amber-800 border border-amber-200'
+                          }`}
+                        >
+                          {isExpired ? 'EXPIRÉ / BLOQUÉ' : `${m.subscription_status} (${daysLeft}j)`}
+                        </span>
+                      </div>
+
+                      <h3 className="text-base font-extrabold text-slate-900">{m.business_name}</h3>
+
+                      <div className="text-xs text-slate-600 space-y-0.5 font-mono bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <div>Tél (Login) : <strong>{m.phone}</strong></div>
+                        <div>Mot de passe : <strong>{m.password || '123456'}</strong></div>
+                        <div>Slug QR : <strong>/join/{m.slug}</strong></div>
+                        <div>Expire le : <strong>{new Date(m.subscription_ends_at).toLocaleDateString('fr-DZ')}</strong></div>
+                      </div>
                     </div>
 
-                    <h3 className="text-base font-extrabold text-slate-900">{m.business_name}</h3>
+                    <div className="pt-3 border-t border-slate-100 space-y-2">
+                      <div className="grid grid-cols-2 gap-1.5 text-xs">
+                        <button
+                          type="button"
+                          onClick={() => handleSetMerchantSubscription(m, 'ACTIVE_30D')}
+                          className="py-2 px-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[11px]"
+                        >
+                          ✔ Activer +30j
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleSetMerchantSubscription(m, 'EXPIRE_NOW')}
+                          className="py-2 px-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 font-bold text-[11px]"
+                        >
+                          🔒 Bloquer Session
+                        </button>
+                      </div>
 
-                    <div className="text-xs text-slate-600 space-y-0.5 font-mono bg-slate-50 p-3 rounded-xl border border-slate-100">
-                      <div>Tél (Login) : <strong>{m.phone}</strong></div>
-                      <div>Mot de passe : <strong>{m.password || '123456'}</strong></div>
-                      <div>Slug QR : <strong>/join/{m.slug}</strong></div>
-                      <div>Expire le : <strong>{new Date(m.subscription_ends_at).toLocaleDateString('fr-DZ')}</strong></div>
+                      <div className="flex items-center justify-between text-xs pt-1">
+                        <button
+                          type="button"
+                          onClick={() => handleChangeMerchantPassword(m)}
+                          className="inline-flex items-center gap-1 text-slate-600 hover:text-slate-900 font-bold text-[11px]"
+                        >
+                          <KeyRound className="w-3.5 h-3.5" />
+                          <span>Changer MDP</span>
+                        </button>
+                        <Link
+                          href={`/join/${m.slug}`}
+                          target="_blank"
+                          className="font-bold text-emerald-600 hover:text-emerald-700 text-[11px]"
+                        >
+                          Voir page QR client →
+                        </Link>
+                      </div>
                     </div>
                   </div>
-
-                  <div className="pt-3 border-t border-slate-100 space-y-2">
-                    <div className="grid grid-cols-2 gap-1.5 text-xs">
-                      <button
-                        type="button"
-                        onClick={() => handleSetMerchantSubscription(m, 'ACTIVE_30D')}
-                        className="py-2 px-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[11px]"
-                      >
-                        ✔ Activer +30j
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleSetMerchantSubscription(m, 'EXPIRE_NOW')}
-                        className="py-2 px-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 font-bold text-[11px]"
-                      >
-                        🔒 Bloquer Session
-                      </button>
-                    </div>
-
-                    <div className="flex items-center justify-between text-xs pt-1">
-                      <button
-                        type="button"
-                        onClick={() => handleChangeMerchantPassword(m)}
-                        className="inline-flex items-center gap-1 text-slate-600 hover:text-slate-900 font-bold text-[11px]"
-                      >
-                        <KeyRound className="w-3.5 h-3.5" />
-                        <span>Changer MDP</span>
-                      </button>
-                      <Link
-                        href={`/join/${m.slug}`}
-                        target="_blank"
-                        className="font-bold text-emerald-600 hover:text-emerald-700 text-[11px]"
-                      >
-                        Voir page QR client →
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </section>
       </main>
     </div>

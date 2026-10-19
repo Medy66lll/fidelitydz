@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
 import { useMerchant } from '@/context/MerchantContext';
 import LanguageToggle from '@/components/LanguageToggle';
-import { db, defaultPlatformSettings } from '@/lib/db';
+import { db, generateUuid } from '@/lib/db';
 import { Merchant } from '@/lib/types';
 import {
   QrCode,
@@ -47,6 +47,12 @@ export default function RegisterMerchantPage() {
     setSlug(generated);
   };
 
+  const getWhatsAppAdminNotificationUrl = (m: Merchant) => {
+    const ownerWa = db.getOwnerWhatsapp() || '213550000000';
+    const text = `🆕 *NOUVEAU COMMERCE INSCRIT (ESSAI 14 JOURS)*\n\n🏪 *Commerce :* ${m.business_name}\n📍 *Wilaya :* ${m.wilaya}\n📂 *Catégorie :* ${m.category}\n📞 *Tél Gérant (Login) :* ${m.phone}\n🔑 *Mot de passe :* ${m.password}\n🔗 *Lien QR Client :* ${typeof window !== 'undefined' ? window.location.origin : 'https://fidelitydz.vercel.app'}/join/${m.slug}\n⏳ *Fin essai 14j :* ${new Date(m.subscription_ends_at).toLocaleDateString('fr-DZ')}`;
+    return `https://wa.me/${ownerWa}?text=${encodeURIComponent(text)}`;
+  };
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -63,13 +69,12 @@ export default function RegisterMerchantPage() {
     }
 
     if (password.trim().length < 4) {
-      setError('Veuillez choisir un mot de passe d\'au moins 4 caractères pour sécuriser votre espace.');
+      setError("Veuillez choisir un mot de passe d'au moins 4 caractères pour sécuriser votre espace.");
       return;
     }
 
     setLoading(true);
 
-    // Vérifier si le slug ou téléphone existe déjà
     await db.syncFromSupabase();
     const existingBySlug = db.getMerchantBySlug(slug.toLowerCase().trim());
     const finalSlug = existingBySlug
@@ -77,7 +82,7 @@ export default function RegisterMerchantPage() {
       : slug.toLowerCase().trim();
 
     const newMerchant: Merchant = {
-      id: `m-${Date.now()}`,
+      id: generateUuid(),
       business_name: businessName.trim(),
       slug: finalSlug,
       category,
@@ -91,10 +96,10 @@ export default function RegisterMerchantPage() {
     };
 
     try {
-      await db.registerMerchantAsync(newMerchant);
-      loginMerchantSession(newMerchant);
+      const saved = await db.registerMerchantAsync(newMerchant);
+      loginMerchantSession(saved);
       await refreshMerchantData();
-      setCreatedMerchant(newMerchant);
+      setCreatedMerchant(saved);
       setLoading(false);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Erreur lors de la création';
@@ -109,7 +114,7 @@ export default function RegisterMerchantPage() {
     '13 - Tlemcen', '14 - Tiaret', '15 - Tizi Ouzou', '16 - Alger', '17 - Djelfa',
     '18 - Jijel', '19 - Sétif', '20 - Saïda', '21 - Skikda', '22 - Sidi Bel Abbès',
     '23 - Annaba', '24 - Guelma', '25 - Constantine', '26 - Médéa', '27 - Mostaganem',
-    '28 - M\'Sila', '29 - Mascara', '30 - Ouargla', '31 - Oran', '34 - Bordj Bou Arréridj',
+    "28 - M'Sila", '29 - Mascara', '30 - Ouargla', '31 - Oran', '34 - Bordj Bou Arréridj',
     '35 - Boumerdès', '42 - Tipaza', '45 - Naâma',
   ];
 
@@ -155,45 +160,44 @@ export default function RegisterMerchantPage() {
               <CheckCircle2 className="w-10 h-10" />
             </div>
             <div className="space-y-2">
-              <span className="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-extrabold">
-                ⏳ Essai Gratuit de 14 Jours Activé
+              <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-extrabold">
+                ✔ Enregistré sur Supabase & Espace Admin (PC & Mobile)
               </span>
               <h2 className="text-2xl font-extrabold text-slate-900">
                 Bienvenue, {createdMerchant.business_name} !
               </h2>
               <p className="text-xs sm:text-sm text-slate-600">
-                Votre compte sécurisé est créé sur Supabase. À la fin de vos 14 jours d&apos;essai, votre abonnement est à <strong>3 900 DZD / mois</strong> (via BaridiMob, CCP ou Edahabia/CIB).
+                Vos <strong>14 jours d&apos;essai gratuit</strong> sont activés. Vous pouvez maintenant vous connecter depuis votre PC ou votre téléphone avec votre numéro et votre mot de passe.
               </p>
             </div>
 
             <div className="bg-slate-900 text-white p-4 rounded-2xl text-left text-xs space-y-1.5 font-mono">
-              <div className="text-emerald-400 font-bold uppercase">Vos identifiants de connexion :</div>
-              <div>Identifiant (Tél) : <strong>{createdMerchant.phone}</strong></div>
+              <div className="text-emerald-400 font-bold uppercase">Vos identifiants de connexion (PC & Téléphone) :</div>
+              <div>Téléphone (Identifiant) : <strong>{createdMerchant.phone}</strong></div>
+              <div>Mot de passe : <strong>{createdMerchant.password}</strong></div>
               <div>Lien QR Client : <strong>/join/{createdMerchant.slug}</strong></div>
-              <div>Expiration essai 14j : <strong>{new Date(createdMerchant.subscription_ends_at).toLocaleDateString('fr-DZ')}</strong></div>
+              <div>Fin de l&apos;essai 14j : <strong>{new Date(createdMerchant.subscription_ends_at).toLocaleDateString('fr-DZ')}</strong></div>
             </div>
 
             <div className="space-y-3 pt-2">
+              <a
+                href={getWhatsAppAdminNotificationUrl(createdMerchant)}
+                target="_blank"
+                rel="noreferrer"
+                className="w-full py-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-sm shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2"
+              >
+                <MessageCircle className="w-5 h-5" />
+                <span>1. Envoyer ma confirmation d&apos;inscription sur WhatsApp Admin</span>
+              </a>
+
               <button
                 type="button"
                 onClick={() => router.push('/dashboard')}
-                className="w-full py-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-sm shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2"
+                className="w-full py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2"
               >
-                <span>Accéder à mon Espace Commerçant</span>
+                <span>2. Ouvrir mon Espace Commerçant</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
-
-              <a
-                href={`https://wa.me/${defaultPlatformSettings.owner_whatsapp || '213550000000'}?text=${encodeURIComponent(
-                  `Bonjour FidelityDZ, je viens d'activer mon essai de 14 jours pour mon commerce "${createdMerchant.business_name}" (${createdMerchant.wilaya}) avec le numéro ${createdMerchant.phone}.`
-                )}`}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-2"
-              >
-                <MessageCircle className="w-4 h-4 text-emerald-600" />
-                <span>Notifier le support WhatsApp FidelityDZ (Optionnel)</span>
-              </a>
             </div>
           </div>
         ) : (
@@ -207,7 +211,7 @@ export default function RegisterMerchantPage() {
                 {isAr ? 'إنشاء حساب تاجر جديد' : 'Créer votre compte commerce'}
               </h1>
               <p className="text-xs sm:text-sm text-slate-500">
-                Créez votre espace privé protégé par mot de passe en 1 minute.
+                Synchronisé automatiquement entre votre PC, votre téléphone et Supabase.
               </p>
             </div>
 
@@ -335,7 +339,7 @@ export default function RegisterMerchantPage() {
                   className="w-full py-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-sm shadow-lg shadow-emerald-500/25 transition-all flex items-center justify-center gap-2"
                 >
                   {loading ? (
-                    <span>Création sécurisée en cours...</span>
+                    <span>Enregistrement sur Supabase en cours...</span>
                   ) : (
                     <>
                       <span>Activer mes 14 jours d&apos;essai gratuit</span>

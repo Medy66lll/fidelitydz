@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { db } from '@/lib/db';
 import { CustomerCard, Merchant, LoyaltyProgram, PersonalizedOffer } from '@/lib/types';
@@ -24,11 +24,11 @@ import {
   Smartphone,
   X,
   RefreshCw,
+  Maximize2,
 } from 'lucide-react';
 
 export default function CustomerCardPage() {
   const params = useParams();
-  const router = useRouter();
   const { t, language } = useLanguage();
   const isAr = language === 'ar';
 
@@ -43,8 +43,9 @@ export default function CustomerCardPage() {
   const [notFound, setNotFound] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
-  // Wallet & PWA state
+  // Apple / Google Wallet Pass & Kiosk Mode
   const [walletModalOpen, setWalletModalOpen] = useState(false);
+  const [appleWalletFullscreen, setAppleWalletFullscreen] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [downloadingPass, setDownloadingPass] = useState(false);
   const hiddenQrRef = useRef<HTMLDivElement>(null);
@@ -85,16 +86,13 @@ export default function CustomerCardPage() {
 
   useEffect(() => {
     loadCardLive(true);
-
-    // Rafraîchissement automatique toutes les 6 secondes pour voir les tampons ajoutés en caisse en direct
     const interval = setInterval(() => {
       loadCardLive(false);
-    }, 6000);
-
+    }, 5000);
     return () => clearInterval(interval);
   }, [qrToken]);
 
-  // Inject dynamic PWA manifest so "Add to Home Screen" opens this exact card URL
+  // Inject iOS Web App meta tags + dynamic PWA manifest so iPhone "Add to Home Screen" opens in standalone Apple Wallet style
   useEffect(() => {
     if (typeof document === 'undefined' || !card || !merchant) return;
     let link: HTMLLinkElement | null = document.querySelector("link[rel='manifest']");
@@ -104,6 +102,19 @@ export default function CustomerCardPage() {
       document.head.appendChild(link);
     }
     link.href = `/api/manifest?token=${encodeURIComponent(card.qr_token)}&name=${encodeURIComponent(merchant.business_name)}`;
+
+    const setMeta = (name: string, content: string) => {
+      let m = document.querySelector(`meta[name='${name}']`) as HTMLMetaElement | null;
+      if (!m) {
+        m = document.createElement('meta');
+        m.name = name;
+        document.head.appendChild(m);
+      }
+      m.content = content;
+    };
+    setMeta('apple-mobile-web-app-capable', 'yes');
+    setMeta('apple-mobile-web-app-status-bar-style', 'black-translucent');
+    setMeta('apple-mobile-web-app-title', merchant.business_name);
 
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
@@ -117,58 +128,67 @@ export default function CustomerCardPage() {
 
   const handleShare = () => {
     if (typeof window !== 'undefined') {
-      navigator.clipboard.writeText(window.location.href);
-      setCopiedLink(true);
-      setTimeout(() => setCopiedLink(false), 2500);
+      if (navigator.share) {
+        navigator
+          .share({
+            title: `Carte Fidélité — ${merchant?.business_name}`,
+            text: `Ma carte de fidélité digitale chez ${merchant?.business_name}`,
+            url: window.location.href,
+          })
+          .catch(() => {});
+      } else {
+        navigator.clipboard.writeText(window.location.href);
+        setCopiedLink(true);
+        setTimeout(() => setCopiedLink(false), 2500);
+      }
     }
   };
 
-  // Génère et télécharge un vrai Pass Wallet HD (Format Apple/Google Wallet Pass Image avec QR Code intégré)
-  const handleDownloadWalletPass = () => {
+  // Génère l'image Pass format Apple Wallet et ouvre le menu natif iOS/Android (Enregistrer l'image / Ajouter)
+  const handleSaveAppleWalletPass = async () => {
     if (!card || !merchant || !program) return;
     setDownloadingPass(true);
 
     try {
       const canvas = document.createElement('canvas');
       canvas.width = 750;
-      canvas.height = 1150;
+      canvas.height = 1180;
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      // Background
+      // Fond style Apple Wallet
       ctx.fillStyle = program.background_color || '#0F172A';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Top Header Accent Bar
+      // Encoche supérieure Apple Wallet
       ctx.fillStyle = program.primary_color || '#10B981';
-      ctx.fillRect(0, 0, canvas.width, 28);
+      ctx.fillRect(0, 0, canvas.width, 32);
 
-      // Store Title
+      // En-tête Pass
       ctx.fillStyle = '#10B981';
       ctx.font = 'bold 22px sans-serif';
-      ctx.fillText('PASS FIDÉLITÉ WALLET • FIDELITYDZ', 50, 90);
+      ctx.fillText('APPLE / GOOGLE WALLET PASS • FIDELITYDZ', 50, 90);
 
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 42px sans-serif';
-      ctx.fillText(merchant.business_name, 50, 145);
+      ctx.font = 'bold 44px sans-serif';
+      ctx.fillText(merchant.business_name, 50, 148);
 
       ctx.fillStyle = '#94A3B8';
       ctx.font = '24px sans-serif';
-      ctx.fillText(`${merchant.wilaya} • ${merchant.category}`, 50, 185);
+      ctx.fillText(`${merchant.wilaya} • ${merchant.category}`, 50, 188);
 
-      // Divider
       ctx.strokeStyle = '#334155';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(50, 220);
-      ctx.lineTo(700, 220);
+      ctx.moveTo(50, 222);
+      ctx.lineTo(700, 222);
       ctx.stroke();
 
-      // Customer Info & Balance
+      // Client & Solde
       ctx.fillStyle = '#94A3B8';
       ctx.font = 'bold 20px sans-serif';
-      ctx.fillText('TITULAIRE DE LA CARTE', 50, 270);
-      ctx.fillText('SOLDE ACTUEL', 480, 270);
+      ctx.fillText('MEMBRE FIDÉLITÉ', 50, 270);
+      ctx.fillText('SOLDE', 480, 270);
 
       ctx.fillStyle = '#FFFFFF';
       ctx.font = 'bold 34px sans-serif';
@@ -186,49 +206,59 @@ export default function CustomerCardPage() {
 
       ctx.fillStyle = '#CBD5E1';
       ctx.font = '24px monospace';
-      ctx.fillText(`Tél : ${card.customer_phone}`, 50, 355);
+      ctx.fillText(`N° : ${card.customer_phone}`, 50, 355);
 
-      // Reward Box
+      // Récompense
       ctx.fillStyle = '#1E293B';
       ctx.fillRect(50, 395, 650, 95);
       ctx.fillStyle = '#F59E0B';
       ctx.font = 'bold 22px sans-serif';
-      ctx.fillText('🎁 RÉCOMPENSE FIDÉLITÉ :', 75, 435);
+      ctx.fillText('🎁 RÉCOMPENSE :', 75, 435);
       ctx.fillStyle = '#FFFFFF';
       ctx.font = 'bold 28px sans-serif';
       ctx.fillText(program.reward_title_fr, 75, 472);
 
-      // White QR Box
+      // Zone QR Blanche haute luminosité
       ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(155, 535, 440, 460);
+      ctx.fillRect(155, 530, 440, 470);
 
       const qrCanvas = hiddenQrRef.current?.querySelector('canvas');
       if (qrCanvas) {
-        ctx.drawImage(qrCanvas, 195, 560, 360, 360);
+        ctx.drawImage(qrCanvas, 195, 555, 360, 360);
       }
 
       ctx.fillStyle = '#0F172A';
-      ctx.font = 'bold 22px monospace';
+      ctx.font = 'bold 24px monospace';
       ctx.textAlign = 'center';
       ctx.fillText(card.customer_phone, 375, 955);
       ctx.fillStyle = '#059669';
       ctx.font = 'bold 18px sans-serif';
-      ctx.fillText('Présentez ce Pass en caisse pour scanner', 375, 982);
+      ctx.fillText('Présentez ce QR Code en caisse', 375, 985);
 
-      // Footer
-      ctx.fillStyle = '#64748B';
-      ctx.font = '18px sans-serif';
-      ctx.fillText(`Lien direct : ${window.location.origin}/card/${card.qr_token}`, 375, 1080);
+      // Utiliser navigator.share avec fichier sur iPhone/Android si supporté pour enregistrer directement dans Photos/Wallet
+      const blob: Blob | null = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+      if (blob && typeof navigator !== 'undefined' && (navigator as any).canShare) {
+        const file = new File([blob], `Pass_Fidelite_${merchant.slug}.png`, { type: 'image/png' });
+        if ((navigator as any).canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: `Pass Fidélité ${merchant.business_name}`,
+            text: `Ma carte de fidélité ${merchant.business_name}`,
+          });
+          setDownloadingPass(false);
+          return;
+        }
+      }
 
       const dataUrl = canvas.toDataURL('image/png');
       const a = document.createElement('a');
       a.href = dataUrl;
-      a.download = `Wallet_Pass_${merchant.slug}_${card.customer_phone}.png`;
+      a.download = `Pass_Wallet_${merchant.slug}_${card.customer_phone}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
     } catch (e) {
-      console.warn('Error generating wallet pass:', e);
+      console.warn('Wallet pass generation warning:', e);
     }
     setDownloadingPass(false);
   };
@@ -240,7 +270,7 @@ export default function CustomerCardPage() {
       setDeferredPrompt(null);
       setWalletModalOpen(false);
     } else {
-      handleDownloadWalletPass();
+      handleSaveAppleWalletPass();
     }
   };
 
@@ -264,7 +294,7 @@ export default function CustomerCardPage() {
           </div>
           <h2 className="text-xl font-extrabold">Retrouver votre Carte de Fidélité</h2>
           <p className="text-xs text-slate-400 leading-relaxed">
-            Ce lien de carte n&apos;est plus actif ou a changé. Scannez le QR code du commerce ou accédez à l&apos;accueil pour retrouver vos tampons avec votre numéro <strong>05 / 06 / 07</strong>.
+            Scannez le QR code du commerce ou cliquez sur Réessayer pour charger vos tampons avec votre numéro <strong>05 / 06 / 07</strong>.
           </p>
           <div className="flex flex-col gap-2 pt-2">
             <button
@@ -290,6 +320,69 @@ export default function CustomerCardPage() {
   const isRewardReady = card.rewards_available > 0 || card.stamps_balance >= program.stamps_required;
   const stampsRemaining = Math.max(0, program.stamps_required - card.stamps_balance);
 
+  // MODE PLEIN ÉCRAN STYLE APPLE WALLET
+  if (appleWalletFullscreen) {
+    return (
+      <div className="fixed inset-0 z-50 bg-black text-white flex flex-col justify-between p-4 overflow-y-auto">
+        <div className="max-w-sm mx-auto w-full flex items-center justify-between py-2">
+          <span className="text-xs font-black uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
+            <Wallet className="w-4 h-4" />
+            <span>Mode Pass Wallet Actif</span>
+          </span>
+          <button
+            type="button"
+            onClick={() => setAppleWalletFullscreen(false)}
+            className="px-3 py-1.5 rounded-full bg-white/15 text-xs font-bold"
+          >
+            Fermer ✕
+          </button>
+        </div>
+
+        <div
+          className="max-w-sm mx-auto w-full rounded-[2rem] p-6 shadow-2xl border-2 border-emerald-500/50 space-y-5 my-auto"
+          style={{ backgroundColor: program.background_color || '#0F172A' }}
+        >
+          <div className="flex items-center justify-between border-b border-white/15 pb-4">
+            <div>
+              <p className="text-[10px] font-black uppercase text-emerald-400">FidelityDZ Pass</p>
+              <h2 className="text-xl font-black">{merchant.business_name}</h2>
+              <p className="text-xs text-slate-300">{card.customer_name} • {card.customer_phone}</p>
+            </div>
+            <div className="text-right">
+              <div className="text-2xl font-black text-emerald-400">
+                {card.stamps_balance}/{program.stamps_required}
+              </div>
+              <span className="text-[10px] text-slate-400 uppercase">Tampons</span>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-3xl p-6 text-slate-950 flex flex-col items-center shadow-2xl">
+            <QRCodeSVG value={card.qr_token} size={200} level="H" includeMargin={false} />
+            <p className="mt-3 font-mono font-black text-base tracking-wider">{card.customer_phone}</p>
+            <span className="text-[11px] font-bold text-emerald-600 mt-0.5">
+              ● Luminosité optimale pour scan en caisse
+            </span>
+          </div>
+
+          <div className="text-center text-xs text-amber-300 font-bold">
+            🎁 Récompense : {isAr ? program.reward_title_ar : program.reward_title_fr}
+          </div>
+        </div>
+
+        <div className="max-w-sm mx-auto w-full pb-4">
+          <button
+            type="button"
+            onClick={handleSaveAppleWalletPass}
+            className="w-full py-3.5 rounded-2xl bg-emerald-500 text-slate-950 font-black text-xs flex items-center justify-center gap-2"
+          >
+            <Download className="w-4 h-4" />
+            <span>Enregistrer cette carte sur mon iPhone / Android</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between pb-10">
       {/* Hidden high-res QR Canvas for Wallet Pass download */}
@@ -297,7 +390,7 @@ export default function CustomerCardPage() {
         <QRCodeCanvas value={card.qr_token} size={360} level="H" includeMargin={false} />
       </div>
 
-      {/* APPLE / GOOGLE WALLET & PWA INSTALL MODAL */}
+      {/* APPLE / GOOGLE WALLET MODAL */}
       {walletModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl text-white">
@@ -307,8 +400,8 @@ export default function CustomerCardPage() {
                   <Wallet className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-base">Apple / Google Wallet & Écran</h3>
-                  <p className="text-[11px] text-slate-400">Gardez votre carte toujours prête en caisse</p>
+                  <h3 className="font-extrabold text-base">Carte Wallet Mobile (iPhone & Android)</h3>
+                  <p className="text-[11px] text-slate-400">Accès rapide sans application à télécharger</p>
                 </div>
               </div>
               <button
@@ -321,25 +414,45 @@ export default function CustomerCardPage() {
             </div>
 
             <div className="space-y-3">
-              {/* Option 1: Download Wallet Pass Card */}
+              {/* Option 1: Open Fullscreen Apple Wallet Pass Mode */}
               <button
                 type="button"
-                onClick={handleDownloadWalletPass}
-                disabled={downloadingPass}
+                onClick={() => {
+                  setWalletModalOpen(false);
+                  setAppleWalletFullscreen(true);
+                }}
                 className="w-full p-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-left flex items-center justify-between transition-all shadow-lg shadow-emerald-500/20"
               >
                 <div className="flex items-center gap-3">
-                  <Download className="w-6 h-6 flex-shrink-0" />
+                  <Maximize2 className="w-6 h-6 flex-shrink-0" />
                   <div>
-                    <div className="text-sm">Télécharger mon Pass Wallet (HD)</div>
+                    <div className="text-sm">Ouvrir en Mode Apple Wallet Plein Écran</div>
                     <div className="text-[11px] font-semibold opacity-80">
-                      Enregistre la carte avec votre QR Code sur votre téléphone (hors-ligne)
+                      Affiche votre Pass plein écran prêt à scanner en caisse
                     </div>
                   </div>
                 </div>
               </button>
 
-              {/* Option 2: Direct Android Install if supported */}
+              {/* Option 2: Save / Share Pass Image directly to iPhone Photos / Android Gallery */}
+              <button
+                type="button"
+                onClick={handleSaveAppleWalletPass}
+                disabled={downloadingPass}
+                className="w-full p-4 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold text-left flex items-center justify-between transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <Download className="w-6 h-6 text-emerald-400 flex-shrink-0" />
+                  <div>
+                    <div className="text-sm">Enregistrer le Pass dans mon Téléphone (Hors-ligne)</div>
+                    <div className="text-[11px] text-slate-400">
+                      Sauvegarde votre carte avec QR Code dans vos Photos / Fichiers
+                    </div>
+                  </div>
+                </div>
+              </button>
+
+              {/* Option 3: Direct Android Install if supported */}
               {deferredPrompt && (
                 <button
                   type="button"
@@ -349,24 +462,22 @@ export default function CustomerCardPage() {
                   <div className="flex items-center gap-3">
                     <Smartphone className="w-6 h-6 text-emerald-400 flex-shrink-0" />
                     <div>
-                      <div className="text-sm">Installer l&apos;icône directe sur l&apos;écran</div>
+                      <div className="text-sm">Installer l&apos;application Carte en 1 clic</div>
                       <div className="text-[11px] text-slate-400">
-                        Ouvre directement votre carte en 1 clic comme une application
+                        Ajoute l&apos;icône directe sur l&apos;écran d&apos;accueil
                       </div>
                     </div>
                   </div>
                 </button>
               )}
 
-              {/* Guide iPhone / Android */}
-              <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2 text-xs text-slate-300">
-                <div className="font-bold text-emerald-400">
-                  📲 Raccourci direct sur l&apos;écran d&apos;accueil (Synchronisé en direct) :
+              {/* Guide iPhone Safari */}
+              <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-1.5 text-xs text-slate-300">
+                <div className="font-bold text-amber-400">
+                  📲 Astuce iPhone (Safari) & Android (Chrome) :
                 </div>
                 <p className="text-[11px] text-slate-400 leading-relaxed">
-                  • <strong>Sur iPhone (Safari) :</strong> appuyez sur le bouton <strong>Partager</strong> en bas puis sur <strong>« Sur l&apos;écran d&apos;accueil »</strong>.<br />
-                  • <strong>Sur Android (Chrome) :</strong> appuyez sur le menu <strong>⋮</strong> en haut à droite puis sur <strong>« Ajouter à l&apos;écran d&apos;accueil »</strong>.<br />
-                  <span className="text-emerald-400 font-semibold">✔ Votre carte se chargera automatiquement depuis le serveur à chaque ouverture !</span>
+                  Pour avoir l&apos;icône de votre carte sur l&apos;écran d&apos;accueil comme une application Wallet : appuyez sur <strong>Partager</strong> (ou <strong>⋮</strong>) dans votre navigateur puis sur <strong>« Sur l&apos;écran d&apos;accueil »</strong>. Vos tampons se mettront à jour en direct !
                 </p>
               </div>
             </div>
@@ -552,7 +663,7 @@ export default function CustomerCardPage() {
 
           {/* Cashier QR Presentation */}
           <div className="mt-6 pt-6 border-t border-white/10 flex flex-col items-center bg-white rounded-2xl p-5 text-slate-900 shadow-xl relative z-10">
-            <QRCodeSVG value={card.qr_token} size={140} level="M" includeMargin={false} />
+            <QRCodeSVG value={card.qr_token} size={145} level="M" includeMargin={false} />
             <p className="mt-3 text-[11px] font-black uppercase tracking-wider text-slate-600">
               {t('show_qr_to_cashier')}
             </p>
@@ -581,7 +692,7 @@ export default function CustomerCardPage() {
             type="button"
           >
             <Wallet className="w-4 h-4" />
-            <span>{isAr ? 'إضافة إلى Wallet / الهاتف' : 'Ajouter à Apple / Google Wallet'}</span>
+            <span>{isAr ? 'فتح / حفظ في Wallet' : 'Pass Apple / Google Wallet'}</span>
           </button>
 
           <button
@@ -590,7 +701,7 @@ export default function CustomerCardPage() {
             type="button"
           >
             <Share2 className="w-4 h-4 text-emerald-400" />
-            <span>{copiedLink ? (isAr ? 'تم نسخ الرابط !' : 'Lien copié !') : (isAr ? 'نسخ رابط بطاقتي' : 'Copier le lien de ma carte')}</span>
+            <span>{copiedLink ? (isAr ? 'تم نسخ الرابط !' : 'Lien copié !') : (isAr ? 'مشاركة بطاقتي' : 'Partager / Copier lien')}</span>
           </button>
         </div>
 
