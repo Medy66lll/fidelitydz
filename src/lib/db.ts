@@ -66,17 +66,21 @@ async function postApiDb(payload: Record<string, unknown>): Promise<any> {
   if (typeof window === 'undefined') return null;
   try {
     const rawKey = localStorage.getItem('fidelitydz_custom_supabase_key');
+    const rawUrl = localStorage.getItem('fidelitydz_custom_supabase_url');
     let customKey = '';
+    let customUrl = '';
     if (rawKey) {
-      try {
-        customKey = JSON.parse(rawKey);
-      } catch {
-        customKey = rawKey;
-      }
+      try { customKey = JSON.parse(rawKey); } catch { customKey = rawKey; }
+    }
+    if (rawUrl) {
+      try { customUrl = JSON.parse(rawUrl); } catch { customUrl = rawUrl; }
     }
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
     if (customKey && customKey.length > 15) {
       headers['x-supabase-key'] = customKey;
+    }
+    if (customUrl && customUrl.startsWith('http')) {
+      headers['x-supabase-url'] = customUrl;
     }
     const res = await fetch('/api/db', {
       method: 'POST',
@@ -127,6 +131,14 @@ class FidelityDatabase {
     this.setStorage('custom_supabase_key', key.trim());
   }
 
+  getCustomSupabaseUrl(): string {
+    return this.getStorage('custom_supabase_url', '');
+  }
+
+  setCustomSupabaseUrl(url: string): void {
+    this.setStorage('custom_supabase_url', url.trim());
+  }
+
   getLastSyncDetails(): { connected: boolean; error_details?: string; keys_configured?: boolean; supabase_url?: string } {
     return this.getStorage('last_sync_details', { connected: false });
   }
@@ -136,9 +148,13 @@ class FidelityDatabase {
     if (typeof window === 'undefined') return false;
     try {
       const customKey = this.getCustomSupabaseKey();
+      const customUrl = this.getCustomSupabaseUrl();
       const headers: Record<string, string> = {};
       if (customKey && customKey.length > 15) {
         headers['x-supabase-key'] = customKey;
+      }
+      if (customUrl && customUrl.startsWith('http')) {
+        headers['x-supabase-url'] = customUrl;
       }
       const res = await fetch('/api/db?type=init', { headers, cache: 'no-store' });
       if (!res.ok) {

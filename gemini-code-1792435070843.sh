@@ -1,3 +1,3 @@
 git add .
-git commit -m "v4: synchronisation cloud supabase PC-mobile, alertes whatsapp et pass wallet"
-git push
+git commit -m "fix: auto derive supabase url from jwt and add url field in admin"
+git push origin main

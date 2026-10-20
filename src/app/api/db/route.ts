@@ -9,6 +9,51 @@ const SUPABASE_URL = rawUrl.startsWith('http') ? rawUrl : 'https://snunueryxejca
 const cleanKey = (k?: string) => (k || '').replace(/^["'\s]+|["'\s]+$/g, '');
 
 let activeRequestKey = '';
+let activeRequestUrl = '';
+
+function getProjectRefFromKey(key: string): string | null {
+  if (!key || !key.startsWith('eyJ')) return null;
+  try {
+    const parts = key.trim().split('.');
+    if (parts.length >= 2) {
+      let b64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+      while (b64.length % 4) b64 += '=';
+      const decoded = JSON.parse(Buffer.from(b64, 'base64').toString('utf8'));
+      if (decoded && typeof decoded.ref === 'string' && decoded.ref.length >= 8) {
+        return decoded.ref.trim().toLowerCase();
+      }
+    }
+  } catch {}
+  return null;
+}
+
+// Détermine l'URL Supabase réelle (en extrayant le projet depuis le token JWT ou l'URL fournie)
+function getEffectiveSupabaseUrl(customUrl?: string, extraKey?: string): string {
+  const cUrl = cleanKey(customUrl || activeRequestUrl);
+  if (cUrl.startsWith('http')) {
+    return cUrl.replace(/\/+$/, '');
+  }
+
+  // 1. Extraire le vrai identifiant de projet depuis le JWT (anon ou service_role)
+  const keys = getCandidateKeys(extraKey);
+  for (const k of keys) {
+    const ref = getProjectRefFromKey(k);
+    if (ref) {
+      return `https://${ref}.supabase.co`;
+    }
+  }
+
+  // 2. Repli sur les variables d'environnement
+  const rawEnv = (
+    process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    process.env.SUPABASE_URL ||
+    'https://snunueryxejcaowlglkb.supabase.co'
+  )
+    .replace(/^["'\s]+|["'\s]+$/g, '')
+    .replace(/\/+$/, '');
+
+  return rawEnv.startsWith('http') ? rawEnv : 'https://snunueryxejcaowlglkb.supabase.co';
+}
 
 // Liste des clés disponibles (teste les clés Vercel ou la clé fournie par l'admin)
 function getCandidateKeys(extraKey?: string): string[] {
@@ -240,15 +285,23 @@ async function sbRequest(
     };
   }
 
+  const baseUrl = getEffectiveSupabaseUrl();
   let lastError = '';
+
   for (const key of keys) {
     try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+      const res = await fetch(`${baseUrl}/rest/v1/${path}`, {
         method,
         headers: buildHeaders(key, method !== 'GET'),
         body: body !== undefined ? JSON.stringify(body) : undefined,
         cache: 'no-store',
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (res.ok) {
         const text = await res.text();
@@ -258,7 +311,10 @@ async function sbRequest(
 
       lastError = await res.text();
     } catch (e: unknown) {
-      lastError = e instanceof Error ? e.message : 'Network error';
+      const err = e as any;
+      const cause = err?.cause?.code || err?.cause?.message || '';
+      const causeStr = cause ? ` (${cause})` : '';
+      lastError = `${err?.message || 'Network error'}${causeStr} [URL testée: ${baseUrl}/rest/v1/${path}]`;
     }
   }
 
@@ -280,6 +336,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const type = searchParams.get('type') || 'init';
   activeRequestKey = req.headers.get('x-supabase-key') || searchParams.get('key') || '';
+  activeRequestUrl = req.headers.get('x-supabase-url') || searchParams.get('url') || '';
 
   if (type === 'merchant_by_slug') {
     const slug = (searchParams.get('slug') || '').toLowerCase().trim();
@@ -351,7 +408,7 @@ export async function GET(req: NextRequest) {
     connected: Array.isArray(mRows),
     error_details: mRes.ok ? null : (mRes.errorText || 'Erreur de connexion Supabase'),
     keys_configured: getCandidateKeys().length > 0,
-    supabase_url: SUPABASE_URL,
+    supabase_url: getEffectiveSupabaseUrl(),
     owner_whatsapp: ownerWhatsapp,
     merchants,
     programs: Array.isArray(pRows) ? pRows : [],
@@ -366,6 +423,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     activeRequestKey = req.headers.get('x-supabase-key') || body.supabase_key || '';
+    activeRequestUrl = req.headers.get('x-supabase-url') || body.supabase_url || '';
     const { action } = body;
 
     if (action === 'save_owner_whatsapp') {

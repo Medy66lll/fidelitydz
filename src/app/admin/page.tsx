@@ -39,6 +39,7 @@ export default function SuperAdminPage() {
   const [loadingSync, setLoadingSync] = useState(false);
   const [supabaseConnected, setSupabaseConnected] = useState(true);
   const [customKeyInput, setCustomKeyInput] = useState('');
+  const [customUrlInput, setCustomUrlInput] = useState('');
   const [testingKey, setTestingKey] = useState(false);
   const [syncErrorDetails, setSyncErrorDetails] = useState('');
   const [sqlCopied, setSqlCopied] = useState(false);
@@ -50,6 +51,7 @@ export default function SuperAdminPage() {
     const details = db.getLastSyncDetails();
     setSyncErrorDetails(details.error_details || '');
     setCustomKeyInput(db.getCustomSupabaseKey());
+    setCustomUrlInput(db.getCustomSupabaseUrl() || details.supabase_url || 'https://snunueryxejcaowlglkb.supabase.co');
     setPayments([...db.getPayments()]);
     setMerchants([...db.getMerchants()]);
     setOwnerWaInput(db.getOwnerWhatsapp());
@@ -60,6 +62,9 @@ export default function SuperAdminPage() {
     e.preventDefault();
     setTestingKey(true);
     db.setCustomSupabaseKey(customKeyInput);
+    if (customUrlInput) {
+      db.setCustomSupabaseUrl(customUrlInput);
+    }
     const connected = await db.syncFromSupabase();
     setSupabaseConnected(connected);
     const details = db.getLastSyncDetails();
@@ -530,30 +535,50 @@ CREATE TABLE IF NOT EXISTS subscription_payments (
               </div>
             )}
 
-            {/* Formulaire de connexion directe par clé */}
+            {/* Formulaire de connexion directe par clé et URL */}
             <form onSubmit={handleSaveCustomKey} className="bg-slate-950/80 p-4 rounded-2xl border border-slate-800 space-y-3">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <label className="text-xs font-bold text-slate-200">
-                  ⚡ Option 1 (Immédiate) : Coller votre clé Supabase (anon ou service_role)
+                  ⚡ Option 1 (Immédiate) : Connecter directement avec votre URL et votre Clé Supabase
                 </label>
                 <span className="text-[11px] text-slate-400">
-                  Copiez la clé sur : Supabase &gt; Project Settings &gt; API
+                  Copiez depuis : Supabase &gt; Project Settings &gt; API
                 </span>
               </div>
-              <div className="flex flex-col sm:flex-row gap-2">
-                <input
-                  type="password"
-                  value={customKeyInput}
-                  onChange={(e) => setCustomKeyInput(e.target.value)}
-                  placeholder="Collez votre clé Supabase (commençant par eyJ...)"
-                  className="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs font-mono text-white focus:border-emerald-400 focus:outline-none"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-300 mb-1">
+                    URL du Projet Supabase (Project URL)
+                  </label>
+                  <input
+                    type="text"
+                    value={customUrlInput}
+                    onChange={(e) => setCustomUrlInput(e.target.value)}
+                    placeholder="https://votre-projet.supabase.co"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs font-mono text-white focus:border-emerald-400 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-300 mb-1">
+                    Clé API (anon ou service_role)
+                  </label>
+                  <input
+                    type="password"
+                    value={customKeyInput}
+                    onChange={(e) => setCustomKeyInput(e.target.value)}
+                    placeholder="eyJhbGciOi..."
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs font-mono text-white focus:border-emerald-400 focus:outline-none"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end pt-1">
                 <button
                   type="submit"
                   disabled={testingKey}
-                  className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs whitespace-nowrap shadow-sm transition"
+                  className="px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs whitespace-nowrap shadow-sm transition flex items-center gap-2"
                 >
-                  {testingKey ? 'Vérification...' : 'Connecter Supabase'}
+                  <RefreshCw className={`w-3.5 h-3.5 ${testingKey ? 'animate-spin' : ''}`} />
+                  <span>{testingKey ? 'Vérification en cours...' : 'Tester & Connecter Supabase'}</span>
                 </button>
               </div>
             </form>
