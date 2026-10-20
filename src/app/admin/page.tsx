@@ -18,6 +18,7 @@ import {
   Lock,
   MessageCircle,
   KeyRound,
+  Trash2,
   AlertTriangle,
   LogOut,
   Save,
@@ -286,6 +287,18 @@ CREATE TABLE IF NOT EXISTS subscription_payments (
     });
     setTimeout(() => loadData(), 400);
     setActionSuccess(`Mot de passe de "${merchant.business_name}" mis à jour sur Supabase.`);
+    setTimeout(() => setActionSuccess(null), 3500);
+  };
+
+  const handleDeleteMerchant = async (merchant: Merchant) => {
+    const ok = window.confirm(
+      `Voulez-vous vraiment supprimer définitivement le commerce "${merchant.business_name}" (${merchant.phone}) ?\n\nAttention : Cette action efface immédiatement ce commerce ainsi que toutes ses cartes clients et offres sur Supabase.`
+    );
+    if (!ok) return;
+
+    await db.deleteMerchant(merchant.id);
+    setTimeout(() => loadData(), 500);
+    setActionSuccess(`Commerce "${merchant.business_name}" supprimé définitivement de Supabase.`);
     setTimeout(() => setActionSuccess(null), 3500);
   };
 
@@ -920,20 +933,32 @@ CREATE TABLE IF NOT EXISTS subscription_payments (
                       </div>
 
                       <div className="flex items-center justify-between text-xs pt-1">
-                        <button
-                          type="button"
-                          onClick={() => handleChangeMerchantPassword(m)}
-                          className="inline-flex items-center gap-1 text-slate-600 hover:text-slate-900 font-bold text-[11px]"
-                        >
-                          <KeyRound className="w-3.5 h-3.5" />
-                          <span>Changer MDP</span>
-                        </button>
+                        <div className="flex items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={() => handleChangeMerchantPassword(m)}
+                            className="inline-flex items-center gap-1 text-slate-600 hover:text-slate-900 font-bold text-[11px]"
+                            title="Modifier le mot de passe du gérant"
+                          >
+                            <KeyRound className="w-3.5 h-3.5" />
+                            <span>MDP</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteMerchant(m)}
+                            className="inline-flex items-center gap-1 text-red-500 hover:text-red-700 font-bold text-[11px] hover:bg-red-50 px-1.5 py-0.5 rounded-lg transition-colors"
+                            title="Supprimer définitivement ce commerce de Supabase"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span>Supprimer</span>
+                          </button>
+                        </div>
                         <Link
                           href={`/join/${m.slug}`}
                           target="_blank"
                           className="font-bold text-emerald-600 hover:text-emerald-700 text-[11px]"
                         >
-                          Voir page QR client →
+                          Page QR client →
                         </Link>
                       </div>
                     </div>

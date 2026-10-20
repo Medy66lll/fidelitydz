@@ -179,36 +179,10 @@ class FidelityDatabase {
       }
 
       const remoteMerchants: Merchant[] = Array.isArray(data.merchants) ? data.merchants : [];
-      const remoteSlugs = new Set(remoteMerchants.map((m) => (m.slug || '').toLowerCase()));
 
-      // Si l'utilisateur avait créé un commerce localement sur ce PC ou téléphone avant la mise à jour, on l'envoie automatiquement sur Supabase !
-      const localMerchants = this.getMerchants().filter((m) => !DEMO_SLUGS.has(m.slug));
-      for (const localM of localMerchants) {
-        if (!remoteSlugs.has((localM.slug || '').toLowerCase())) {
-          const fixedMerchant: Merchant = {
-            ...localM,
-            id: toValidUuid(localM.id),
-          };
-          const localProg = this.getProgramByMerchantId(localM.id);
-          const fixedProg: LoyaltyProgram = {
-            ...localProg,
-            id: toValidUuid(localProg.id),
-            merchant_id: fixedMerchant.id,
-          };
-          const upRes = await postApiDb({
-            action: 'save_merchant',
-            merchant: fixedMerchant,
-            program: fixedProg,
-          });
-          if (upRes && upRes.success && upRes.merchant) {
-            remoteMerchants.unshift(upRes.merchant);
-          } else {
-            remoteMerchants.unshift(fixedMerchant);
-          }
-        }
-      }
-
-      // Remplacer le cache local par la vérité Supabase (sans les faux commerces démo)
+      // Supabase est l'unique source de vérité absolue :
+      // On remplace directement le cache local par les données réelles de Supabase.
+      // Tout commerce supprimé sur Supabase est définitivement effacé du cache et ne revient JAMAIS.
       const cleanRemoteMerchants = remoteMerchants.filter((m) => !DEMO_SLUGS.has(m.slug));
       this.setStorage('merchants', cleanRemoteMerchants);
 
@@ -396,6 +370,31 @@ class FidelityDatabase {
     }
     await this.syncFromSupabase();
     return finalMerchant;
+  }
+
+  async deleteMerchant(merchantId: string): Promise<boolean> {
+    const mUuid = toValidUuid(merchantId);
+    // Supprimer des données locales
+    const merchants = this.getMerchants().filter((m) => m.id !== merchantId && m.id !== mUuid);
+    this.setStorage('merchants', merchants);
+
+    const programs = this.getStorage('programs', initialPrograms).filter((p: any) => p.merchant_id !== merchantId && p.merchant_id !== mUuid);
+    this.setStorage('programs', programs);
+
+    const cards = this.getStorage('customer_cards', initialCustomerCards).filter((c: any) => c.merchant_id !== merchantId && c.merchant_id !== mUuid);
+    this.setStorage('customer_cards', cards);
+    this.setStorage('cards', cards);
+
+    const offers = this.getStorage('offers', initialOffers).filter((o: any) => o.merchant_id !== merchantId && o.merchant_id !== mUuid);
+    this.setStorage('offers', offers);
+
+    const payments = this.getStorage('payments', initialPayments).filter((p: any) => p.merchant_id !== merchantId && p.merchant_id !== mUuid);
+    this.setStorage('payments', payments);
+
+    // Supprimer de Supabase
+    const res = await postApiDb({ action: 'delete_merchant', merchant_id: mUuid });
+    await this.syncFromSupabase();
+    return res?.success ?? true;
   }
 
   // Loyalty Program

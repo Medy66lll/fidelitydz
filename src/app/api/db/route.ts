@@ -650,6 +650,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true });
     }
 
+    if (action === 'delete_merchant') {
+      const merchantId = body.merchant_id || body.id;
+      if (!merchantId) {
+        return NextResponse.json({ success: false, error: 'merchant_id manquant' }, { status: 400 });
+      }
+      const mUuid = ensureUuid(merchantId);
+      // Supprimer en cascade sécurisée (au cas où les FK ne sont pas ON DELETE CASCADE)
+      await Promise.allSettled([
+        sbRequest(`loyalty_transactions?merchant_id=eq.${encodeURIComponent(mUuid)}`, 'DELETE'),
+        sbRequest(`customer_cards?merchant_id=eq.${encodeURIComponent(mUuid)}`, 'DELETE'),
+        sbRequest(`personalized_offers?merchant_id=eq.${encodeURIComponent(mUuid)}`, 'DELETE'),
+        sbRequest(`subscription_payments?merchant_id=eq.${encodeURIComponent(mUuid)}`, 'DELETE'),
+        sbRequest(`loyalty_programs?merchant_id=eq.${encodeURIComponent(mUuid)}`, 'DELETE'),
+      ]);
+      const res = await sbRequest(`merchants?id=eq.${encodeURIComponent(mUuid)}`, 'DELETE');
+      return NextResponse.json({ success: res.ok, error: res.ok ? null : res.errorText });
+    }
+
     return NextResponse.json({ success: false, error: 'Action inconnue' }, { status: 400 });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Erreur serveur';
