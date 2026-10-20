@@ -8,13 +8,21 @@ const SUPABASE_URL = rawUrl.startsWith('http') ? rawUrl : 'https://snunueryxejca
 
 const cleanKey = (k?: string) => (k || '').replace(/^["'\s]+|["'\s]+$/g, '');
 
-// Liste des clés disponibles (on teste d'abord les clés JWT valides commençant par eyJ)
-function getCandidateKeys(): string[] {
+let activeRequestKey = '';
+
+// Liste des clés disponibles (teste les clés Vercel ou la clé fournie par l'admin)
+function getCandidateKeys(extraKey?: string): string[] {
   const kService = cleanKey(process.env.SUPABASE_SERVICE_ROLE_KEY);
   const kAnon = cleanKey(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-  const list = [kService, kAnon].filter((k) => k.length > 15);
-  // Prioriser les vrais JWT (commençant par eyJ)
+  const kAnon2 = cleanKey(process.env.SUPABASE_ANON_KEY);
+  const kKey = cleanKey(process.env.SUPABASE_KEY);
+  const kPub = cleanKey(process.env.NEXT_PUBLIC_SUPABASE_KEY);
+  const kExtra = cleanKey(extraKey || activeRequestKey);
+  const list = [kExtra, kService, kAnon, kAnon2, kKey, kPub].filter((k) => k.length > 15);
+  // Prioriser la clé manuelle si fournie, puis les vrais JWT (commençant par eyJ)
   list.sort((a, b) => {
+    if (kExtra && a === kExtra) return -1;
+    if (kExtra && b === kExtra) return 1;
     const aJwt = a.startsWith('eyJ') ? 0 : 1;
     const bJwt = b.startsWith('eyJ') ? 0 : 1;
     return aJwt - bJwt;
@@ -225,7 +233,11 @@ async function sbRequest(
 ): Promise<{ ok: boolean; data: any; errorText?: string }> {
   const keys = getCandidateKeys();
   if (keys.length === 0) {
-    return { ok: false, data: null, errorText: 'Aucune clé Supabase configurée sur Vercel.' };
+    return {
+      ok: false,
+      data: null,
+      errorText: 'Aucune clé Supabase configurée (NEXT_PUBLIC_SUPABASE_ANON_KEY ou SUPABASE_SERVICE_ROLE_KEY). Veuillez la renseigner sur Vercel ou dans le panneau Super-Admin.'
+    };
   }
 
   let lastError = '';
@@ -267,6 +279,7 @@ async function sbUpsert(table: string, payload: unknown, onConflict = 'id') {
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const type = searchParams.get('type') || 'init';
+  activeRequestKey = req.headers.get('x-supabase-key') || searchParams.get('key') || '';
 
   if (type === 'merchant_by_slug') {
     const slug = (searchParams.get('slug') || '').toLowerCase().trim();
@@ -311,8 +324,8 @@ export async function GET(req: NextRequest) {
   }
 
   // Synchronisation complète de toutes les tables Supabase
-  const [mRows, pRows, cRows, oRows, payRows, txRows, settingsRows] = await Promise.all([
-    sbSelect('merchants', 'order=created_at.desc'),
+  const [mRes, pRows, cRows, oRows, payRows, txRows, settingsRows] = await Promise.all([
+    sbRequest('merchants?order=created_at.desc', 'GET'),
     sbSelect('loyalty_programs', ''),
     sbSelect('customer_cards', 'order=last_visit_at.desc'),
     sbSelect('personalized_offers', 'order=created_at.desc'),
@@ -321,6 +334,7 @@ export async function GET(req: NextRequest) {
     sbSelect('platform_settings', 'id=eq.1'),
   ]);
 
+  const mRows = mRes.ok && Array.isArray(mRes.data) ? mRes.data : null;
   const merchants = Array.isArray(mRows) ? mRows.map(unpackMerchantFromDb) : [];
   const payments = Array.isArray(payRows) ? payRows.map(unpackPaymentFromDb) : [];
   const settings = Array.isArray(settingsRows) && settingsRows.length > 0 ? settingsRows[0] : null;
@@ -335,6 +349,9 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({
     connected: Array.isArray(mRows),
+    error_details: mRes.ok ? null : (mRes.errorText || 'Erreur de connexion Supabase'),
+    keys_configured: getCandidateKeys().length > 0,
+    supabase_url: SUPABASE_URL,
     owner_whatsapp: ownerWhatsapp,
     merchants,
     programs: Array.isArray(pRows) ? pRows : [],
@@ -348,6 +365,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+    activeRequestKey = req.headers.get('x-supabase-key') || body.supabase_key || '';
     const { action } = body;
 
     if (action === 'save_owner_whatsapp') {

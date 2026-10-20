@@ -21,6 +21,7 @@ import {
   AlertTriangle,
   LogOut,
   Save,
+  Copy,
 } from 'lucide-react';
 
 export default function SuperAdminPage() {
@@ -37,15 +38,147 @@ export default function SuperAdminPage() {
   const [previewReceipt, setPreviewReceipt] = useState<SubscriptionPayment | null>(null);
   const [loadingSync, setLoadingSync] = useState(false);
   const [supabaseConnected, setSupabaseConnected] = useState(true);
+  const [customKeyInput, setCustomKeyInput] = useState('');
+  const [testingKey, setTestingKey] = useState(false);
+  const [syncErrorDetails, setSyncErrorDetails] = useState('');
+  const [sqlCopied, setSqlCopied] = useState(false);
 
   const loadData = async () => {
     setLoadingSync(true);
     const connected = await db.syncFromSupabase();
     setSupabaseConnected(connected);
+    const details = db.getLastSyncDetails();
+    setSyncErrorDetails(details.error_details || '');
+    setCustomKeyInput(db.getCustomSupabaseKey());
     setPayments([...db.getPayments()]);
     setMerchants([...db.getMerchants()]);
     setOwnerWaInput(db.getOwnerWhatsapp());
     setLoadingSync(false);
+  };
+
+  const handleSaveCustomKey = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setTestingKey(true);
+    db.setCustomSupabaseKey(customKeyInput);
+    const connected = await db.syncFromSupabase();
+    setSupabaseConnected(connected);
+    const details = db.getLastSyncDetails();
+    setSyncErrorDetails(details.error_details || '');
+    setTestingKey(false);
+    if (connected) {
+      setActionSuccess('🎉 Supabase Connecté avec succès ! PC et Mobile sont maintenant 100% synchronisés.');
+      confetti({ particleCount: 50, spread: 60 });
+    } else {
+      setActionSuccess(null);
+    }
+  };
+
+  const handleCopySql = () => {
+    const sql = `-- FidelityDZ - Script SQL complet pour Supabase
+CREATE TABLE IF NOT EXISTS platform_settings (
+  id INT PRIMARY KEY DEFAULT 1,
+  platform_name TEXT DEFAULT 'FidelityDZ',
+  plan_price_dzd INT DEFAULT 3900,
+  trial_days INT DEFAULT 14,
+  owner_account_name TEXT DEFAULT 'KAZI TANI MOHAMMED EL MEHDI',
+  owner_rip_number TEXT DEFAULT '00799999004172668994',
+  owner_ccp_number TEXT DEFAULT '41726689',
+  owner_ccp_key TEXT DEFAULT '87',
+  owner_whatsapp TEXT DEFAULT '213550000000',
+  admin_password TEXT DEFAULT 'FidelityDZ2026!',
+  chargily_mode TEXT DEFAULT 'test'
+);
+
+INSERT INTO platform_settings (id, platform_name, plan_price_dzd, trial_days, owner_account_name, owner_rip_number, owner_ccp_number, owner_ccp_key, owner_whatsapp, admin_password, chargily_mode)
+VALUES (1, 'FidelityDZ', 3900, 14, 'KAZI TANI MOHAMMED EL MEHDI', '00799999004172668994', '41726689', '87', '213550000000', 'FidelityDZ2026!', 'test')
+ON CONFLICT (id) DO NOTHING;
+
+CREATE TABLE IF NOT EXISTS merchants (
+  id TEXT PRIMARY KEY,
+  owner_user_id TEXT,
+  business_name TEXT NOT NULL,
+  slug TEXT UNIQUE NOT NULL,
+  category TEXT NOT NULL,
+  wilaya TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  email TEXT,
+  password TEXT NOT NULL DEFAULT '123456',
+  logo_url TEXT,
+  subscription_status TEXT DEFAULT 'TRIAL',
+  subscription_ends_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '14 days'),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS loyalty_programs (
+  id TEXT PRIMARY KEY,
+  merchant_id TEXT REFERENCES merchants(id) ON DELETE CASCADE,
+  program_type TEXT DEFAULT 'STAMPS',
+  stamps_required INT DEFAULT 10,
+  points_per_100dzd INT DEFAULT 1,
+  reward_title_fr TEXT NOT NULL DEFAULT '10ème Offert',
+  reward_title_ar TEXT NOT NULL DEFAULT 'الهدية العاشرة مجاناً',
+  welcome_bonus INT DEFAULT 1,
+  primary_color TEXT DEFAULT '#10B981',
+  background_color TEXT DEFAULT '#0F172A'
+);
+
+CREATE TABLE IF NOT EXISTS customer_cards (
+  id TEXT PRIMARY KEY,
+  merchant_id TEXT REFERENCES merchants(id) ON DELETE CASCADE,
+  program_id TEXT REFERENCES loyalty_programs(id) ON DELETE CASCADE,
+  customer_phone TEXT NOT NULL,
+  customer_name TEXT NOT NULL,
+  qr_token TEXT UNIQUE NOT NULL,
+  stamps_balance INT DEFAULT 1,
+  points_balance INT DEFAULT 0,
+  rewards_available INT DEFAULT 0,
+  total_visits INT DEFAULT 1,
+  last_visit_at TIMESTAMPTZ DEFAULT NOW(),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(merchant_id, customer_phone)
+);
+
+CREATE TABLE IF NOT EXISTS loyalty_transactions (
+  id TEXT PRIMARY KEY,
+  card_id TEXT REFERENCES customer_cards(id) ON DELETE CASCADE,
+  merchant_id TEXT REFERENCES merchants(id) ON DELETE CASCADE,
+  performed_by TEXT DEFAULT 'Caissier',
+  action_type TEXT NOT NULL,
+  delta_value INT NOT NULL,
+  purchase_amount_dzd INT DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS personalized_offers (
+  id TEXT PRIMARY KEY,
+  merchant_id TEXT REFERENCES merchants(id) ON DELETE CASCADE,
+  title_fr TEXT NOT NULL,
+  title_ar TEXT,
+  description_fr TEXT,
+  description_ar TEXT,
+  target_segment TEXT DEFAULT 'ALL',
+  valid_until TIMESTAMPTZ,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS subscription_payments (
+  id TEXT PRIMARY KEY,
+  merchant_id TEXT REFERENCES merchants(id) ON DELETE CASCADE,
+  amount_dzd INT DEFAULT 3900,
+  payment_method TEXT NOT NULL,
+  transaction_reference TEXT,
+  receipt_url TEXT,
+  chargily_checkout_id TEXT,
+  status TEXT DEFAULT 'PENDING',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  reviewed_at TIMESTAMPTZ
+);`;
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(sql);
+      setSqlCopied(true);
+      setTimeout(() => setSqlCopied(false), 3000);
+    }
   };
 
   useEffect(() => {
@@ -358,6 +491,109 @@ export default function SuperAdminPage() {
           <div className="bg-emerald-50 border border-emerald-300 text-emerald-800 p-4 rounded-2xl flex items-center gap-2 text-sm font-bold shadow-sm">
             <CheckCircle2 className="w-5 h-5 text-emerald-600" />
             <span>{actionSuccess}</span>
+          </div>
+        )}
+
+        {/* PANNEAU DIAGNOSTIC ET CONNEXION RAPIDE SUPABASE */}
+        {!supabaseConnected && (
+          <div className="bg-gradient-to-br from-slate-900 via-slate-850 to-slate-900 text-white rounded-3xl p-6 border-2 border-red-500/60 shadow-xl space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-red-500/20 text-red-400 border border-red-500/40 flex items-center justify-center text-xl font-bold">
+                  ⚠️
+                </div>
+                <div>
+                  <h2 className="text-lg font-extrabold text-white flex items-center gap-2">
+                    <span>Supabase Non Connecté — Guide de Résolution Rapide</span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500 text-white">Action Requise</span>
+                  </h2>
+                  <p className="text-xs text-slate-300">
+                    URL Supabase configurée : <code className="text-emerald-400 font-mono">https://snunueryxejcaowlglkb.supabase.co</code>
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={loadData}
+                disabled={loadingSync}
+                className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white inline-flex items-center gap-1.5 border border-slate-700 transition"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${loadingSync ? 'animate-spin' : ''}`} />
+                <span>Tester la connexion</span>
+              </button>
+            </div>
+
+            {syncErrorDetails && (
+              <div className="p-3.5 rounded-2xl bg-red-950/40 border border-red-500/40 text-xs space-y-1">
+                <div className="font-bold text-red-200">Message renvoyé par l&apos;API :</div>
+                <div className="font-mono text-red-300 break-all">{syncErrorDetails}</div>
+              </div>
+            )}
+
+            {/* Formulaire de connexion directe par clé */}
+            <form onSubmit={handleSaveCustomKey} className="bg-slate-950/80 p-4 rounded-2xl border border-slate-800 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <label className="text-xs font-bold text-slate-200">
+                  ⚡ Option 1 (Immédiate) : Coller votre clé Supabase (anon ou service_role)
+                </label>
+                <span className="text-[11px] text-slate-400">
+                  Copiez la clé sur : Supabase &gt; Project Settings &gt; API
+                </span>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="password"
+                  value={customKeyInput}
+                  onChange={(e) => setCustomKeyInput(e.target.value)}
+                  placeholder="Collez votre clé Supabase (commençant par eyJ...)"
+                  className="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs font-mono text-white focus:border-emerald-400 focus:outline-none"
+                />
+                <button
+                  type="submit"
+                  disabled={testingKey}
+                  className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs whitespace-nowrap shadow-sm transition"
+                >
+                  {testingKey ? 'Vérification...' : 'Connecter Supabase'}
+                </button>
+              </div>
+            </form>
+
+            {/* Explications des 2 étapes Vercel & Supabase */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+              <div className="bg-slate-950/60 p-4 rounded-2xl border border-slate-800 space-y-2">
+                <div className="font-bold text-emerald-400 flex items-center gap-1.5">
+                  <span>Option 2 : Variables Vercel (Définitif pour tous)</span>
+                </div>
+                <p className="text-slate-300 text-[11px] leading-relaxed">
+                  Dans votre projet Vercel (<strong>Settings &gt; Environment Variables</strong>), ajoutez :
+                </p>
+                <div className="space-y-1 font-mono text-[10px] text-slate-300 bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+                  <div>NEXT_PUBLIC_SUPABASE_URL = https://snunueryxejcaowlglkb.supabase.co</div>
+                  <div>NEXT_PUBLIC_SUPABASE_ANON_KEY = [Votre clé anon]</div>
+                  <div>SUPABASE_SERVICE_ROLE_KEY = [Votre clé service_role]</div>
+                </div>
+                <p className="text-[10px] text-amber-300">
+                  Puis cliquez sur <strong>Deployments &gt; ⋮ &gt; Redeploy</strong>.
+                </p>
+              </div>
+
+              <div className="bg-slate-950/60 p-4 rounded-2xl border border-slate-800 space-y-2">
+                <div className="font-bold text-amber-400 flex items-center gap-1.5">
+                  <span>Création des Tables SQL dans Supabase</span>
+                </div>
+                <p className="text-slate-300 text-[11px] leading-relaxed">
+                  Si vos tables ne sont pas encore créées, allez dans <strong>SQL Editor</strong> sur Supabase et exécutez le script du projet :
+                </p>
+                <button
+                  type="button"
+                  onClick={handleCopySql}
+                  className="w-full py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-emerald-300 border border-slate-700 flex items-center justify-center gap-1.5 transition"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>{sqlCopied ? '✔ Script SQL Copié dans le presse-papiers !' : 'Copier le script SQL (schema.sql)'}</span>
+                </button>
+              </div>
+            </div>
           </div>
         )}
 

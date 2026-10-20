@@ -65,9 +65,22 @@ export const initialPayments: SubscriptionPayment[] = [];
 async function postApiDb(payload: Record<string, unknown>): Promise<any> {
   if (typeof window === 'undefined') return null;
   try {
+    const rawKey = localStorage.getItem('fidelitydz_custom_supabase_key');
+    let customKey = '';
+    if (rawKey) {
+      try {
+        customKey = JSON.parse(rawKey);
+      } catch {
+        customKey = rawKey;
+      }
+    }
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (customKey && customKey.length > 15) {
+      headers['x-supabase-key'] = customKey;
+    }
     const res = await fetch('/api/db', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify(payload),
       cache: 'no-store',
     });
@@ -106,13 +119,43 @@ class FidelityDatabase {
     await postApiDb({ action: 'save_owner_whatsapp', owner_whatsapp: formatted });
   }
 
+  getCustomSupabaseKey(): string {
+    return this.getStorage('custom_supabase_key', '');
+  }
+
+  setCustomSupabaseKey(key: string): void {
+    this.setStorage('custom_supabase_key', key.trim());
+  }
+
+  getLastSyncDetails(): { connected: boolean; error_details?: string; keys_configured?: boolean; supabase_url?: string } {
+    return this.getStorage('last_sync_details', { connected: false });
+  }
+
   // Synchronisation bidirectionnelle intelligente avec Supabase
   async syncFromSupabase(): Promise<boolean> {
     if (typeof window === 'undefined') return false;
     try {
-      const res = await fetch('/api/db?type=init', { cache: 'no-store' });
-      if (!res.ok) return false;
+      const customKey = this.getCustomSupabaseKey();
+      const headers: Record<string, string> = {};
+      if (customKey && customKey.length > 15) {
+        headers['x-supabase-key'] = customKey;
+      }
+      const res = await fetch('/api/db?type=init', { headers, cache: 'no-store' });
+      if (!res.ok) {
+        this.setStorage('last_sync_details', {
+          connected: false,
+          error_details: 'Erreur HTTP ' + res.status + ': ' + res.statusText,
+        });
+        return false;
+      }
       const data = await res.json();
+      this.setStorage('last_sync_details', {
+        connected: !!data.connected,
+        error_details: data.error_details,
+        keys_configured: data.keys_configured,
+        supabase_url: data.supabase_url,
+      });
+
       if (!data.connected) return false;
 
       if (data.owner_whatsapp) {
