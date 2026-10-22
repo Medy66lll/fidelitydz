@@ -141,9 +141,15 @@ export default function CustomerCardPage() {
     const updatedCard = { ...card };
     if (program?.program_type === 'STAMPS') {
       updatedCard.stamps_balance += bonus;
+      const req = program.stamps_required || 10;
+      if (updatedCard.stamps_balance >= req) {
+        updatedCard.rewards_available = (updatedCard.rewards_available || 0) + Math.floor(updatedCard.stamps_balance / req);
+        updatedCard.stamps_balance = updatedCard.stamps_balance % req;
+      }
     } else {
       updatedCard.points_balance += bonus * 10;
     }
+    updatedCard.last_visit_at = new Date().toISOString();
     db.saveCard(updatedCard);
     setCard(updatedCard);
     setGoogleReviewClaimed(true);

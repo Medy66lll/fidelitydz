@@ -476,7 +476,7 @@ class FidelityDatabase {
     return all;
   }
 
-  private saveCardLocalOnly(card: CustomerCard): void {
+  saveCardLocalOnly(card: CustomerCard): void {
     const cards = this.getCustomerCards();
     const idx = cards.findIndex((c) => c.id === card.id || c.qr_token === card.qr_token);
     if (idx >= 0) {
@@ -485,6 +485,20 @@ class FidelityDatabase {
       cards.unshift(card);
     }
     this.setStorage('customer_cards', cards);
+  }
+
+  saveCard(card: CustomerCard, transaction?: LoyaltyTransaction): void {
+    const fixed: CustomerCard = {
+      ...card,
+      id: toValidUuid(card.id),
+      merchant_id: toValidUuid(card.merchant_id),
+      program_id: toValidUuid(card.program_id),
+    };
+    this.saveCardLocalOnly(fixed);
+    if (transaction) {
+      this.addTransaction(transaction);
+    }
+    postApiDb({ action: 'save_card', card: fixed, transaction });
   }
 
   getCardByToken(token: string): CustomerCard | undefined {
