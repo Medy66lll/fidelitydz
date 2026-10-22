@@ -50,6 +50,8 @@ export const Schemas = {
     phone: string;
     email: string;
     password?: string;
+    address?: string;
+    logo_url?: string;
   }> {
     if (!raw || typeof raw !== 'object') {
       return { success: false, error: 'Données commerçant invalides.' };
