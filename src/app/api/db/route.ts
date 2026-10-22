@@ -123,16 +123,26 @@ function ensureUuid(val?: string): string {
   return `${full.slice(0, 8)}-${full.slice(8, 12)}-4${full.slice(13, 16)}-8${full.slice(17, 20)}-${full.slice(20, 32)}`;
 }
 
-// Encodage/Décodage transparent du mot de passe et email dans logo_url pour compatibilité avec le 1er schéma SQL
+// Encodage/Décodage transparent des données étendues (mot de passe, email, adresse, réseaux sociaux, avis Google) dans logo_url
 function packMerchantForDb(m: any) {
   const pass = String(m.password || '123456').trim();
   const email = String(m.email || '').trim();
+  const address = String(m.address || '').trim();
+  const socials = {
+    ig: m.social_instagram || '',
+    fb: m.social_facebook || '',
+    tk: m.social_tiktok || '',
+    gm: m.social_maps || '',
+    gr_en: Boolean(m.google_review_reward_enabled),
+    gr_bn: Number(m.google_review_reward_bonus || 1),
+  };
   let rawLogo = String(m.logo_url || '').trim();
   if (rawLogo.startsWith('__AUTH__:')) {
     const parts = rawLogo.split(':::');
     rawLogo = parts[1] || '';
   }
-  const packedLogo = `__AUTH__:${encodeURIComponent(pass)}:${encodeURIComponent(email)}:::${rawLogo}`;
+  const metaObj = { pass, email, address, socials };
+  const packedLogo = `__AUTH__:${encodeURIComponent(JSON.stringify(metaObj))}:::${rawLogo}`;
 
   return {
     id: ensureUuid(m.id || m.slug),
@@ -152,21 +162,53 @@ function unpackMerchantFromDb(row: any) {
   if (!row) return null;
   let password = row.password || '123456';
   let email = row.email || '';
+  let address = row.address || '';
   let logo_url = row.logo_url || '';
+  let social_instagram = row.social_instagram || '';
+  let social_facebook = row.social_facebook || '';
+  let social_tiktok = row.social_tiktok || '';
+  let social_maps = row.social_maps || '';
+  let google_review_reward_enabled = Boolean(row.google_review_reward_enabled);
+  let google_review_reward_bonus = Number(row.google_review_reward_bonus || 1);
 
   if (typeof logo_url === 'string' && logo_url.startsWith('__AUTH__:')) {
     const [authPart, realLogo] = logo_url.split(':::');
-    const segs = authPart.split(':');
-    if (segs[1]) password = decodeURIComponent(segs[1]);
-    if (segs[2]) email = decodeURIComponent(segs[2]);
     logo_url = realLogo || '';
+    const content = authPart.slice(9); // remove '__AUTH__:'
+    try {
+      if (content.startsWith('%7B') || content.startsWith('{')) {
+        const parsed = JSON.parse(decodeURIComponent(content));
+        if (parsed.pass) password = parsed.pass;
+        if (parsed.email) email = parsed.email;
+        if (parsed.address) address = parsed.address;
+        if (parsed.socials) {
+          social_instagram = parsed.socials.ig || '';
+          social_facebook = parsed.socials.fb || '';
+          social_tiktok = parsed.socials.tk || '';
+          social_maps = parsed.socials.gm || '';
+          google_review_reward_enabled = Boolean(parsed.socials.gr_en);
+          google_review_reward_bonus = Number(parsed.socials.gr_bn || 1);
+        }
+      } else {
+        const segs = authPart.split(':');
+        if (segs[1]) password = decodeURIComponent(segs[1]);
+        if (segs[2]) email = decodeURIComponent(segs[2]);
+      }
+    } catch {}
   }
 
   return {
     ...row,
     password,
     email,
+    address,
     logo_url,
+    social_instagram,
+    social_facebook,
+    social_tiktok,
+    social_maps,
+    google_review_reward_enabled,
+    google_review_reward_bonus,
   };
 }
 
@@ -543,8 +585,8 @@ export async function POST(req: NextRequest) {
 
     if (action === 'login_admin') {
       const { password } = body;
-      const expectedAdminPass = process.env.ADMIN_PASSWORD || process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'FidelityDZ2026!';
-      if (password === expectedAdminPass || password === 'admin2026') {
+      const expectedAdminPass = process.env.ADMIN_PASSWORD || process.env.ADMIN_SECRET_PASSWORD || 'FidelityDZ2026!';
+      if (password === expectedAdminPass) {
         return NextResponse.json({ success: true });
       }
       return NextResponse.json({ success: false, error: 'Mot de passe Super-Admin incorrect.' }, { status: 401 });

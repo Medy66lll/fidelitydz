@@ -36,6 +36,12 @@ export default function LoyaltyStudioPage() {
   const [logoUrl, setLogoUrl] = useState('');
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [logoError, setLogoError] = useState('');
+  const [socialInstagram, setSocialInstagram] = useState('');
+  const [socialFacebook, setSocialFacebook] = useState('');
+  const [socialTiktok, setSocialTiktok] = useState('');
+  const [socialMaps, setSocialMaps] = useState('');
+  const [googleReviewRewardEnabled, setGoogleReviewRewardEnabled] = useState(false);
+  const [googleReviewRewardBonus, setGoogleReviewRewardBonus] = useState(1);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -53,6 +59,12 @@ export default function LoyaltyStudioPage() {
     }
     if (currentMerchant) {
       setLogoUrl(currentMerchant.logo_url || '');
+      setSocialInstagram(currentMerchant.social_instagram || '');
+      setSocialFacebook(currentMerchant.social_facebook || '');
+      setSocialTiktok(currentMerchant.social_tiktok || '');
+      setSocialMaps(currentMerchant.social_maps || currentMerchant.address || '');
+      setGoogleReviewRewardEnabled(Boolean(currentMerchant.google_review_reward_enabled));
+      setGoogleReviewRewardBonus(Number(currentMerchant.google_review_reward_bonus || 1));
     }
   }, [program, currentMerchant]);
 
@@ -132,7 +144,7 @@ export default function LoyaltyStudioPage() {
     e.preventDefault();
     if (!currentMerchant || !program) return;
 
-    // Mise à jour du programme
+    // Mise à jour du programme avec réseaux sociaux et avis Google
     const updatedProg: LoyaltyProgram = {
       ...program,
       program_type: programType,
@@ -143,13 +155,25 @@ export default function LoyaltyStudioPage() {
       welcome_bonus: welcomeBonus,
       primary_color: primaryColor,
       background_color: backgroundColor,
+      social_instagram: socialInstagram.trim(),
+      social_facebook: socialFacebook.trim(),
+      social_tiktok: socialTiktok.trim(),
+      social_maps: socialMaps.trim(),
+      google_review_reward_enabled: googleReviewRewardEnabled,
+      google_review_reward_bonus: Number(googleReviewRewardBonus) || 1,
     };
     updateProgram(updatedProg);
 
-    // Mise à jour du commerçant (avec son logo)
+    // Mise à jour du commerçant (avec son logo, réseaux sociaux et localisation)
     const updatedMerchant: Merchant = {
       ...currentMerchant,
       logo_url: logoUrl,
+      social_instagram: socialInstagram.trim(),
+      social_facebook: socialFacebook.trim(),
+      social_tiktok: socialTiktok.trim(),
+      social_maps: socialMaps.trim(),
+      google_review_reward_enabled: googleReviewRewardEnabled,
+      google_review_reward_bonus: Number(googleReviewRewardBonus) || 1,
     };
     updateMerchant(updatedMerchant);
 
@@ -431,6 +455,118 @@ export default function LoyaltyStudioPage() {
                   <span>{preset.name}</span>
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* Réseaux Sociaux & Avis Google Maps Récompensé */}
+          <div className="space-y-4 pt-4 border-t border-slate-100">
+            <div>
+              <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
+                {isAr ? 'روابط التواصل الاجتماعي وخرائط جوجل' : 'Réseaux Sociaux & Localisation du Commerce'}
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                {isAr ? 'تظهر هذه الروابط كأزرار مباشرة في أسفل بطاقة الزبون الرقمية.' : 'Ces boutons s\'affichent directement sur la carte de fidélité de vos clients.'}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-700 block">Instagram (Lien ou @pseudo)</label>
+                <input
+                  type="text"
+                  placeholder="https://instagram.com/mon_commerce"
+                  value={socialInstagram}
+                  onChange={(e) => setSocialInstagram(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-700 block">Facebook (Lien de la page)</label>
+                <input
+                  type="text"
+                  placeholder="https://facebook.com/mon_commerce"
+                  value={socialFacebook}
+                  onChange={(e) => setSocialFacebook(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-700 block">TikTok (Lien ou @pseudo)</label>
+                <input
+                  type="text"
+                  placeholder="https://tiktok.com/@mon_commerce"
+                  value={socialTiktok}
+                  onChange={(e) => setSocialTiktok(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-700 block">Google Maps (Lien itinéraire ou fiche)</label>
+                <input
+                  type="text"
+                  placeholder="https://maps.app.goo.gl/..."
+                  value={socialMaps}
+                  onChange={(e) => setSocialMaps(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs outline-none focus:border-emerald-500"
+                />
+              </div>
+            </div>
+
+            {/* Récompense Avis Google Maps */}
+            <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">⭐</span>
+                  <div>
+                    <span className="text-xs font-bold text-slate-900 block">
+                      {isAr ? 'مكافأة الزبائن عند تقييم المحل على Google Maps' : 'Récompenser les avis Google Maps (+ Tampons / Points)'}
+                    </span>
+                    <span className="text-[11px] text-slate-600 block">
+                      {isAr ? 'يحصل الزبون على مكافأة فورية في بطاقته عند الضغط على زر تقييم محلك.' : 'Le client clique pour noter votre établissement et reçoit un bonus instantané sur sa carte.'}
+                    </span>
+                  </div>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={googleReviewRewardEnabled}
+                  onChange={(e) => setGoogleReviewRewardEnabled(e.target.checked)}
+                  className="w-4 h-4 accent-emerald-500 cursor-pointer"
+                />
+              </div>
+
+              {googleReviewRewardEnabled && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-amber-200/60">
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-slate-700 block">
+                      Bonus offert au client
+                    </label>
+                    <select
+                      value={googleReviewRewardBonus}
+                      onChange={(e) => setGoogleReviewRewardBonus(Number(e.target.value))}
+                      className="w-full bg-white border border-amber-300 rounded-xl py-2 px-3 text-xs font-bold outline-none"
+                    >
+                      <option value={1}>+1 Tampon / +10 Points offert</option>
+                      <option value={2}>+2 Tampons / +20 Points offerts</option>
+                      <option value={3}>+3 Tampons / +30 Points offerts</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-slate-700 block">
+                      Lien direct pour laisser un avis Google Maps *
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Ex: https://g.page/r/.../review"
+                      value={socialMaps}
+                      onChange={(e) => setSocialMaps(e.target.value)}
+                      className="w-full bg-white border border-amber-300 rounded-xl py-2 px-3 text-xs outline-none font-mono"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

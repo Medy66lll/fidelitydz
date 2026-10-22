@@ -25,7 +25,7 @@ export const algerianPhoneSchema = z
     message: 'Numéro de téléphone algérien invalide (format requis : 05, 06 ou 07 suivi de 8 chiffres).',
   });
 
-// Schéma Inscription / Édition Commerçant
+// Schéma Inscription / Édition Commerçant (Email et Localisation et Logo obligatoires/supportés)
 export const merchantSchema = z.object({
   business_name: z
     .string()
@@ -37,17 +37,28 @@ export const merchantSchema = z.object({
     .max(60)
     .regex(REGEX_SLUG, 'Identifiant URL invalide (lettres minuscules, chiffres et tirets uniquement).'),
   category: z.string().min(2).max(60),
-  wilaya: z.string().min(2).max(60),
+  wilaya: z.string().min(2).max(80),
+  address: z.string().max(200).optional(),
   phone: algerianPhoneSchema,
-  email: z.string().email('Email invalide.').or(z.literal('')).optional(),
-  password: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caractères.').optional(),
+  email: z.string().min(5, "L'adresse email est obligatoire.").email('Format d\'email invalide.'),
+  password: z.string().min(4, 'Le mot de passe doit contenir au moins 4 caractères.').optional(),
+  logo_url: z.string().optional(),
+  social_instagram: z.string().optional(),
+  social_facebook: z.string().optional(),
+  social_tiktok: z.string().optional(),
+  social_maps: z.string().optional(),
+  google_review_reward_enabled: z.boolean().optional(),
+  google_review_reward_bonus: z.number().optional(),
 });
 
-// Schéma Client (05/06/07 + Prénom)
+// Schéma Client (05/06/07 + Prénom STRICTEMENT OBLIGATOIRE)
 export const customerCardSchema = z.object({
   merchant_id: z.string().min(1, 'Identifiant commerçant manquant.'),
   customer_phone: algerianPhoneSchema,
-  customer_name: z.string().min(1).max(60).default('Client Fidèle'),
+  customer_name: z
+    .string()
+    .min(2, 'Le prénom est obligatoire (au moins 2 caractères).')
+    .max(60, 'Le prénom ne peut pas dépasser 60 caractères.'),
 });
 
 // Schéma Programme de Fidélité
@@ -61,6 +72,12 @@ export const loyaltyProgramSchema = z.object({
   welcome_bonus: z.number().int().min(0).max(10).default(1),
   primary_color: z.string().regex(REGEX_HEX_COLOR).default('#10B981'),
   background_color: z.string().regex(REGEX_HEX_COLOR).default('#0F172A'),
+  social_instagram: z.string().optional(),
+  social_facebook: z.string().optional(),
+  social_tiktok: z.string().optional(),
+  social_maps: z.string().optional(),
+  google_review_reward_enabled: z.boolean().optional(),
+  google_review_reward_bonus: z.number().optional(),
 });
 
 // Schéma Offre Promotionnelle Ciblée
@@ -77,6 +94,7 @@ export const subscriptionPaymentSchema = z.object({
   transaction_reference: z.string().min(3).max(120),
   amount_dzd: z.number().int().min(100).max(1000000).default(3900),
   payment_method: z.enum(['BARIDIMOB', 'CCP_RECEIPT', 'CHARGILY_PAY']).default('BARIDIMOB'),
+  receipt_url: z.string().min(5, 'La capture d\'écran du reçu est obligatoire.'),
 });
 
 // Règle 2 : Protection XSS (Échappement de toute chaîne utilisateur)
@@ -131,7 +149,7 @@ export function validateReceiptFile(file: { name: string; type: string; size: nu
   valid: boolean;
   error?: string;
 } {
-  if (!file) return { valid: false, error: 'Aucun fichier sélectionné.' };
+  if (!file) return { valid: false, error: 'La capture d\'écran du reçu est obligatoire.' };
   if (file.size > MAX_UPLOAD_SIZE) {
     return { valid: false, error: 'Le fichier dépasse la taille maximale de 5 Mo.' };
   }

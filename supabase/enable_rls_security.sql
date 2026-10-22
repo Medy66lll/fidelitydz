@@ -1,9 +1,27 @@
 -- ====================================================================
--- FidelityDZ v9 - Script de Sécurité RLS (Row Level Security sur 100% des tables)
+-- FidelityDZ v12 - Script de Sécurité RLS (Row Level Security sur 100% des tables)
+-- + Migration Colonnes (69 Wilayas, Localisation, Logo, Réseaux Sociaux & Avis Google)
 -- À exécuter dans Supabase > SQL Editor > New Query > Run
 -- ====================================================================
 
--- 1. ACTIVER RLS SUR 100% DES TABLES (Sans exception - Règle 5)
+-- 1. MIGRATION DES COLONNES ADDITIONNELLES (Non-destructive)
+ALTER TABLE IF EXISTS merchants ADD COLUMN IF NOT EXISTS address TEXT;
+ALTER TABLE IF EXISTS merchants ADD COLUMN IF NOT EXISTS logo_url TEXT;
+ALTER TABLE IF EXISTS merchants ADD COLUMN IF NOT EXISTS social_instagram TEXT;
+ALTER TABLE IF EXISTS merchants ADD COLUMN IF NOT EXISTS social_facebook TEXT;
+ALTER TABLE IF EXISTS merchants ADD COLUMN IF NOT EXISTS social_tiktok TEXT;
+ALTER TABLE IF EXISTS merchants ADD COLUMN IF NOT EXISTS social_maps TEXT;
+ALTER TABLE IF EXISTS merchants ADD COLUMN IF NOT EXISTS google_review_reward_enabled BOOLEAN DEFAULT FALSE;
+ALTER TABLE IF EXISTS merchants ADD COLUMN IF NOT EXISTS google_review_reward_bonus INT DEFAULT 1;
+
+ALTER TABLE IF EXISTS loyalty_programs ADD COLUMN IF NOT EXISTS social_instagram TEXT;
+ALTER TABLE IF EXISTS loyalty_programs ADD COLUMN IF NOT EXISTS social_facebook TEXT;
+ALTER TABLE IF EXISTS loyalty_programs ADD COLUMN IF NOT EXISTS social_tiktok TEXT;
+ALTER TABLE IF EXISTS loyalty_programs ADD COLUMN IF NOT EXISTS social_maps TEXT;
+ALTER TABLE IF EXISTS loyalty_programs ADD COLUMN IF NOT EXISTS google_review_reward_enabled BOOLEAN DEFAULT FALSE;
+ALTER TABLE IF EXISTS loyalty_programs ADD COLUMN IF NOT EXISTS google_review_reward_bonus INT DEFAULT 1;
+
+-- 2. ACTIVER RLS SUR 100% DES TABLES (Sans exception - Règle 5)
 ALTER TABLE IF EXISTS platform_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS merchants ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS loyalty_programs ENABLE ROW LEVEL SECURITY;
@@ -12,7 +30,7 @@ ALTER TABLE IF EXISTS loyalty_transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS personalized_offers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS subscription_payments ENABLE ROW LEVEL SECURITY;
 
--- 2. NETTOYAGE DES ANCIENNES POLICIES SI ELLES EXISTAIENT
+-- 3. NETTOYAGE DES ANCIENNES POLICIES SI ELLES EXISTAIENT
 DROP POLICY IF EXISTS "platform_settings_select_policy" ON platform_settings;
 DROP POLICY IF EXISTS "platform_settings_write_policy" ON platform_settings;
 
@@ -45,7 +63,7 @@ DROP POLICY IF EXISTS "subscription_payments_insert_policy" ON subscription_paym
 DROP POLICY IF EXISTS "subscription_payments_update_policy" ON subscription_payments;
 DROP POLICY IF EXISTS "subscription_payments_delete_policy" ON subscription_payments;
 
--- 3. POLICIES EXPLICITES POUR CHAQUE OPÉRATION (SELECT, INSERT, UPDATE, DELETE)
+-- 4. POLICIES EXPLICITES POUR CHAQUE OPÉRATION (SELECT, INSERT, UPDATE, DELETE)
 
 -- Table: platform_settings
 CREATE POLICY "platform_settings_select_policy" ON platform_settings FOR SELECT USING (true);

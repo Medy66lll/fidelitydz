@@ -763,7 +763,7 @@ CREATE POLICY "subscription_payments_all" ON subscription_payments FOR ALL USING
                       <div>
                         <h3 className="font-extrabold text-sm text-slate-900">{m.business_name}</h3>
                         <p className="text-xs text-slate-500">
-                          {m.wilaya} • Tél : <strong className="font-mono text-slate-800">{m.phone}</strong> • MDP : <strong className="font-mono text-slate-800">{m.password || '123456'}</strong>
+                          {m.wilaya}{m.address ?  : ''} • Tél : <strong className="font-mono text-slate-800">{m.phone}</strong> • MDP : <strong className="font-mono text-slate-800">{m.password || '123456'}</strong>
                         </p>
                         <p className="text-[11px] text-slate-400">
                           Inscrit le : {new Date(m.created_at).toLocaleDateString('fr-DZ')} • Fin essai : {new Date(m.subscription_ends_at).toLocaleDateString('fr-DZ')}

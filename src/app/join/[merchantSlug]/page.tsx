@@ -80,10 +80,27 @@ export default function CustomerJoinPage() {
       return;
     }
 
+    if (!name.trim()) {
+      setError(
+        isAr
+          ? 'يرجى إدخال اسمك الأول (إجباري لإنشاء بطاقة الولاء).'
+          : 'Votre prénom est obligatoire pour créer ou retrouver votre carte de fidélité.'
+      );
+      return;
+    }
+    if (name.trim().length < 2) {
+      setError(
+        isAr
+          ? 'يجب أن يحتوي الاسم على حرفين على الأقل.'
+          : 'Le prénom doit contenir au moins 2 caractères.'
+      );
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const finalName = name.trim() || existingCustomer?.customer_name || `Client ${cleaned.slice(-4)}`;
+      const finalName = name.trim();
       const result = await db.getOrCreateCustomerCardAsync(merchantSlug, cleaned, finalName);
       if (typeof window !== 'undefined') {
         localStorage.setItem('fidelitydz_last_card_token', result.card.qr_token);
@@ -189,10 +206,10 @@ export default function CustomerJoinPage() {
               <p className="text-[11px] text-slate-500">{t('phone_hint')}</p>
             </div>
 
-            {/* Name Input */}
+            {/* Name Input - OBLIGATOIRE */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-300 block">
-                {t('customer_name_label')} <span className="text-slate-500 font-normal">(optionnel si déjà inscrit)</span>
+                {t('customer_name_label')} <span className="text-emerald-400">* (Obligatoire)</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 rtl:left-auto rtl:right-0 pl-3 rtl:pr-3 flex items-center pointer-events-none text-slate-500">
@@ -200,6 +217,7 @@ export default function CustomerJoinPage() {
                 </div>
                 <input
                   type="text"
+                  required
                   placeholder={isAr ? 'مثال: أمين أو سارة' : 'Ex: Amine ou Sara'}
                   value={name}
                   onChange={(e) => setName(e.target.value)}

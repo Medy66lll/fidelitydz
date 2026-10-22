@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
 import { useMerchant } from '@/context/MerchantContext';
 import LanguageToggle from '@/components/LanguageToggle';
 import { db, generateUuid } from '@/lib/db';
-import { Merchant } from '@/lib/types';
+import { Merchant, ALGERIAN_WILAYAS_69 } from '@/lib/types';
 import {
   QrCode,
   Sparkles,
@@ -17,6 +17,10 @@ import {
   Phone,
   CheckCircle2,
   MessageCircle,
+  MapPin,
+  Upload,
+  Image as ImageIcon,
+  Trash2,
 } from 'lucide-react';
 
 export default function RegisterMerchantPage() {
@@ -28,13 +32,18 @@ export default function RegisterMerchantPage() {
   const [businessName, setBusinessName] = useState('');
   const [slug, setSlug] = useState('');
   const [category, setCategory] = useState('Café, Salon de thé & Pâtisserie');
-  const [wilaya, setWilaya] = useState('16 - Alger');
+  const [wilaya, setWilaya] = useState('16 - Alger (الجزائر العاصمة)');
+  const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [logoUrl, setLogoUrl] = useState('');
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [createdMerchant, setCreatedMerchant] = useState<Merchant | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleNameChange = (val: string) => {
     setBusinessName(val);
@@ -47,9 +56,62 @@ export default function RegisterMerchantPage() {
     setSlug(generated);
   };
 
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const allowed = ['image/png', 'image/jpeg', 'image/webp', 'image/jpg'];
+    if (!allowed.includes(file.type.toLowerCase())) {
+      setError(isAr ? 'صيغة غير مدعومة. يرجى اختيار صورة PNG أو JPG أو WEBP.' : 'Format non supporté. Utilisez PNG, JPG ou WEBP.');
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setError(isAr ? 'حجم الصورة كبير جداً (الحد الأقصى 2 ميغابايت).' : 'Image trop volumineuse (max 2 Mo).');
+      return;
+    }
+
+    setIsUploadingLogo(true);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const maxDim = 256;
+        let width = img.width;
+        let height = img.height;
+        if (width > height) {
+          if (width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          }
+        } else {
+          if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressed = canvas.toDataURL('image/png', 0.9);
+          setLogoUrl(compressed);
+        }
+        setIsUploadingLogo(false);
+      };
+      img.onerror = () => {
+        setError('Impossible de lire le fichier image.');
+        setIsUploadingLogo(false);
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
   const getWhatsAppAdminNotificationUrl = (m: Merchant) => {
     const ownerWa = db.getOwnerWhatsapp() || '213550000000';
-    const text = `🆕 *NOUVEAU COMMERCE INSCRIT (ESSAI 14 JOURS)*\n\n🏪 *Commerce :* ${m.business_name}\n📍 *Wilaya :* ${m.wilaya}\n📂 *Catégorie :* ${m.category}\n📞 *Tél Gérant (Login) :* ${m.phone}\n🔑 *Mot de passe :* ${m.password}\n🔗 *Lien QR Client :* ${typeof window !== 'undefined' ? window.location.origin : 'https://fidelitydz.vercel.app'}/join/${m.slug}\n⏳ *Fin essai 14j :* ${new Date(m.subscription_ends_at).toLocaleDateString('fr-DZ')}`;
+    const text = `🆕 *NOUVEAU COMMERCE INSCRIT (ESSAI 14 JOURS)*\n\n🏪 *Commerce :* ${m.business_name}\n📍 *Wilaya :* ${m.wilaya}\n📍 *Localisation :* ${m.address || 'Non renseignée'}\n📧 *Email :* ${m.email}\n📂 *Catégorie :* ${m.category}\n📞 *Tél Gérant (Login) :* ${m.phone}\n🔑 *Mot de passe :* ${m.password}\n🔗 *Lien QR Client :* ${typeof window !== 'undefined' ? window.location.origin : 'https://fidelitydz.vercel.app'}/join/${m.slug}\n⏳ *Fin essai 14j :* ${new Date(m.subscription_ends_at).toLocaleDateString('fr-DZ')}`;
     return `https://wa.me/${ownerWa}?text=${encodeURIComponent(text)}`;
   };
 
@@ -65,6 +127,16 @@ export default function RegisterMerchantPage() {
     const cleanedPhone = phone.replace(/\s+/g, '');
     if (!/^(0)(5|6|7)[0-9]{8}$/.test(cleanedPhone)) {
       setError('Veuillez saisir un numéro de mobile algérien valide (05, 06 ou 07 sur 10 chiffres).');
+      return;
+    }
+
+    if (!email.trim() || !email.includes('@')) {
+      setError("L'adresse email est obligatoire pour votre compte commerce.");
+      return;
+    }
+
+    if (!address.trim()) {
+      setError('Veuillez indiquer la localisation ou adresse de votre commerce.');
       return;
     }
 
@@ -87,9 +159,11 @@ export default function RegisterMerchantPage() {
       slug: finalSlug,
       category,
       wilaya,
+      address: address.trim(),
       phone: cleanedPhone,
-      email: email.trim() || undefined,
+      email: email.trim(),
       password: password.trim(),
+      logo_url: logoUrl || undefined,
       subscription_status: 'TRIAL',
       subscription_ends_at: new Date(Date.now() + 14 * 86400000).toISOString(),
       created_at: new Date().toISOString(),
@@ -108,16 +182,6 @@ export default function RegisterMerchantPage() {
     }
   };
 
-  const algerianWilayas = [
-    '01 - Adrar', '02 - Chlef', '03 - Laghouat', '04 - Oum El Bouaghi', '05 - Batna',
-    '06 - Béjaïa', '07 - Biskra', '08 - Béchar', '09 - Blida', '10 - Bouira',
-    '13 - Tlemcen', '14 - Tiaret', '15 - Tizi Ouzou', '16 - Alger', '17 - Djelfa',
-    '18 - Jijel', '19 - Sétif', '20 - Saïda', '21 - Skikda', '22 - Sidi Bel Abbès',
-    '23 - Annaba', '24 - Guelma', '25 - Constantine', '26 - Médéa', '27 - Mostaganem',
-    "28 - M'Sila", '29 - Mascara', '30 - Ouargla', '31 - Oran', '34 - Bordj Bou Arréridj',
-    '35 - Boumerdès', '42 - Tipaza', '45 - Naâma',
-  ];
-
   const categories = [
     'Café, Salon de thé & Pâtisserie',
     'Restauration rapide, Pizza & Fast-food',
@@ -134,19 +198,19 @@ export default function RegisterMerchantPage() {
       <header className="bg-white border-b border-slate-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center font-black">
+            <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-white font-extrabold text-sm">
               <QrCode className="w-5 h-5" />
             </div>
-            <span className="font-extrabold text-xl tracking-tight text-slate-900">
+            <span className="font-extrabold text-lg tracking-tight text-slate-900">
               Fidelity<span className="text-emerald-500">DZ</span>
             </span>
           </Link>
           <div className="flex items-center gap-3">
             <Link
               href="/login"
-              className="text-xs font-bold text-slate-700 hover:text-emerald-600 px-3 py-1.5 rounded-lg border border-slate-200"
+              className="text-xs font-bold text-slate-600 hover:text-slate-900 transition-colors"
             >
-              Se connecter
+              Déjà inscrit ? Connexion
             </Link>
             <LanguageToggle />
           </div>
@@ -174,6 +238,8 @@ export default function RegisterMerchantPage() {
             <div className="bg-slate-900 text-white p-4 rounded-2xl text-left text-xs space-y-1.5 font-mono">
               <div className="text-emerald-400 font-bold uppercase">Vos identifiants de connexion (PC & Téléphone) :</div>
               <div>Téléphone (Identifiant) : <strong>{createdMerchant.phone}</strong></div>
+              <div>Email : <strong>{createdMerchant.email}</strong></div>
+              <div>Localisation : <strong>{createdMerchant.address || createdMerchant.wilaya}</strong></div>
               <div>Mot de passe : <strong>{createdMerchant.password}</strong></div>
               <div>Lien QR Client : <strong>/join/{createdMerchant.slug}</strong></div>
               <div>Fin de l&apos;essai 14j : <strong>{new Date(createdMerchant.subscription_ends_at).toLocaleDateString('fr-DZ')}</strong></div>
@@ -222,36 +288,84 @@ export default function RegisterMerchantPage() {
             )}
 
             <form onSubmit={handleRegister} className="space-y-4">
+              {/* Logo Upload Option */}
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl flex items-center gap-3">
+                <div className="w-14 h-14 rounded-xl border border-slate-300 bg-white flex items-center justify-center overflow-hidden flex-shrink-0">
+                  {logoUrl ? (
+                    <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
+                  ) : (
+                    <ImageIcon className="w-6 h-6 text-slate-400" />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <div className="text-xs font-bold text-slate-800">
+                    Logo du commerce (Optionnel)
+                  </div>
+                  <p className="text-[11px] text-slate-500">Visible sur la carte de vos clients</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleLogoUpload}
+                      accept="image/png,image/jpeg,image/webp"
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploadingLogo}
+                      className="px-2.5 py-1 bg-slate-900 text-white rounded-lg text-[11px] font-bold hover:bg-slate-800 flex items-center gap-1"
+                    >
+                      <Upload className="w-3 h-3 text-emerald-400" />
+                      <span>{isUploadingLogo ? '...' : logoUrl ? 'Changer' : 'Téléverser'}</span>
+                    </button>
+                    {logoUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setLogoUrl('')}
+                        className="px-2 py-1 bg-red-50 text-red-600 rounded-lg text-[11px] font-bold border border-red-200 hover:bg-red-100 flex items-center gap-1"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                        <span>Effacer</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Nom du Commerce */}
               <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-700 block">
-                  Nom de votre établissement <span className="text-emerald-500">*</span>
+                  Nom du Commerce / Enseigne <span className="text-emerald-500">*</span>
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="Ex: Pizzeria El Djazair ou Café El Bahdja"
+                  placeholder="Ex: Pâtisserie La Rose d'Alger"
                   value={businessName}
                   onChange={(e) => handleNameChange(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3.5 text-sm outline-none focus:border-emerald-500 focus:bg-white transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold"
                 />
               </div>
 
+              {/* URL Slug */}
               <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-700 block">
-                  Lien QR Code unique de votre commerce
+                  Lien QR pour vos clients (Slug) <span className="text-emerald-500">*</span>
                 </label>
-                <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-500 font-mono">
-                  <span>/join/</span>
+                <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono">
+                  <span className="text-slate-400">fidelitydz.com/join/</span>
                   <input
                     type="text"
                     required
                     value={slug}
                     onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-                    className="flex-1 bg-transparent text-slate-900 font-bold outline-none pl-1"
+                    className="bg-transparent font-bold text-emerald-600 outline-none flex-1 ml-1"
                   />
                 </div>
               </div>
 
+              {/* Catégorie & 69 Wilayas */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-700 block">Catégorie</label>
@@ -267,19 +381,40 @@ export default function RegisterMerchantPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700 block">Wilaya</label>
+                  <label className="text-xs font-bold text-slate-700 block">
+                    Wilaya (69 Wilayas d&apos;Algérie) <span className="text-emerald-500">*</span>
+                  </label>
                   <select
                     value={wilaya}
                     onChange={(e) => setWilaya(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-semibold outline-none focus:border-emerald-500"
                   >
-                    {algerianWilayas.map((w) => (
+                    {ALGERIAN_WILAYAS_69.map((w) => (
                       <option key={w} value={w}>{w}</option>
                     ))}
                   </select>
                 </div>
               </div>
 
+              {/* Localisation / Adresse */}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-700 block">
+                  Localisation / Adresse ou Lien Google Maps <span className="text-emerald-500">*</span>
+                </label>
+                <div className="relative">
+                  <MapPin className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ex: 14 Rue Didouche Mourad, Alger Centre (ou lien Google Maps)"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-9 pr-3 text-sm outline-none focus:border-emerald-500 focus:bg-white"
+                  />
+                </div>
+              </div>
+
+              {/* Téléphone & Mot de Passe */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-700 block">
@@ -316,14 +451,16 @@ export default function RegisterMerchantPage() {
                 </div>
               </div>
 
+              {/* Email Obligatoire */}
               <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-700 block">
-                  Email (Optionnel)
+                  Email du Commerce <span className="text-emerald-500">* (Obligatoire)</span>
                 </label>
                 <div className="relative">
                   <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="email"
+                    required
                     placeholder="contact@moncommerce.dz"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}

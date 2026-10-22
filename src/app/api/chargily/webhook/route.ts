@@ -7,8 +7,8 @@ export async function POST(req: NextRequest) {
     const signature = req.headers.get('signature') || req.headers.get('x-chargily-signature') || '';
     const secretKey = process.env.CHARGILY_SECRET_KEY || '';
 
-    // Vérification de la signature HMAC-SHA256
-    if (signature) {
+    // Vérification stricte de la signature HMAC-SHA256 (Anti-usurpation Webhook)
+    if (signature && secretKey) {
       const computedSignature = crypto
         .createHmac('sha256', secretKey)
         .update(rawBody)
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
 
       if (computedSignature !== signature) {
         console.warn('Signature Chargily non valide.');
-        // En mode test / sandbox, on logue l'avertissement
+        return NextResponse.json({ success: false, error: 'Signature webhook invalide.' }, { status: 403 });
       }
     }
 

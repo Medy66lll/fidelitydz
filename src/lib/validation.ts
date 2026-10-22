@@ -74,17 +74,21 @@ export const Schemas = {
     }
 
     const category = sanitizeString(raw.category || 'Commerce', 60);
-    const wilaya = sanitizeString(raw.wilaya || '16 - Alger', 60);
+    const wilaya = sanitizeString(raw.wilaya || '16 - Alger', 80);
+    const address = sanitizeString(raw.address || '', 200);
     const email = sanitizeString(raw.email || '', 120);
+    if (!email || !email.includes('@')) {
+      return { success: false, error: 'Une adresse email valide est obligatoire pour votre compte commerce.' };
+    }
     const password = typeof raw.password === 'string' ? raw.password.trim().slice(0, 100) : undefined;
 
-    if (password !== undefined && password.length > 0 && password.length < 6) {
-      return { success: false, error: 'Le mot de passe doit contenir au moins 6 caractères.' };
+    if (password !== undefined && password.length > 0 && password.length < 4) {
+      return { success: false, error: 'Le mot de passe doit contenir au moins 4 caractères.' };
     }
 
     return {
       success: true,
-      data: { business_name, slug, category, wilaya, phone, email, password },
+      data: { business_name, slug, category, wilaya, phone, email, password, address, logo_url: raw.logo_url },
     };
   },
 
@@ -110,7 +114,13 @@ export const Schemas = {
       };
     }
 
-    const customer_name = sanitizeString(raw.customer_name || raw.name || 'Client Fidèle', 60) || 'Client Fidèle';
+    const customer_name = sanitizeString(raw.customer_name || raw.name || '', 60);
+    if (!customer_name || customer_name.length < 2) {
+      return {
+        success: false,
+        error: 'Le prénom du client est obligatoire (minimum 2 caractères).',
+      };
+    }
 
     return {
       success: true,

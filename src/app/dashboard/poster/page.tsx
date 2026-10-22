@@ -52,7 +52,7 @@ export default function CounterPosterPage() {
     doc.text(bName, 105, 32, { align: 'center' });
     doc.setFontSize(10);
     doc.setTextColor(16, 185, 129);
-    doc.text(`${currentMerchant?.wilaya || 'Algerie'} - Sans application a installer`, 105, 41, { align: 'center' });
+    doc.text(`${currentMerchant?.wilaya || 'Algerie'}${currentMerchant?.address ? ` - ${currentMerchant.address}` : ''} - Sans application a installer`, 105, 41, { align: 'center' });
 
     // Main Announcement
     doc.setTextColor(15, 23, 42);
@@ -168,7 +168,7 @@ export default function CounterPosterPage() {
               {currentMerchant?.business_name}
             </h3>
             <p className="text-xs text-slate-400">
-              {currentMerchant?.wilaya}
+              {currentMerchant?.wilaya}{currentMerchant?.address ? ` • 📍 ${currentMerchant.address}` : ''}
             </p>
           </div>
 

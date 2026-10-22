@@ -25,6 +25,9 @@ import {
   X,
   RefreshCw,
   Maximize2,
+  MapPin,
+  ExternalLink,
+  Star,
 } from 'lucide-react';
 
 export default function CustomerCardPage() {
@@ -48,6 +51,7 @@ export default function CustomerCardPage() {
   const [appleWalletFullscreen, setAppleWalletFullscreen] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [downloadingPass, setDownloadingPass] = useState(false);
+  const [googleReviewClaimed, setGoogleReviewClaimed] = useState(false);
   const hiddenQrRef = useRef<HTMLDivElement>(null);
 
   const loadCardLive = async (showSpinner = false) => {
@@ -69,6 +73,8 @@ export default function CustomerCardPage() {
 
       if (typeof window !== 'undefined') {
         localStorage.setItem('fidelitydz_last_card_token', res.card.qr_token);
+        const claimed = localStorage.getItem(`fidelitydz_gr_claimed_${res.card.id}`) === 'true';
+        setGoogleReviewClaimed(claimed);
       }
 
       if (showSpinner && (res.card.rewards_available > 0 || res.card.stamps_balance >= res.program.stamps_required)) {
@@ -125,6 +131,31 @@ export default function CustomerCardPage() {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     };
   }, [card, merchant]);
+
+  const handleClaimGoogleReview = () => {
+    if (!card || !merchant || googleReviewClaimed) return;
+    const mapsLink = merchant.social_maps || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(merchant.business_name + ' ' + merchant.wilaya)}`;
+    window.open(mapsLink, '_blank');
+
+    const bonus = Number(merchant.google_review_reward_bonus || 1);
+    const updatedCard = { ...card };
+    if (program?.program_type === 'STAMPS') {
+      updatedCard.stamps_balance += bonus;
+    } else {
+      updatedCard.points_balance += bonus * 10;
+    }
+    db.saveCard(updatedCard);
+    setCard(updatedCard);
+    setGoogleReviewClaimed(true);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(`fidelitydz_gr_claimed_${card.id}`, 'true');
+    }
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+    });
+  };
 
   const handleShare = () => {
     if (typeof window !== 'undefined') {
@@ -729,6 +760,115 @@ export default function CustomerCardPage() {
             <span>{copiedLink ? (isAr ? 'تم نسخ الرابط !' : 'Lien copié !') : (isAr ? 'مشاركة بطاقتي' : 'Partager / Copier lien')}</span>
           </button>
         </div>
+
+        {/* Google Maps Review Reward Banner */}
+        {merchant.google_review_reward_enabled && (merchant.social_maps || merchant.address) && (
+          <div className="bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-transparent border border-amber-500/40 rounded-2xl p-4 text-white space-y-3 shadow-lg">
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-black text-lg flex-shrink-0">
+                ⭐
+              </div>
+              <div>
+                <h4 className="text-xs font-black uppercase text-amber-300 tracking-wider">
+                  {isAr ? 'مكافأة تقييم المتجر على Google Maps' : 'Cadeau Fidélité : Avis Google Maps'}
+                </h4>
+                <p className="text-xs text-slate-200 mt-0.5 leading-relaxed">
+                  {isAr
+                    ? `اترك تقييماً على خرائط جوجل واكسب +${merchant.google_review_reward_bonus || 1} أختام/نقاط مجاناً !`
+                    : `Laissez un avis 5 étoiles sur Google Maps et recevez +${merchant.google_review_reward_bonus || 1} ${program.program_type === 'STAMPS' ? 'tampon(s)' : 'points'} cadeau(x) sur votre carte !`}
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleClaimGoogleReview}
+              disabled={googleReviewClaimed}
+              className={`w-full py-3 px-4 rounded-xl text-xs font-black flex items-center justify-center gap-2 transition-all shadow-md ${
+                googleReviewClaimed
+                  ? 'bg-emerald-950/90 border border-emerald-600 text-emerald-300 cursor-default'
+                  : 'bg-amber-400 hover:bg-amber-300 text-slate-950 hover:scale-[1.01]'
+              }`}
+            >
+              {googleReviewClaimed ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span>{isAr ? '✔ تم استلام هدية التقييم بنجاح' : '✔ Cadeau avis Google déjà crédité sur votre carte !'}</span>
+                </>
+              ) : (
+                <>
+                  <Star className="w-4 h-4 fill-current" />
+                  <span>{isAr ? 'تقييم المتجر واستلام الهدية فوراً' : 'Déposer mon avis Google & Recevoir mon cadeau'}</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </>
+              )}
+            </button>
+          </div>
+        )}
+
+        {/* Social Networks & Google Maps Location Links */}
+        {(merchant.social_instagram || merchant.social_facebook || merchant.social_tiktok || merchant.social_maps || merchant.address) && (
+          <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 space-y-2.5 shadow-md">
+            <div className="flex items-center justify-between text-xs font-bold text-slate-300">
+              <span>{isAr ? 'تابعنا على مواقع التواصل' : 'Suivre le commerce'}</span>
+              {merchant.address && (
+                <span className="text-[11px] text-slate-400 font-normal truncate max-w-[200px]">
+                  📍 {merchant.address}
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              {merchant.social_instagram && (
+                <a
+                  href={merchant.social_instagram.startsWith('http') ? merchant.social_instagram : `https://instagram.com/${merchant.social_instagram.replace('@', '')}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-600/30 to-pink-600/30 border border-pink-500/40 text-pink-300 hover:text-white text-xs font-bold flex items-center gap-1.5 transition"
+                >
+                  <span>📸 Instagram</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
+
+              {merchant.social_facebook && (
+                <a
+                  href={merchant.social_facebook.startsWith('http') ? merchant.social_facebook : `https://facebook.com/${merchant.social_facebook}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1.5 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-300 hover:text-white text-xs font-bold flex items-center gap-1.5 transition"
+                >
+                  <span>👍 Facebook</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
+
+              {merchant.social_tiktok && (
+                <a
+                  href={merchant.social_tiktok.startsWith('http') ? merchant.social_tiktok : `https://tiktok.com/@${merchant.social_tiktok.replace('@', '')}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 hover:text-white text-xs font-bold flex items-center gap-1.5 transition"
+                >
+                  <span>🎵 TikTok</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
+
+              {(merchant.social_maps || merchant.address) && (
+                <a
+                  href={merchant.social_maps && merchant.social_maps.startsWith('http') ? merchant.social_maps : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(merchant.business_name + ' ' + (merchant.address || merchant.wilaya))}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 hover:text-white text-xs font-bold flex items-center gap-1.5 transition"
+                >
+                  <span>📍 Itinéraire Google Maps</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Personalized Offers Section */}
         {offers.length > 0 && (

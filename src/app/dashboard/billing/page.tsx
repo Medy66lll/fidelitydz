@@ -133,6 +133,11 @@ function BillingContent() {
       return;
     }
 
+    if (!receiptDataUrl) {
+      setFormError("La capture d'écran du reçu BaridiMob ou la photo du reçu CCP est obligatoire.");
+      return;
+    }
+
     setSubmittingReceipt(true);
 
     const newPayment: SubscriptionPayment = {
@@ -392,11 +397,12 @@ function BillingContent() {
 
               <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-700 block">
-                  Capture d&apos;écran du reçu BaridiMob ou photo du reçu CCP
+                  Capture d&apos;écran du reçu BaridiMob ou photo du reçu CCP <span className="text-emerald-500">* (Obligatoire)</span>
                 </label>
                 <input
                   type="file"
                   accept="image/*"
+                  required
                   onChange={handleReceiptFileChange}
                   className="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
                 />
@@ -419,8 +425,8 @@ function BillingContent() {
                 <Send className="w-4 h-4 text-emerald-400" />
                 <span>
                   {submittingReceipt
-                    ? 'Envoi vers Supabase & Admin...'
-                    : 'Envoyer ma preuve de paiement (Admin + Supabase + WhatsApp)'}
+                    ? 'Envoi en cours...'
+                    : 'Envoyer ma preuve de paiement'}
                 </span>
               </button>
             </form>
