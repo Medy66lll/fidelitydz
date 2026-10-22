@@ -3,24 +3,11 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { z } from 'zod';
 import { useLanguage } from '@/context/LanguageContext';
 import { useMerchant } from '@/context/MerchantContext';
 import LanguageToggle from '@/components/LanguageToggle';
 import { db } from '@/lib/db';
 import { QrCode, Lock, Phone, ArrowRight, Store, Sparkles, ShieldCheck } from 'lucide-react';
-
-const loginInputSchema = z.object({
-  identifier: z
-    .string()
-    .trim()
-    .min(3, { message: 'Identifiant trop court (minimum 3 caractères).' })
-    .max(100, { message: 'Identifiant trop long.' }),
-  password: z
-    .string()
-    .min(1, { message: 'Veuillez renseigner votre mot de passe.' })
-    .max(128, { message: 'Mot de passe trop long.' }),
-});
 
 export default function MerchantLoginPage() {
   const { language } = useLanguage();
@@ -36,17 +23,6 @@ export default function MerchantLoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
-    const validation = loginInputSchema.safeParse({ identifier, password });
-    if (!validation.success) {
-      setError(
-        isAr
-          ? 'يرجى التأكد من ملء جميع الحقول بشكل صحيح'
-          : validation.error.issues[0]?.message || 'Données saisies invalides.'
-      );
-      return;
-    }
-
     setLoading(true);
 
     const res = await db.loginMerchantAsync(identifier, password);

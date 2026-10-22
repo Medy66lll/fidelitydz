@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { Schemas, sanitizeString, checkRateLimit } from '@/lib/validation';
 
-const rawUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://snunueryxejcaowlglkb.supabase.co')
+const rawUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://aiaobpbouxzlfrfhludn.supabase.co')
   .replace(/^["'\s]+|["'\s]+$/g, '')
   .replace(/\/+$/, '');
 
-const SUPABASE_URL = rawUrl.startsWith('http') ? rawUrl : 'https://snunueryxejcaowlglkb.supabase.co';
+const SUPABASE_URL = rawUrl.startsWith('http') ? rawUrl : 'https://aiaobpbouxzlfrfhludn.supabase.co';
 
 const cleanKey = (k?: string) => (k || '').replace(/^["'\s]+|["'\s]+$/g, '');
 
@@ -47,12 +48,12 @@ function getEffectiveSupabaseUrl(customUrl?: string, extraKey?: string): string 
   const rawEnv = (
     process.env.NEXT_PUBLIC_SUPABASE_URL ||
     process.env.SUPABASE_URL ||
-    'https://snunueryxejcaowlglkb.supabase.co'
+    'https://aiaobpbouxzlfrfhludn.supabase.co'
   )
     .replace(/^["'\s]+|["'\s]+$/g, '')
     .replace(/\/+$/, '');
 
-  return rawEnv.startsWith('http') ? rawEnv : 'https://snunueryxejcaowlglkb.supabase.co';
+  return rawEnv.startsWith('http') ? rawEnv : 'https://aiaobpbouxzlfrfhludn.supabase.co';
 }
 
 // Liste des clés disponibles (teste les clés Vercel ou la clé fournie par l'admin)
@@ -135,7 +136,7 @@ function packMerchantForDb(m: any) {
 
   return {
     id: ensureUuid(m.id || m.slug),
-    business_name: m.business_name,
+    business_name: sanitizeString(m.business_name, 80),
     slug: String(m.slug || '').toLowerCase().trim(),
     category: m.category || 'Commerce',
     wilaya: m.wilaya || '16 - Alger',
@@ -195,7 +196,7 @@ function packCardForDb(c: any) {
     merchant_id: mId,
     program_id: pId,
     customer_phone: String(c.customer_phone || '').replace(/\s+/g, ''),
-    customer_name: c.customer_name || 'Client Fidélité',
+    customer_name: sanitizeString(c.customer_name || 'Client Fidélité', 60),
     qr_token: qToken,
     stamps_balance: Number(c.stamps_balance ?? 1),
     points_balance: Number(c.points_balance ?? 0),
@@ -223,7 +224,7 @@ function packOfferForDb(o: any) {
   return {
     id: ensureUuid(o.id),
     merchant_id: ensureUuid(o.merchant_id),
-    title_fr: o.title_fr,
+    title_fr: sanitizeString(o.title_fr, 120),
     title_ar: o.title_ar || '',
     description_fr: o.description_fr || '',
     description_ar: o.description_ar || '',
@@ -347,7 +348,8 @@ export async function GET(req: NextRequest) {
     }
     const progRows = await sbSelect('loyalty_programs', `merchant_id=eq.${encodeURIComponent(merchant.id)}&limit=1`);
     const program = progRows && progRows.length > 0 ? progRows[0] : null;
-    return NextResponse.json({ found: true, merchant, program }, { status: 200 });
+    const { password: _pw, ...safePublicMerchant } = merchant;
+    return NextResponse.json({ found: true, merchant: safePublicMerchant, program }, { status: 200 });
   }
 
   if (type === 'card_by_token') {
@@ -368,11 +370,12 @@ export async function GET(req: NextRequest) {
     ]);
     const merchant = mRows && mRows.length > 0 ? unpackMerchantFromDb(mRows[0]) : null;
     const program = pRows && pRows.length > 0 ? pRows[0] : null;
+    const safeMerchant = merchant ? (() => { const { password: _p, ...rest } = merchant; return rest; })() : null;
     return NextResponse.json(
       {
         found: true,
         card,
-        merchant,
+        merchant: safeMerchant,
         program,
         offers: oRows || [],
       },
@@ -380,7 +383,28 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  // Synchronisation complète de toutes les tables Supabase
+  const reqMerchantId = (req.headers.get('x-merchant-id') || searchParams.get('merchant_id') || '').trim();
+  const reqAdminSession = req.headers.get('x-admin-session') === 'true';
+
+  // Si aucune session n'est active (ex: visiteur anonyme en navigation privée), ne renvoyer AUCUNE donnée privée !
+  if (!reqMerchantId && !reqAdminSession) {
+    const mPing = await sbRequest('platform_settings?id=eq.1', 'GET');
+    return NextResponse.json({
+      connected: mPing.ok,
+      error_details: mPing.ok ? null : 'Connexion Supabase requise',
+      keys_configured: getCandidateKeys().length > 0,
+      supabase_url: getEffectiveSupabaseUrl(),
+      owner_whatsapp: '213550000000',
+      merchants: [],
+      programs: [],
+      cards: [],
+      offers: [],
+      payments: [],
+      transactions: [],
+    });
+  }
+
+  // Synchronisation sécurisée (Filtrée par commerçant ou complète pour Super-Admin)
   const [mRes, pRows, cRows, oRows, payRows, txRows, settingsRows] = await Promise.all([
     sbRequest('merchants?order=created_at.desc', 'GET'),
     sbSelect('loyalty_programs', ''),
@@ -392,8 +416,29 @@ export async function GET(req: NextRequest) {
   ]);
 
   const mRows = mRes.ok && Array.isArray(mRes.data) ? mRes.data : null;
-  const merchants = Array.isArray(mRows) ? mRows.map(unpackMerchantFromDb) : [];
-  const payments = Array.isArray(payRows) ? payRows.map(unpackPaymentFromDb) : [];
+  const allMerchants = Array.isArray(mRows) ? mRows.map(unpackMerchantFromDb) : [];
+  const allPayments = Array.isArray(payRows) ? payRows.map(unpackPaymentFromDb) : [];
+  const targetUuid = reqMerchantId ? ensureUuid(reqMerchantId) : '';
+
+  const merchants = reqAdminSession
+    ? allMerchants
+    : allMerchants
+        .filter((m: any) => m && (m.id === reqMerchantId || m.id === targetUuid || m.slug === reqMerchantId))
+        .map((m: any) => {
+          const { password: _pw, ...safeM } = m;
+          return safeM;
+        });
+
+  const allowedMerchantIds = new Set(merchants.map((m: any) => m.id));
+  const filterByMerchant = (rows: any[] | null) => {
+    if (!Array.isArray(rows)) return [];
+    if (reqAdminSession) return rows;
+    return rows.filter((r) => allowedMerchantIds.has(r.merchant_id));
+  };
+
+  const payments = reqAdminSession
+    ? allPayments
+    : allPayments.filter((p: any) => allowedMerchantIds.has(p.merchant_id));
   const settings = Array.isArray(settingsRows) && settingsRows.length > 0 ? settingsRows[0] : null;
   let ownerWhatsapp = '213550000000';
   if (settings) {
@@ -411,20 +456,34 @@ export async function GET(req: NextRequest) {
     supabase_url: getEffectiveSupabaseUrl(),
     owner_whatsapp: ownerWhatsapp,
     merchants,
-    programs: Array.isArray(pRows) ? pRows : [],
-    cards: Array.isArray(cRows) ? cRows : [],
-    offers: Array.isArray(oRows) ? oRows : [],
+    programs: filterByMerchant(pRows),
+    cards: filterByMerchant(cRows),
+    offers: filterByMerchant(oRows),
     payments,
-    transactions: Array.isArray(txRows) ? txRows : [],
+    transactions: filterByMerchant(txRows),
   });
 }
 
 export async function POST(req: NextRequest) {
   try {
+    const clientIp = (req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || '127.0.0.1')
+      .split(',')[0]
+      .trim();
     const body = await req.json();
     activeRequestKey = req.headers.get('x-supabase-key') || body.supabase_key || '';
     activeRequestUrl = req.headers.get('x-supabase-url') || body.supabase_url || '';
     const { action } = body;
+
+    // Règle 6 : Rate Limiting sur les soumissions publiques (max 5 / heure par IP pour création/auth)
+    if (action === 'get_or_create_card' || action === 'login_admin') {
+      const limit = checkRateLimit(clientIp, action, action === 'login_admin' ? 10 : 15);
+      if (!limit.allowed) {
+        return NextResponse.json(
+          { success: false, error: 'Trop de tentatives. Veuillez réessayer plus tard.' },
+          { status: 429 }
+        );
+      }
+    }
 
     if (action === 'save_owner_whatsapp') {
       const cleanWa = String(body.owner_whatsapp || '').replace(/\D/g, '');
@@ -669,8 +728,10 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ success: false, error: 'Action inconnue' }, { status: 400 });
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : 'Erreur serveur';
-    return NextResponse.json({ success: false, error: msg }, { status: 500 });
+  } catch {
+    return NextResponse.json(
+      { success: false, error: 'Erreur lors du traitement, veuillez réessayer.' },
+      { status: 500 }
+    );
   }
 }

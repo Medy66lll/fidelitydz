@@ -8,12 +8,16 @@ interface MerchantContextType {
   currentMerchant: Merchant | null;
   setCurrentMerchant: (merchant: Merchant | null) => void;
   program: LoyaltyProgram | null;
-  refreshMerchantData: () => void;
+  isAuthenticated: boolean;
+  isLoadingAuth: boolean;
+  isSubscriptionExpired: boolean;
+  daysLeft: number;
+  refreshMerchantData: () => Promise<void>;
   switchMerchant: (slugOrId: string) => void;
-  updateProgram: (newProg: LoyaltyProgram) => void;
-  allMerchants: Merchant[];
   loginMerchantSession: (merchant: Merchant) => void;
   logoutMerchantSession: () => void;
+  updateProgram: (newProg: LoyaltyProgram) => void;
+  allMerchants: Merchant[];
 }
 
 const MerchantContext = createContext<MerchantContextType | undefined>(undefined);
@@ -22,39 +26,91 @@ export function MerchantProvider({ children }: { children: React.ReactNode }) {
   const [currentMerchant, setCurrentMerchant] = useState<Merchant | null>(null);
   const [program, setProgram] = useState<LoyaltyProgram | null>(null);
   const [allMerchants, setAllMerchants] = useState<Merchant[]>([]);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
 
-  const loadData = () => {
+  const loadData = async () => {
+    const sessionMerchantId =
+      typeof window !== 'undefined' ? localStorage.getItem('fidelitydz_merchant_session') : null;
+    const sessionExpiry =
+      typeof window !== 'undefined' ? Number(localStorage.getItem('fidelitydz_merchant_session_expiry') || '0') : 0;
+
+    // Règle 7 : Session utilisateur 30 jours max + Isolation totale en navigation privée
+    if (!sessionMerchantId || (sessionExpiry > 0 && Date.now() > sessionExpiry)) {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('fidelitydz_merchant_session');
+        localStorage.removeItem('fidelitydz_merchant_session_expiry');
+        localStorage.removeItem('fidelitydz_active_merchant');
+        db.clearSensitiveCache();
+      }
+      setAllMerchants([]);
+      setCurrentMerchant(null);
+      setProgram(null);
+      setIsAuthenticated(false);
+      setIsLoadingAuth(false);
+      return;
+    }
+
+    await db.syncFromSupabase();
     const merchants = db.getMerchants();
     setAllMerchants(merchants);
 
-    // Récupérer le marchand actif sauvegardé ou le premier par défaut
-    const savedId = typeof window !== 'undefined' ? localStorage.getItem('fidelitydz_active_merchant') : null;
-    let active = merchants.find(m => m.id === savedId || m.slug === savedId);
-    if (!active && merchants.length > 0) {
-      active = merchants[0]; // Café El Bahdja
+    if (sessionMerchantId) {
+      const found = merchants.find((m) => m.id === sessionMerchantId || m.slug === sessionMerchantId);
+      if (found) {
+        // Vérifier automatiquement si les 14 jours d'essai ou l'abonnement sont dépassés
+        const expiryTime = new Date(found.subscription_ends_at).getTime();
+        if (expiryTime < Date.now() && found.subscription_status !== 'EXPIRED') {
+          found.subscription_status = 'EXPIRED';
+          db.saveMerchant(found);
+        }
+        setCurrentMerchant(found);
+        setProgram(db.getProgramByMerchantId(found.id));
+        setIsAuthenticated(true);
+        setIsLoadingAuth(false);
+        return;
+      }
     }
 
-    if (active) {
-      setCurrentMerchant(active);
-      const prog = db.getProgramByMerchantId(active.id);
-      setProgram(prog);
-    }
+    setCurrentMerchant(null);
+    setProgram(null);
+    setIsAuthenticated(false);
+    setIsLoadingAuth(false);
   };
 
   useEffect(() => {
     loadData();
   }, []);
 
+  const loginMerchantSession = (merchant: Merchant) => {
+    if (typeof window !== 'undefined') {
+      const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+      localStorage.setItem('fidelitydz_merchant_session', merchant.id);
+      localStorage.setItem('fidelitydz_merchant_session_expiry', String(Date.now() + thirtyDaysMs));
+      localStorage.setItem('fidelitydz_active_merchant', merchant.id);
+    }
+    setCurrentMerchant(merchant);
+    setProgram(db.getProgramByMerchantId(merchant.id));
+    setIsAuthenticated(true);
+  };
+
+  const logoutMerchantSession = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('fidelitydz_merchant_session');
+      localStorage.removeItem('fidelitydz_merchant_session_expiry');
+      localStorage.removeItem('fidelitydz_active_merchant');
+      db.clearSensitiveCache();
+    }
+    setCurrentMerchant(null);
+    setProgram(null);
+    setIsAuthenticated(false);
+  };
+
   const switchMerchant = (slugOrId: string) => {
     const merchants = db.getMerchants();
-    const target = merchants.find(m => m.id === slugOrId || m.slug === slugOrId);
+    const target = merchants.find((m) => m.id === slugOrId || m.slug === slugOrId);
     if (target) {
-      setCurrentMerchant(target);
-      const prog = db.getProgramByMerchantId(target.id);
-      setProgram(prog);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('fidelitydz_active_merchant', target.id);
-      }
+      loginMerchantSession(target);
     }
   };
 
@@ -63,26 +119,18 @@ export function MerchantProvider({ children }: { children: React.ReactNode }) {
     setProgram({ ...newProg });
   };
 
-  const refreshMerchantData = () => {
-    loadData();
+  const refreshMerchantData = async () => {
+    await loadData();
   };
 
-  const loginMerchantSession = (merchant: Merchant) => {
-    setCurrentMerchant(merchant);
-    const prog = db.getProgramByMerchantId(merchant.id);
-    setProgram(prog);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('fidelitydz_active_merchant', merchant.id);
-    }
-  };
-
-  const logoutMerchantSession = () => {
-    setCurrentMerchant(null);
-    setProgram(null);
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('fidelitydz_active_merchant');
-    }
-  };
+  const endsAtMs = currentMerchant?.subscription_ends_at
+    ? new Date(currentMerchant.subscription_ends_at).getTime()
+    : 0;
+  const daysLeft = endsAtMs ? Math.max(0, Math.ceil((endsAtMs - Date.now()) / 86400000)) : 0;
+  const isSubscriptionExpired = Boolean(
+    currentMerchant &&
+      (currentMerchant.subscription_status === 'EXPIRED' || (endsAtMs > 0 && endsAtMs < Date.now()))
+  );
 
   return (
     <MerchantContext.Provider
@@ -90,12 +138,16 @@ export function MerchantProvider({ children }: { children: React.ReactNode }) {
         currentMerchant,
         setCurrentMerchant,
         program,
+        isAuthenticated,
+        isLoadingAuth,
+        isSubscriptionExpired,
+        daysLeft,
         refreshMerchantData,
         switchMerchant,
-        updateProgram,
-        allMerchants,
         loginMerchantSession,
         logoutMerchantSession,
+        updateProgram,
+        allMerchants,
       }}
     >
       {children}

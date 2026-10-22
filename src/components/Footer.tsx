@@ -29,17 +29,8 @@ export default function Footer() {
                 ? 'المنصة الجزائرية الرائدة لبطاقات الولاء الرقمية للمتاجر والمقاهي والمطاعم بدون تحميل أي تطبيق.'
                 : 'La plateforme algérienne de référence pour la fidélisation client en commerce de détail, cafés et restaurants sans application à installer.'}
             </p>
-            <div className="flex flex-col gap-1.5 pt-1">
-              <a
-                href="https://wa.me/213541534762"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-xs text-emerald-400 font-bold bg-emerald-950/70 border border-emerald-800/80 px-3 py-1.5 rounded-xl hover:bg-emerald-900/80 transition-colors w-fit"
-              >
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>WhatsApp : +213 541 53 47 62</span>
-              </a>
-              <span className="text-[11px] text-slate-400">Assistance commerçants 7j/7</span>
+            <div className="inline-flex items-center gap-1.5 text-xs text-emerald-400 font-semibold bg-emerald-950/60 border border-emerald-800/60 px-3 py-1 rounded-full">
+              <span>🇩🇿 Fièrement conçu pour l&apos;Algérie</span>
             </div>
           </div>
 
@@ -51,8 +42,8 @@ export default function Footer() {
             <ul className="space-y-2 text-xs text-slate-400">
               <li><Link href="/#fonctionnement" className="hover:text-emerald-400 transition-colors">{isAr ? 'برنامج الأختام الرقمية' : 'Mode Tampons Digitaux'}</Link></li>
               <li><Link href="/#fonctionnement" className="hover:text-emerald-400 transition-colors">{isAr ? 'برنامج النقاط والمشتريات' : 'Mode Points de Fidélité'}</Link></li>
-              <li><Link href="/dashboard/poster" className="hover:text-emerald-400 transition-colors">{isAr ? 'ملصق QR للطاولة والكاونتر' : 'Affiche QR de Comptoir'}</Link></li>
-              <li><Link href="/scanner" className="hover:text-emerald-400 transition-colors">{isAr ? 'ماسح الكاشير السريع' : 'Scanner Caisse Caissier'}</Link></li>
+              <li><Link href="/login" className="hover:text-emerald-400 transition-colors">{isAr ? 'ملصق QR للطاولة والكاونتر' : 'Affiche QR de Comptoir'}</Link></li>
+              <li><Link href="/login" className="hover:text-emerald-400 transition-colors">{isAr ? 'ماسح الكاشير السريع' : 'Scanner Caisse Caissier'}</Link></li>
             </ul>
           </div>
 
@@ -63,8 +54,8 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2 text-xs text-slate-400">
               <li><Link href="/register" className="hover:text-emerald-400 transition-colors">{isAr ? 'ابدأ تجربة مجانية 14 يوماً' : 'Essai Gratuit 14 Jours'}</Link></li>
-              <li><Link href="/dashboard" className="hover:text-emerald-400 transition-colors">{isAr ? 'دخول لوحة تحكم التاجر' : 'Espace Commerçant'}</Link></li>
-              <li><Link href="/admin" className="hover:text-emerald-400 transition-colors">{isAr ? 'إدارة دفعات بريدي موب / CCP' : 'Super Admin Vérification'}</Link></li>
+              <li><Link href="/login" className="hover:text-emerald-400 transition-colors">{isAr ? 'دخول لوحة تحكم التاجر' : 'Connexion Commerçant'}</Link></li>
+              <li><Link href="/admin" className="hover:text-emerald-400 transition-colors">{isAr ? 'إدارة المنصة (المالك)' : 'Accès Propriétaire (Super-Admin)'}</Link></li>
               <li><Link href="/#tarif" className="hover:text-emerald-400 transition-colors">{isAr ? 'اشتراك 3900 دج شهرياً' : 'Tarif Unique 3 900 DZD'}</Link></li>
             </ul>
           </div>

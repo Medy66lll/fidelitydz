@@ -1,45 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkoutRequestSchema, checkRateLimit, sanitizeErrorMessage } from '@/lib/security';
 
 export async function POST(req: NextRequest) {
   try {
-    // Règle 6: Rate Limiting par IP (Protection contre les abus / 429)
-    const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || '127.0.0.1';
-    const rateCheck = checkRateLimit(`checkout_${ip}`, 10, 60 * 60 * 1000);
-    if (!rateCheck.allowed) {
-      return NextResponse.json(
-        { success: false, error: 'Trop de requêtes. Veuillez réessayer dans quelques instants.' },
-        { status: 429 }
-      );
-    }
+    const body = await req.json();
+    const { merchant_id, merchant_name, merchant_email } = body;
 
-    let merchant_id = 'm-el-bahdja';
-    let merchant_name = 'Café & Pâtisserie El Bahdja';
-
-    const contentType = req.headers.get('content-type') || '';
-    if (contentType.includes('application/json')) {
-      try {
-        const body = await req.json();
-        const parsed = checkoutRequestSchema.safeParse(body);
-        if (parsed.success) {
-          merchant_id = parsed.data.merchant_id;
-          if (parsed.data.merchant_name) merchant_name = parsed.data.merchant_name;
-        }
-      } catch {}
-    } else if (contentType.includes('application/x-www-form-urlencoded') || contentType.includes('multipart/form-data')) {
-      try {
-        const formData = await req.formData();
-        const rawId = formData.get('merchant_id') as string;
-        const rawName = formData.get('merchant_name') as string;
-        const parsed = checkoutRequestSchema.safeParse({ merchant_id: rawId, merchant_name: rawName });
-        if (parsed.success) {
-          merchant_id = parsed.data.merchant_id;
-          if (parsed.data.merchant_name) merchant_name = parsed.data.merchant_name;
-        }
-      } catch {}
-    }
-
-    const secretKey = process.env.CHARGILY_SECRET_KEY || 'test_sk_P3QClZbSPS4HKULB8pdfx2NBWnHsPvZ1v1I3chL6';
+    const secretKey = process.env.CHARGILY_SECRET_KEY || '';
     const origin = req.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
     const payload = {
@@ -48,19 +14,15 @@ export async function POST(req: NextRequest) {
       success_url: `${origin}/dashboard/billing?payment=success&merchant_id=${merchant_id}`,
       failure_url: `${origin}/dashboard/billing?payment=failed&merchant_id=${merchant_id}`,
       webhook_endpoint: `${origin}/api/chargily/webhook`,
-      description: `Abonnement mensuel FidelityDZ (3 900 DZD) - ${merchant_name}`,
+      description: `Abonnement mensuel FidelityDZ (3 900 DZD) - ${merchant_name || 'Commerçant'}`,
       metadata: {
-        merchant_id: merchant_id,
+        merchant_id: merchant_id || 'm-el-bahdja',
         plan: 'STANDARD_MONTHLY_3900',
-        merchant_name: merchant_name,
-        price_dzd: 3900,
+        merchant_name: merchant_name || 'Commerce Fidélité',
       },
     };
 
     // Appel direct à l'API Chargily Pay V2
-    let checkoutUrl = '';
-    let checkoutId = '';
-
     try {
       const response = await fetch('https://pay.chargily.net/test/api/v2/checkouts', {
         method: 'POST',
@@ -75,36 +37,28 @@ export async function POST(req: NextRequest) {
       const data = await response.json();
 
       if (response.ok && data.checkout_url) {
-        checkoutUrl = data.checkout_url;
-        checkoutId = data.id;
-      } else {
-        console.warn('Chargily API response not OK:', data);
+        return NextResponse.json({
+          success: true,
+          checkout_url: data.checkout_url,
+          id: data.id,
+        });
       }
+
+      console.warn('Chargily API response not OK, fallback simulation:', data);
     } catch (apiErr) {
-      console.warn('Network issue reaching Chargily API directly:', apiErr);
+      console.warn('Network issue reaching Chargily API directly, providing test simulation url:', apiErr);
     }
 
-    // Fallback de simulation fluide si hors-ligne ou test
-    if (!checkoutUrl) {
-      checkoutUrl = `${origin}/dashboard/billing?simulated_chargily=true&checkout_id=chk_${Date.now()}&merchant_id=${merchant_id}`;
-      checkoutId = `chk_sim_${Date.now()}`;
-    }
-
-    // Si la requête provient d'un formulaire HTML classique, rediriger directement
-    const acceptHeader = req.headers.get('accept') || '';
-    if (acceptHeader.includes('text/html') && !contentType.includes('application/json')) {
-      return NextResponse.redirect(checkoutUrl, { status: 303 });
-    }
-
+    // Simulation de fallback fluide pour environnement de développement / test
+    const simulatedCheckoutUrl = `${origin}/dashboard/billing?simulated_chargily=true&checkout_id=chk_${Date.now()}&merchant_id=${merchant_id}`;
     return NextResponse.json({
       success: true,
-      checkout_url: checkoutUrl,
-      id: checkoutId,
-      amount: 3900,
-      currency: 'dzd',
+      checkout_url: simulatedCheckoutUrl,
+      simulated: true,
+      message: 'Session Chargily Pay test générée avec succès.',
     });
   } catch (err: unknown) {
-    const message = sanitizeErrorMessage(err, 'Erreur interne lors de la création de la session de paiement.');
+    const message = err instanceof Error ? err.message : 'Erreur interne';
     return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
