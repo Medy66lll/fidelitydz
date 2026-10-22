@@ -7,6 +7,7 @@ import { Sparkles, Gift, Check, Coffee, Trophy } from 'lucide-react';
 interface LoyaltyPassProps {
   businessName?: string;
   category?: string;
+  logoUrl?: string;
   programType?: 'STAMPS' | 'POINTS';
   stampsCount?: number;
   stampsRequired?: number;
@@ -24,6 +25,7 @@ interface LoyaltyPassProps {
 export default function LoyaltyPassSimulator({
   businessName = 'Café & Pâtisserie El Bahdja',
   category = 'Café & Restauration • Alger',
+  logoUrl = '',
   programType = 'STAMPS',
   stampsCount = 7,
   stampsRequired = 10,
@@ -71,12 +73,20 @@ export default function LoyaltyPassSimulator({
               </h3>
               <p className="text-[11px] text-slate-300 font-medium">{category}</p>
             </div>
-            <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-md font-bold text-sm"
-              style={{ backgroundColor: primaryColor }}
-            >
-              <Coffee className="w-5 h-5" />
-            </div>
+            {logoUrl ? (
+              <img
+                src={logoUrl}
+                alt={businessName}
+                className="w-10 h-10 rounded-xl object-cover shadow-md border border-white/20 bg-white"
+              />
+            ) : (
+              <div
+                className="w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-md font-bold text-sm"
+                style={{ backgroundColor: primaryColor }}
+              >
+                <Coffee className="w-5 h-5" />
+              </div>
+            )}
           </div>
 
           {/* Reward Status Banner */}

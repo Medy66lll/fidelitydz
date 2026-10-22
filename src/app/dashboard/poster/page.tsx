@@ -148,14 +148,22 @@ export default function CounterPosterPage() {
         >
           {/* Top Banner */}
           <div className="bg-slate-900 -mx-8 -mt-8 sm:-mx-10 sm:-mt-10 p-6 text-white space-y-2">
-            <div className="flex items-center justify-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-emerald-500 text-slate-950 flex items-center justify-center font-black">
-                <QrCode className="w-5 h-5" />
+            {currentMerchant?.logo_url ? (
+              <img
+                src={currentMerchant.logo_url}
+                alt={currentMerchant.business_name}
+                className="w-16 h-16 rounded-2xl mx-auto object-cover border-2 border-emerald-400 shadow-lg bg-white mb-2"
+              />
+            ) : (
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500 text-slate-950 flex items-center justify-center font-black">
+                  <QrCode className="w-5 h-5" />
+                </div>
+                <span className="font-extrabold text-xl tracking-tight">
+                  Fidelity<span className="text-emerald-400">DZ</span>
+                </span>
               </div>
-              <span className="font-extrabold text-xl tracking-tight">
-                Fidelity<span className="text-emerald-400">DZ</span>
-              </span>
-            </div>
+            )}
             <h3 className="text-lg font-bold text-slate-200">
               {currentMerchant?.business_name}
             </h3>

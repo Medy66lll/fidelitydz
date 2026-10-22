@@ -47,7 +47,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Col 3: Navigation rapide */}
+          {/* Col 3: Navigation rapide (Admin masqué de la navigation publique) */}
           <div className="space-y-3">
             <h4 className="text-sm font-bold text-white uppercase tracking-wider">
               {isAr ? 'روابط سريعة' : 'Navigation'}
@@ -55,7 +55,6 @@ export default function Footer() {
             <ul className="space-y-2 text-xs text-slate-400">
               <li><Link href="/register" className="hover:text-emerald-400 transition-colors">{isAr ? 'ابدأ تجربة مجانية 14 يوماً' : 'Essai Gratuit 14 Jours'}</Link></li>
               <li><Link href="/login" className="hover:text-emerald-400 transition-colors">{isAr ? 'دخول لوحة تحكم التاجر' : 'Connexion Commerçant'}</Link></li>
-              <li><Link href="/admin" className="hover:text-emerald-400 transition-colors">{isAr ? 'إدارة المنصة (المالك)' : 'Accès Propriétaire (Super-Admin)'}</Link></li>
               <li><Link href="/#tarif" className="hover:text-emerald-400 transition-colors">{isAr ? 'اشتراك 3900 دج شهرياً' : 'Tarif Unique 3 900 DZD'}</Link></li>
             </ul>
           </div>

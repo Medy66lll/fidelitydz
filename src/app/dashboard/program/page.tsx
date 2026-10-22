@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useMerchant } from '@/context/MerchantContext';
 import LoyaltyPassSimulator from '@/components/LoyaltyPassSimulator';
-import { LoyaltyProgram } from '@/lib/types';
+import { LoyaltyProgram, Merchant } from '@/lib/types';
 import {
   Palette,
   CheckCircle2,
@@ -13,12 +13,16 @@ import {
   Gift,
   Coins,
   Check,
-  RefreshCw
+  RefreshCw,
+  Upload,
+  Image as ImageIcon,
+  Trash2,
+  AlertCircle
 } from 'lucide-react';
 
 export default function LoyaltyStudioPage() {
   const { t, language } = useLanguage();
-  const { currentMerchant, program, updateProgram } = useMerchant();
+  const { currentMerchant, program, updateProgram, updateMerchant } = useMerchant();
   const isAr = language === 'ar';
 
   const [programType, setProgramType] = useState<'STAMPS' | 'POINTS'>('STAMPS');
@@ -29,7 +33,12 @@ export default function LoyaltyStudioPage() {
   const [welcomeBonus, setWelcomeBonus] = useState(1);
   const [primaryColor, setPrimaryColor] = useState('#10B981');
   const [backgroundColor, setBackgroundColor] = useState('#0F172A');
+  const [logoUrl, setLogoUrl] = useState('');
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [logoError, setLogoError] = useState('');
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (program) {
@@ -42,13 +51,89 @@ export default function LoyaltyStudioPage() {
       setPrimaryColor(program.primary_color || '#10B981');
       setBackgroundColor(program.background_color || '#0F172A');
     }
-  }, [program]);
+    if (currentMerchant) {
+      setLogoUrl(currentMerchant.logo_url || '');
+    }
+  }, [program, currentMerchant]);
+
+  // Upload et compression client-side du logo en canvas (max 256x256)
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLogoError('');
+
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/webp', 'image/jpg'];
+    if (!allowedTypes.includes(file.type.toLowerCase())) {
+      setLogoError(
+        isAr
+          ? 'صيغة غير مدعومة. يرجى اختيار صورة PNG أو JPG أو WEBP.'
+          : 'Format non supporté. Utilisez uniquement PNG, JPG ou WEBP.'
+      );
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setLogoError(
+        isAr
+          ? 'حجم الصورة كبير جداً (الحد الأقصى 2 ميغابايت).'
+          : 'Le fichier dépasse la taille maximale autorisée de 2 Mo.'
+      );
+      return;
+    }
+
+    setIsUploadingLogo(true);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const maxDim = 256;
+        let width = img.width;
+        let height = img.height;
+        if (width > height) {
+          if (width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          }
+        } else {
+          if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressed = canvas.toDataURL('image/png', 0.9);
+          setLogoUrl(compressed);
+        }
+        setIsUploadingLogo(false);
+      };
+      img.onerror = () => {
+        setLogoError(isAr ? 'تعذر قراءة ملف الصورة.' : 'Impossible de lire le fichier image.');
+        setIsUploadingLogo(false);
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveLogo = () => {
+    setLogoUrl('');
+    setLogoError('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentMerchant || !program) return;
 
-    const updated: LoyaltyProgram = {
+    // Mise à jour du programme
+    const updatedProg: LoyaltyProgram = {
       ...program,
       program_type: programType,
       stamps_required: stampsRequired,
@@ -59,8 +144,15 @@ export default function LoyaltyStudioPage() {
       primary_color: primaryColor,
       background_color: backgroundColor,
     };
+    updateProgram(updatedProg);
 
-    updateProgram(updated);
+    // Mise à jour du commerçant (avec son logo)
+    const updatedMerchant: Merchant = {
+      ...currentMerchant,
+      logo_url: logoUrl,
+    };
+    updateMerchant(updatedMerchant);
+
     setSavedSuccess(true);
     setTimeout(() => setSavedSuccess(false), 3000);
   };
@@ -96,6 +188,82 @@ export default function LoyaltyStudioPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left: Configuration Form */}
         <form onSubmit={handleSave} className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-sm space-y-6">
+          
+          {/* Logo du Commerce */}
+          <div className="space-y-3 pb-6 border-b border-slate-100">
+            <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
+              {isAr ? 'شعار متجرك على البطاقة (Logo)' : 'Logo de votre commerce sur la carte'}
+            </label>
+            <p className="text-xs text-slate-500">
+              {isAr
+                ? 'أضف شعار متجرك ليظهر أعلى بطاقة ولاء الزبون وعلى ملصق الصندوق QR.'
+                : 'Ajoutez le logo de votre enseigne pour qu\'il apparaisse sur la carte de vos clients et sur l\'affiche QR de caisse.'}
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center gap-4 pt-1">
+              {/* Preview Avatar */}
+              <div className="w-20 h-20 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 flex items-center justify-center overflow-hidden flex-shrink-0 shadow-inner relative group">
+                {logoUrl ? (
+                  <img
+                    src={logoUrl}
+                    alt={currentMerchant?.business_name || 'Logo'}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="text-center p-2">
+                    <ImageIcon className="w-7 h-7 text-slate-400 mx-auto" />
+                    <span className="text-[10px] text-slate-400 block mt-0.5">Sans logo</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Upload Controls */}
+              <div className="flex-1 space-y-2 w-full">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleLogoUpload}
+                  accept="image/png,image/jpeg,image/webp"
+                  className="hidden"
+                />
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploadingLogo}
+                    className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm"
+                  >
+                    <Upload className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>{isUploadingLogo ? 'Optimisation...' : (logoUrl ? 'Changer mon logo' : 'Téléverser mon logo')}</span>
+                  </button>
+
+                  {logoUrl && (
+                    <button
+                      type="button"
+                      onClick={handleRemoveLogo}
+                      className="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-xs font-bold transition flex items-center gap-1 border border-red-200"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Supprimer</span>
+                    </button>
+                  )}
+                </div>
+
+                <p className="text-[11px] text-slate-400">
+                  PNG, JPG ou WEBP (carré recommandé, max 2 Mo). Redimensionné automatiquement.
+                </p>
+
+                {logoError && (
+                  <div className="text-xs text-red-600 font-semibold flex items-center gap-1">
+                    <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span>{logoError}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* Mode Selector */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
@@ -289,6 +457,7 @@ export default function LoyaltyStudioPage() {
           <LoyaltyPassSimulator
             businessName={currentMerchant?.business_name}
             category={currentMerchant?.category}
+            logoUrl={logoUrl}
             programType={programType}
             stampsCount={7}
             stampsRequired={stampsRequired}

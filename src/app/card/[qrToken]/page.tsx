@@ -343,10 +343,19 @@ export default function CustomerCardPage() {
           style={{ backgroundColor: program.background_color || '#0F172A' }}
         >
           <div className="flex items-center justify-between border-b border-white/15 pb-4">
-            <div>
-              <p className="text-[10px] font-black uppercase text-emerald-400">FidelityDZ Pass</p>
-              <h2 className="text-xl font-black">{merchant.business_name}</h2>
-              <p className="text-xs text-slate-300">{card.customer_name} • {card.customer_phone}</p>
+            <div className="flex items-center gap-3">
+              {merchant.logo_url && (
+                <img
+                  src={merchant.logo_url}
+                  alt={merchant.business_name}
+                  className="w-10 h-10 rounded-xl object-cover shadow-md border border-white/20 bg-white"
+                />
+              )}
+              <div>
+                <p className="text-[10px] font-black uppercase text-emerald-400">FidelityDZ Pass</p>
+                <h2 className="text-xl font-black">{merchant.business_name}</h2>
+                <p className="text-xs text-slate-300">{card.customer_name} • {card.customer_phone}</p>
+              </div>
             </div>
             <div className="text-right">
               <div className="text-2xl font-black text-emerald-400">
@@ -497,9 +506,17 @@ export default function CustomerCardPage() {
       <header className="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80 px-4 py-3">
         <div className="max-w-md mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500 text-slate-950 flex items-center justify-center font-black">
-              <QrCode className="w-5 h-5" />
-            </div>
+            {merchant.logo_url ? (
+              <img
+                src={merchant.logo_url}
+                alt={merchant.business_name}
+                className="w-8 h-8 rounded-lg object-cover shadow-sm border border-emerald-500/30 bg-white"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-lg bg-emerald-500 text-slate-950 flex items-center justify-center font-black">
+                <QrCode className="w-5 h-5" />
+              </div>
+            )}
             <div>
               <span className="font-extrabold text-sm tracking-tight text-white block">
                 {merchant.business_name}
@@ -549,12 +566,20 @@ export default function CustomerCardPage() {
               </p>
             </div>
 
-            <div
-              className="w-11 h-11 rounded-2xl flex items-center justify-center text-white shadow-lg font-bold"
-              style={{ backgroundColor: program.primary_color || '#10B981' }}
-            >
-              <Coffee className="w-6 h-6" />
-            </div>
+            {merchant.logo_url ? (
+              <img
+                src={merchant.logo_url}
+                alt={merchant.business_name}
+                className="w-12 h-12 rounded-2xl object-cover shadow-lg border-2 border-white/20 bg-white"
+              />
+            ) : (
+              <div
+                className="w-11 h-11 rounded-2xl flex items-center justify-center text-white shadow-lg font-bold"
+                style={{ backgroundColor: program.primary_color || '#10B981' }}
+              >
+                <Coffee className="w-6 h-6" />
+              </div>
+            )}
           </div>
 
           {/* Reward Ready Alert */}
