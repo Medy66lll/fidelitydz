@@ -12,6 +12,8 @@ interface MerchantContextType {
   switchMerchant: (slugOrId: string) => void;
   updateProgram: (newProg: LoyaltyProgram) => void;
   allMerchants: Merchant[];
+  loginMerchantSession: (merchant: Merchant) => void;
+  logoutMerchantSession: () => void;
 }
 
 const MerchantContext = createContext<MerchantContextType | undefined>(undefined);
@@ -65,6 +67,23 @@ export function MerchantProvider({ children }: { children: React.ReactNode }) {
     loadData();
   };
 
+  const loginMerchantSession = (merchant: Merchant) => {
+    setCurrentMerchant(merchant);
+    const prog = db.getProgramByMerchantId(merchant.id);
+    setProgram(prog);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('fidelitydz_active_merchant', merchant.id);
+    }
+  };
+
+  const logoutMerchantSession = () => {
+    setCurrentMerchant(null);
+    setProgram(null);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('fidelitydz_active_merchant');
+    }
+  };
+
   return (
     <MerchantContext.Provider
       value={{
@@ -75,6 +94,8 @@ export function MerchantProvider({ children }: { children: React.ReactNode }) {
         switchMerchant,
         updateProgram,
         allMerchants,
+        loginMerchantSession,
+        logoutMerchantSession,
       }}
     >
       {children}

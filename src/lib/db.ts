@@ -308,6 +308,42 @@ class FidelityDatabase {
     this.setStorage('merchants', list);
   }
 
+  async loginMerchantAsync(identifier: string, password?: string): Promise<{ success: boolean; merchant?: Merchant; error?: string }> {
+    const cleaned = identifier.trim().toLowerCase().replace(/\s+/g, '');
+    if (!cleaned) {
+      return { success: false, error: 'Veuillez saisir votre numéro de téléphone ou identifiant.' };
+    }
+
+    // 1. Recherche locale / mémoire
+    const merchants = this.getMerchants();
+    let found = merchants.find(m => 
+      m.phone.replace(/\s+/g, '') === cleaned || 
+      m.slug.toLowerCase() === cleaned ||
+      m.business_name.toLowerCase() === cleaned ||
+      m.id.toLowerCase() === cleaned
+    );
+
+    // 2. Recherche distante via API si disponible
+    if (!found && typeof window !== 'undefined') {
+      try {
+        const res = await fetch(`/api/db?type=merchant_by_slug&slug=${encodeURIComponent(cleaned)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.found && data.merchant) {
+            found = data.merchant;
+            this.saveMerchant(found!);
+          }
+        }
+      } catch {}
+    }
+
+    if (!found) {
+      return { success: false, error: 'Identifiant ou commerce introuvable.' };
+    }
+
+    return { success: true, merchant: found };
+  }
+
   // Loyalty Program
   getProgramByMerchantId(merchantId: string): LoyaltyProgram {
     const list = this.getStorage('programs', initialPrograms);
