@@ -473,6 +473,29 @@ export default function LandingPage() {
                 </div>
               ))}
             </div>
+
+            {/* Direct WhatsApp Callout */}
+            <div className="mt-10 p-6 bg-emerald-950 text-white rounded-3xl border border-emerald-800 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+              <div className="space-y-1 text-center sm:text-left rtl:sm:text-right">
+                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider block">
+                  Une question sur la mise en place de votre carte ?
+                </span>
+                <h4 className="text-lg font-black text-white">
+                  Contactez directement notre équipe commerciale en Algérie
+                </h4>
+                <p className="text-xs text-slate-300">
+                  Assistance disponible 7j/7 pour les commerçants de toutes les wilayas.
+                </p>
+              </div>
+              <a
+                href="https://wa.me/213541534762"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm transition-all shadow-md flex items-center gap-2 flex-shrink-0"
+              >
+                <span>WhatsApp : +213 541 53 47 62</span>
+              </a>
+            </div>
           </div>
         </section>
       </main>

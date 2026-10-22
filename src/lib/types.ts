@@ -1,4 +1,4 @@
-// Types TypeScript correspondant au schéma SQL Supabase FidelityDZ v3
+// Types TypeScript correspondant au schéma SQL Supabase FidelityDZ
 
 export interface PlatformSettings {
   id: number;
@@ -9,7 +9,8 @@ export interface PlatformSettings {
   owner_rip_number: string;
   owner_ccp_number: string;
   owner_ccp_key: string;
-  owner_whatsapp?: string;
+  support_whatsapp: string;
+  owner_phone: string;
   chargily_mode: 'test' | 'live';
 }
 
@@ -23,8 +24,6 @@ export interface Merchant {
   category: string;
   wilaya: string;
   phone: string;
-  email?: string;
-  password?: string;
   logo_url?: string;
   subscription_status: SubscriptionStatus;
   subscription_ends_at: string;

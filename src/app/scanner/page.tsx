@@ -2,11 +2,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { db } from '@/lib/db';
-import { CustomerCard, LoyaltyProgram } from '@/lib/types';
+import { CustomerCard, Merchant, LoyaltyProgram } from '@/lib/types';
 import { useLanguage } from '@/context/LanguageContext';
-import { useMerchant } from '@/context/MerchantContext';
 import LanguageToggle from '@/components/LanguageToggle';
 import { soundFX } from '@/lib/sound';
 import confetti from 'canvas-confetti';
@@ -19,94 +17,70 @@ import {
   CheckCircle2,
   X,
   Phone,
+  Store,
+  Sparkles,
+  RefreshCw,
   Trophy,
-  ArrowLeft,
-  AlertTriangle,
-  UserPlus,
+  ArrowLeft
 } from 'lucide-react';
 
 export default function CashierScannerPage() {
   const { t, language } = useLanguage();
-  const { currentMerchant, program, isAuthenticated, isLoadingAuth, isSubscriptionExpired } = useMerchant();
-  const router = useRouter();
   const isAr = language === 'ar';
 
   const [activeTab, setActiveTab] = useState<'camera' | 'search'>('search');
   const [phoneSearch, setPhoneSearch] = useState('');
+  const [currentMerchant, setCurrentMerchant] = useState<Merchant | null>(null);
   const [activeCard, setActiveCard] = useState<CustomerCard | null>(null);
   const [activeProgram, setActiveProgram] = useState<LoyaltyProgram | null>(null);
   const [purchaseAmount, setPurchaseAmount] = useState('1500');
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Scanner camera state
   const [scannerInitialized, setScannerInitialized] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const html5QrCodeRef = useRef<any>(null);
 
   useEffect(() => {
-    if (!isLoadingAuth && !isAuthenticated) {
-      router.replace('/login');
+    // Initialise le marchand actif
+    const merchants = db.getMerchants();
+    const savedId = typeof window !== 'undefined' ? localStorage.getItem('fidelitydz_active_merchant') : null;
+    const active = merchants.find(m => m.id === savedId) || merchants[0];
+    if (active) {
+      setCurrentMerchant(active);
+      setActiveProgram(db.getProgramByMerchantId(active.id));
     }
-  }, [isLoadingAuth, isAuthenticated, router]);
+  }, []);
 
-  useEffect(() => {
-    if (program) {
-      setActiveProgram(program);
-    }
-  }, [program]);
-
-  if (isLoadingAuth || !isAuthenticated || !currentMerchant) {
-    return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-4">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-400"></div>
-      </div>
-    );
-  }
-
-  // Recherche manuelle par téléphone ou token (Synchronisée avec Supabase)
-  const handleSearchCard = async (e?: React.FormEvent) => {
+  // Recherche manuelle par téléphone ou token
+  const handleSearchCard = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    if (!currentMerchant) return;
     setErrorMessage(null);
     setFeedbackMessage(null);
 
     const term = phoneSearch.trim();
     if (!term) return;
 
-    await db.syncFromSupabase();
-
+    // Chercher par token exact ou par téléphone
     let found = db.getCardByToken(term);
     if (!found) {
       found = db.getCardByPhone(currentMerchant.id, term);
     }
 
-    // S'assure que le client appartient bien à ce commerce
-    if (found && found.merchant_id === currentMerchant.id) {
+    if (found) {
       soundFX.playBeep();
       setActiveCard(found);
-      setActiveProgram(db.getProgramByMerchantId(currentMerchant.id));
+      setActiveProgram(db.getProgramByMerchantId(found.merchant_id));
       setFeedbackMessage(t('customer_found'));
     } else {
       setErrorMessage(
         isAr
-          ? 'لم يتم العثور على أي بطاقة بهذا الرقم في متجرك. يمكنك إنشاؤها فوراً بزر الإضافة أدناه.'
-          : "Aucune carte trouvée pour ce numéro dans votre commerce. Vous pouvez l'inscrire en 1 clic ci-dessous."
+          ? 'لم يتم العثور على أي بطاقة بهذا الرقم. تحقق من الرقم أو اطلب من الزبون مسح رمز الكاونتر.'
+          : 'Aucune carte trouvée pour ce numéro ou ce QR token.'
       );
     }
-  };
-
-  // Inscription rapide en caisse par numéro 05/06/07
-  const handleQuickEnrollAtCashier = async () => {
-    const cleaned = phoneSearch.replace(/\s+/g, '');
-    if (!/^(0)(5|6|7)[0-9]{8}$/.test(cleaned)) {
-      setErrorMessage('Numéro algérien valide requis (05, 06 ou 07 sur 10 chiffres).');
-      return;
-    }
-    const res = await db.getOrCreateCustomerCardAsync(currentMerchant.slug, cleaned, `Client ${cleaned.slice(-4)}`);
-    soundFX.playStamp();
-    setActiveCard(res.card);
-    setActiveProgram(db.getProgramByMerchantId(currentMerchant.id));
-    setErrorMessage(null);
-    setFeedbackMessage(`Carte créée en caisse pour ${cleaned} avec +1 tampon de bienvenue !`);
   };
 
   // Initialisation du scanner caméra via html5-qrcode
@@ -129,36 +103,37 @@ export default function CashierScannerPage() {
                   fps: 10,
                   qrbox: { width: 250, height: 250 },
                 },
-                async (decodedText) => {
+                (decodedText) => {
+                  // QR code détecté !
                   soundFX.playBeep();
-                  scanner
-                    .stop()
-                    .then(() => {
-                      setScannerInitialized(false);
-                    })
-                    .catch(() => {});
+                  scanner.stop().then(() => {
+                    setScannerInitialized(false);
+                  }).catch(() => {});
 
-                  const fetched = await db.fetchCardByTokenAsync(decodedText);
-                  let found = fetched.card || db.getCardByToken(decodedText);
+                  // Résoudre le token
+                  let found = db.getCardByToken(decodedText);
                   if (!found && currentMerchant) {
                     found = db.getCardByPhone(currentMerchant.id, decodedText);
                   }
 
-                  if (found && found.merchant_id === currentMerchant.id) {
+                  if (found) {
                     setActiveCard(found);
-                    setActiveProgram(db.getProgramByMerchantId(currentMerchant.id));
+                    setActiveProgram(db.getProgramByMerchantId(found.merchant_id));
                     setActiveTab('search');
                     setFeedbackMessage(t('customer_found'));
                   } else {
-                    setErrorMessage(`QR Code invalide ou appartenant à un autre commerce (${decodedText})`);
+                    setErrorMessage(`QR Code inconnu (${decodedText})`);
                   }
                 },
-                () => {}
+                () => {
+                  // Ignore per-frame scan errors
+                }
               )
               .then(() => {
                 if (isMounted) setScannerInitialized(true);
               })
-              .catch(() => {
+              .catch((err) => {
+                console.warn('Camera scan error:', err);
                 if (isMounted) {
                   setCameraError(
                     isAr
@@ -167,9 +142,13 @@ export default function CashierScannerPage() {
                   );
                 }
               });
-          } catch {}
+          } catch (err: unknown) {
+            console.warn(err);
+          }
         })
-        .catch(() => {});
+        .catch((err) => {
+          console.warn('Failed to load html5-qrcode:', err);
+        });
 
       return () => {
         isMounted = false;
@@ -182,12 +161,9 @@ export default function CashierScannerPage() {
     }
   }, [activeTab, currentMerchant, isAr, t]);
 
+  // Action : Ajouter tampon
   const handleAddStamp = (count: number = 1) => {
     if (!activeCard) return;
-    if (isSubscriptionExpired) {
-      setErrorMessage('Votre période d\'essai de 14 jours ou abonnement est expiré : veuillez renouveler (3 900 DZD/mois) pour créditer des tampons.');
-      return;
-    }
     try {
       const result = db.addStampToCard(activeCard.id, count);
       setActiveCard({ ...result.card });
@@ -214,12 +190,9 @@ export default function CashierScannerPage() {
     }
   };
 
+  // Action : Ajouter points par montant
   const handleAddPoints = () => {
     if (!activeCard) return;
-    if (isSubscriptionExpired) {
-      setErrorMessage('Abonnement expiré : veuillez renouveler votre abonnement (3 900 DZD/mois).');
-      return;
-    }
     const amount = parseInt(purchaseAmount, 10);
     if (isNaN(amount) || amount <= 0) {
       setErrorMessage(isAr ? 'يرجى إدخال مبلغ صحيح' : 'Veuillez saisir un montant valide en DZD');
@@ -241,6 +214,7 @@ export default function CashierScannerPage() {
     }
   };
 
+  // Action : Valider & Remettre cadeau
   const handleRedeemReward = () => {
     if (!activeCard) return;
     try {
@@ -265,6 +239,7 @@ export default function CashierScannerPage() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white flex flex-col justify-between">
+      {/* Top Header */}
       <header className="bg-slate-950 border-b border-slate-800 px-4 py-3 sticky top-0 z-40">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -284,7 +259,7 @@ export default function CashierScannerPage() {
                   {t('scanner_title')}
                 </span>
                 <span className="text-[11px] text-emerald-400 font-medium">
-                  {currentMerchant.business_name}
+                  {currentMerchant?.business_name || 'Commerce'}
                 </span>
               </div>
             </div>
@@ -293,22 +268,9 @@ export default function CashierScannerPage() {
         </div>
       </header>
 
+      {/* Main Content Area */}
       <main className="max-w-2xl mx-auto w-full p-4 sm:p-6 flex-1 space-y-6">
-        {isSubscriptionExpired && (
-          <div className="bg-red-500/20 border-2 border-red-400 text-red-200 p-4 rounded-2xl flex items-center justify-between gap-3 text-xs sm:text-sm font-bold">
-            <div className="flex items-center gap-2.5">
-              <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0" />
-              <span>Fin des 14 jours d&apos;essai / Abonnement expiré : activez votre forfait (3 900 DZD/mois) pour continuer à scanner vos clients.</span>
-            </div>
-            <Link
-              href="/dashboard/billing"
-              className="px-3 py-1.5 rounded-xl bg-red-400 text-slate-950 font-black text-xs whitespace-nowrap"
-            >
-              Payer 3 900 DZD
-            </Link>
-          </div>
-        )}
-
+        {/* Toggle Mode Scanner (Caméra / Recherche Manuel) */}
         <div className="grid grid-cols-2 gap-2 p-1.5 bg-slate-950 rounded-2xl border border-slate-800">
           <button
             onClick={() => setActiveTab('camera')}
@@ -336,6 +298,7 @@ export default function CashierScannerPage() {
           </button>
         </div>
 
+        {/* CAMERA SCANNER VIEW */}
         {activeTab === 'camera' && (
           <div className="bg-slate-950 rounded-3xl p-5 border border-slate-800 text-center space-y-4">
             <div className="relative rounded-2xl overflow-hidden bg-black aspect-square max-w-[320px] mx-auto border-2 border-emerald-500/50 flex items-center justify-center">
@@ -365,6 +328,7 @@ export default function CashierScannerPage() {
           </div>
         )}
 
+        {/* MANUAL SEARCH INPUT */}
         {activeTab === 'search' && (
           <form onSubmit={handleSearchCard} className="bg-slate-950 rounded-3xl p-5 border border-slate-800 space-y-3">
             <label className="text-xs font-bold text-slate-300 block">
@@ -374,7 +338,7 @@ export default function CashierScannerPage() {
               <div className="relative flex-1">
                 <input
                   type="text"
-                  placeholder="Ex: 0555123456"
+                  placeholder="0555123456 ou token..."
                   value={phoneSearch}
                   onChange={(e) => setPhoneSearch(e.target.value)}
                   className="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl py-3 px-4 text-white text-base placeholder-slate-600 font-mono tracking-wider tabular-nums outline-none transition-all"
@@ -389,27 +353,39 @@ export default function CashierScannerPage() {
               </button>
             </div>
 
-            <div className="pt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
-              <span>Le client n&apos;a pas son téléphone ?</span>
+            {/* Quick Demo Buttons for Fast Testing */}
+            <div className="pt-2 flex flex-wrap items-center gap-2 text-xs text-slate-400">
+              <span>Clients tests :</span>
               <button
                 type="button"
-                onClick={handleQuickEnrollAtCashier}
-                className="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 rounded-lg font-bold text-xs"
+                onClick={() => { setPhoneSearch('0555123456'); }}
+                className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-200 font-mono text-[11px]"
               >
-                <UserPlus className="w-3.5 h-3.5" />
-                <span>Inscrire ce N° 05/06/07 directement en caisse</span>
+                0555123456 (Amine)
+              </button>
+              <button
+                type="button"
+                onClick={() => { setPhoneSearch('0770112233'); }}
+                className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-200 font-mono text-[11px]"
+              >
+                0770112233 (Sara - Cadeau prêt)
               </button>
             </div>
           </form>
         )}
 
+        {/* FEEDBACK & ERROR MESSAGES */}
         {feedbackMessage && (
           <div className="bg-emerald-950/80 border border-emerald-700 text-emerald-200 p-4 rounded-2xl flex items-center justify-between text-xs sm:text-sm animate-fade-in">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
               <span>{feedbackMessage}</span>
             </div>
-            <button onClick={() => setFeedbackMessage(null)} className="text-emerald-400 hover:text-white p-1" type="button">
+            <button
+              onClick={() => setFeedbackMessage(null)}
+              className="text-emerald-400 hover:text-white p-1"
+              type="button"
+            >
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -418,18 +394,24 @@ export default function CashierScannerPage() {
         {errorMessage && (
           <div className="bg-red-950/80 border border-red-800 text-red-200 p-4 rounded-2xl flex items-center justify-between text-xs sm:text-sm">
             <span>{errorMessage}</span>
-            <button onClick={() => setErrorMessage(null)} className="text-red-400 hover:text-white p-1" type="button">
+            <button
+              onClick={() => setErrorMessage(null)}
+              className="text-red-400 hover:text-white p-1"
+              type="button"
+            >
               <X className="w-4 h-4" />
             </button>
           </div>
         )}
 
+        {/* ACTIVE CUSTOMER CARD PROFILE & CASHIER ACTIONS */}
         {activeCard && activeProgram && (
           <div className="bg-slate-950 rounded-3xl p-6 border-2 border-emerald-500/80 shadow-2xl space-y-6">
+            {/* Customer Details Header */}
             <div className="flex items-start justify-between pb-4 border-b border-slate-800">
               <div>
                 <span className="text-[10px] uppercase font-bold text-emerald-400 tracking-wider block">
-                  {isAr ? 'الزبون المختار' : 'Client Identifié'}
+                  {isAr ? 'الزبون المختار' : 'Client Actif'}
                 </span>
                 <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
                   {activeCard.customer_name}
@@ -440,10 +422,7 @@ export default function CashierScannerPage() {
               </div>
 
               <button
-                onClick={() => {
-                  setActiveCard(null);
-                  setFeedbackMessage(null);
-                }}
+                onClick={() => { setActiveCard(null); setFeedbackMessage(null); }}
                 className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
                 title="Fermer"
                 type="button"
@@ -452,6 +431,7 @@ export default function CashierScannerPage() {
               </button>
             </div>
 
+            {/* Balances Display */}
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 text-center space-y-1">
                 <span className="text-xs text-slate-400 font-semibold">{t('stamps_progress')}</span>
@@ -469,6 +449,7 @@ export default function CashierScannerPage() {
               </div>
             </div>
 
+            {/* UNLOCKED REWARD ALERT & REDEEM ACTION */}
             {(activeCard.rewards_available > 0 || activeCard.stamps_balance >= activeProgram.stamps_required) && (
               <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 to-amber-600/30 border-2 border-amber-400 space-y-3">
                 <div className="flex items-center gap-3">
@@ -496,16 +477,17 @@ export default function CashierScannerPage() {
               </div>
             )}
 
+            {/* QUICK CASHIER ACTIONS */}
             <div className="space-y-3 pt-2">
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
                 {t('cashier_actions')}
               </span>
 
+              {/* Mode Tampons Buttons */}
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => handleAddStamp(1)}
-                  disabled={isSubscriptionExpired}
-                  className="flex items-center justify-center gap-2 py-4 bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-black text-sm rounded-xl shadow-lg shadow-emerald-500/20 transition-all disabled:opacity-40"
+                  className="flex items-center justify-center gap-2 py-4 bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-black text-sm rounded-xl shadow-lg shadow-emerald-500/20 transition-all"
                   type="button"
                 >
                   <Plus className="w-5 h-5" />
@@ -514,8 +496,7 @@ export default function CashierScannerPage() {
 
                 <button
                   onClick={() => handleAddStamp(2)}
-                  disabled={isSubscriptionExpired}
-                  className="flex items-center justify-center gap-2 py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm rounded-xl transition-all disabled:opacity-40"
+                  className="flex items-center justify-center gap-2 py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm rounded-xl transition-all"
                   type="button"
                 >
                   <Plus className="w-4 h-4" />
@@ -523,6 +504,7 @@ export default function CashierScannerPage() {
                 </button>
               </div>
 
+              {/* Mode Points (Montant d'achat en DZD) */}
               <div className="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-3">
                 <div className="flex items-center justify-between text-xs font-bold text-slate-300">
                   <span>{t('purchase_amount_label')}</span>
@@ -547,8 +529,7 @@ export default function CashierScannerPage() {
                   </div>
                   <button
                     onClick={handleAddPoints}
-                    disabled={isSubscriptionExpired}
-                    className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl transition-all disabled:opacity-40"
+                    className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl transition-all"
                     type="button"
                   >
                     {t('validate_points_btn')}
@@ -560,8 +541,9 @@ export default function CashierScannerPage() {
         )}
       </main>
 
+      {/* Footer */}
       <footer className="text-center py-3 border-t border-slate-800/60 text-xs text-slate-500">
-        FidelityDZ • Scanner Caisse Privé ({currentMerchant.business_name})
+        FidelityDZ • Scanner Caisse 24h/24
       </footer>
     </div>
   );

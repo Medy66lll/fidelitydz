@@ -73,7 +73,7 @@ export default function DashboardOverviewPage() {
           </p>
         </div>
 
-        {/* Quick Cashier Button */}
+        {/* Quick Action Buttons */}
         <div className="flex flex-wrap items-center gap-3 relative z-10 w-full sm:w-auto">
           <Link
             href="/scanner"
@@ -84,10 +84,10 @@ export default function DashboardOverviewPage() {
           </Link>
           <Link
             href="/dashboard/poster"
-            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm rounded-xl transition-all"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm rounded-xl shadow-lg shadow-amber-500/20 transition-all hover:scale-105"
           >
-            <Printer className="w-4 h-4 text-emerald-400" />
-            <span>Affiche PDF</span>
+            <Printer className="w-5 h-5" />
+            <span>Télécharger / Imprimer mon affiche QR de caisse (A4)</span>
           </Link>
         </div>
       </div>
@@ -201,6 +201,16 @@ export default function DashboardOverviewPage() {
               </p>
               <p className="text-[11px] text-slate-500 font-mono break-all px-2">
                 {joinUrl}
+              </p>
+            </div>
+
+            {/* Mention bilingue obligatoire */}
+            <div className="p-2.5 bg-emerald-50 border border-emerald-200/80 rounded-xl space-y-0.5 text-center">
+              <p className="text-[11px] font-extrabold text-emerald-900 leading-tight">
+                Scannez le QR code et entrez votre numéro 05 / 06 / 07 — sans application à installer
+              </p>
+              <p className="text-[11px] font-arabic font-bold text-emerald-800 leading-tight" dir="rtl">
+                امسح رمز QR وأدخل رقم هاتفك 05 / 06 / 07 — بدون تحميل أي تطبيق
               </p>
             </div>
           </div>

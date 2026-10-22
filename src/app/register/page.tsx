@@ -6,54 +6,48 @@ import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
 import { useMerchant } from '@/context/MerchantContext';
 import LanguageToggle from '@/components/LanguageToggle';
-import { db, generateUuid } from '@/lib/db';
+import { db } from '@/lib/db';
 import { Merchant } from '@/lib/types';
 import {
   QrCode,
+  Store,
+  MapPin,
+  Phone,
   Sparkles,
   ArrowRight,
-  Lock,
-  Mail,
-  Phone,
-  CheckCircle2,
-  MessageCircle,
+  ShieldCheck,
+  CheckCircle2
 } from 'lucide-react';
 
 export default function RegisterMerchantPage() {
-  const { language } = useLanguage();
-  const { loginMerchantSession, refreshMerchantData } = useMerchant();
+  const { t, language } = useLanguage();
+  const { switchMerchant, refreshMerchantData } = useMerchant();
   const router = useRouter();
   const isAr = language === 'ar';
 
   const [businessName, setBusinessName] = useState('');
   const [slug, setSlug] = useState('');
-  const [category, setCategory] = useState('Café, Salon de thé & Pâtisserie');
+  const [category, setCategory] = useState('Café & Restauration');
   const [wilaya, setWilaya] = useState('16 - Alger');
   const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [createdMerchant, setCreatedMerchant] = useState<Merchant | null>(null);
 
+  // Auto-slugify
   const handleNameChange = (val: string) => {
     setBusinessName(val);
-    const generated = val
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
-    setSlug(generated);
+    if (!slug || slug === businessName.toLowerCase().replace(/[^a-z0-9]/g, '-')) {
+      const generated = val
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+      setSlug(generated);
+    }
   };
 
-  const getWhatsAppAdminNotificationUrl = (m: Merchant) => {
-    const ownerWa = db.getOwnerWhatsapp() || '213550000000';
-    const text = `🆕 *NOUVEAU COMMERCE INSCRIT (ESSAI 14 JOURS)*\n\n🏪 *Commerce :* ${m.business_name}\n📍 *Wilaya :* ${m.wilaya}\n📂 *Catégorie :* ${m.category}\n📞 *Tél Gérant (Login) :* ${m.phone}\n🔑 *Mot de passe :* ${m.password}\n🔗 *Lien QR Client :* ${typeof window !== 'undefined' ? window.location.origin : 'https://fidelitydz.vercel.app'}/join/${m.slug}\n⏳ *Fin essai 14j :* ${new Date(m.subscription_ends_at).toLocaleDateString('fr-DZ')}`;
-    return `https://wa.me/${ownerWa}?text=${encodeURIComponent(text)}`;
-  };
-
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -64,65 +58,57 @@ export default function RegisterMerchantPage() {
 
     const cleanedPhone = phone.replace(/\s+/g, '');
     if (!/^(0)(5|6|7)[0-9]{8}$/.test(cleanedPhone)) {
-      setError('Veuillez saisir un numéro de mobile algérien valide (05, 06 ou 07 sur 10 chiffres).');
-      return;
-    }
-
-    if (password.trim().length < 4) {
-      setError("Veuillez choisir un mot de passe d'au moins 4 caractères pour sécuriser votre espace.");
+      setError('Veuillez saisir un numéro de mobile algérien valide (05, 06 ou 07, 10 chiffres).');
       return;
     }
 
     setLoading(true);
 
-    await db.syncFromSupabase();
-    const existingBySlug = db.getMerchantBySlug(slug.toLowerCase().trim());
-    const finalSlug = existingBySlug
-      ? `${slug.toLowerCase().trim()}-${Math.floor(100 + Math.random() * 900)}`
-      : slug.toLowerCase().trim();
-
     const newMerchant: Merchant = {
-      id: generateUuid(),
+      id: `m-${Date.now()}`,
       business_name: businessName.trim(),
-      slug: finalSlug,
+      slug: slug.toLowerCase().trim(),
       category,
       wilaya,
       phone: cleanedPhone,
-      email: email.trim() || undefined,
-      password: password.trim(),
       subscription_status: 'TRIAL',
       subscription_ends_at: new Date(Date.now() + 14 * 86400000).toISOString(),
       created_at: new Date().toISOString(),
     };
 
     try {
-      const saved = await db.registerMerchantAsync(newMerchant);
-      loginMerchantSession(saved);
-      await refreshMerchantData();
-      setCreatedMerchant(saved);
-      setLoading(false);
+      db.saveMerchant(newMerchant);
+      refreshMerchantData();
+      switchMerchant(newMerchant.id);
+      router.push('/dashboard');
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Erreur lors de la création';
+      const msg = err instanceof Error ? err.message : 'Erreur';
       setError(msg);
       setLoading(false);
     }
   };
 
   const algerianWilayas = [
-    '01 - Adrar', '02 - Chlef', '03 - Laghouat', '04 - Oum El Bouaghi', '05 - Batna',
-    '06 - Béjaïa', '07 - Biskra', '08 - Béchar', '09 - Blida', '10 - Bouira',
-    '13 - Tlemcen', '14 - Tiaret', '15 - Tizi Ouzou', '16 - Alger', '17 - Djelfa',
-    '18 - Jijel', '19 - Sétif', '20 - Saïda', '21 - Skikda', '22 - Sidi Bel Abbès',
-    '23 - Annaba', '24 - Guelma', '25 - Constantine', '26 - Médéa', '27 - Mostaganem',
-    "28 - M'Sila", '29 - Mascara', '30 - Ouargla', '31 - Oran', '34 - Bordj Bou Arréridj',
-    '35 - Boumerdès', '42 - Tipaza', '45 - Naâma',
+    '16 - Alger',
+    '31 - Oran',
+    '25 - Constantine',
+    '19 - Sétif',
+    '09 - Blida',
+    '23 - Annaba',
+    '06 - Béjaïa',
+    '15 - Tizi Ouzou',
+    '13 - Tlemcen',
+    '35 - Boumerdès',
+    '05 - Batna',
+    '27 - Mostaganem',
+    '30 - Ouargla',
   ];
 
   const categories = [
     'Café, Salon de thé & Pâtisserie',
-    'Restauration rapide, Pizza & Fast-food',
+    'Restauration rapide & Fast-food',
     'Boutique de Mode & Prêt-à-porter',
-    'Coiffure, Barber Shop & Beauté',
+    'Coiffure, Beauté & Spa',
     'Optique & Lunetterie',
     'Superette & Épicerie fine',
     'Parfumerie & Cosmétiques',
@@ -131,6 +117,7 @@ export default function RegisterMerchantPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
+      {/* Top Header */}
       <header className="bg-white border-b border-slate-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
@@ -141,225 +128,145 @@ export default function RegisterMerchantPage() {
               Fidelity<span className="text-emerald-500">DZ</span>
             </span>
           </Link>
-          <div className="flex items-center gap-3">
-            <Link
-              href="/login"
-              className="text-xs font-bold text-slate-700 hover:text-emerald-600 px-3 py-1.5 rounded-lg border border-slate-200"
-            >
-              Se connecter
-            </Link>
-            <LanguageToggle />
-          </div>
+          <LanguageToggle />
         </div>
       </header>
 
+      {/* Main Container */}
       <main className="max-w-xl mx-auto w-full p-4 sm:p-6 my-auto">
-        {createdMerchant ? (
-          <div className="bg-white rounded-3xl p-6 sm:p-10 border-2 border-emerald-500 shadow-2xl space-y-6 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
-              <CheckCircle2 className="w-10 h-10" />
+        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-xl space-y-6">
+          {/* Header */}
+          <div className="text-center space-y-2">
+            <div className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full text-xs font-bold">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Essai gratuit 14 jours • Zéro engagement</span>
             </div>
-            <div className="space-y-2">
-              <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-extrabold">
-                ✔ Enregistré sur Supabase & Espace Admin (PC & Mobile)
-              </span>
-              <h2 className="text-2xl font-extrabold text-slate-900">
-                Bienvenue, {createdMerchant.business_name} !
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-600">
-                Vos <strong>14 jours d&apos;essai gratuit</strong> sont activés. Vous pouvez maintenant vous connecter depuis votre PC ou votre téléphone avec votre numéro et votre mot de passe.
-              </p>
-            </div>
-
-            <div className="bg-slate-900 text-white p-4 rounded-2xl text-left text-xs space-y-1.5 font-mono">
-              <div className="text-emerald-400 font-bold uppercase">Vos identifiants de connexion (PC & Téléphone) :</div>
-              <div>Téléphone (Identifiant) : <strong>{createdMerchant.phone}</strong></div>
-              <div>Mot de passe : <strong>{createdMerchant.password}</strong></div>
-              <div>Lien QR Client : <strong>/join/{createdMerchant.slug}</strong></div>
-              <div>Fin de l&apos;essai 14j : <strong>{new Date(createdMerchant.subscription_ends_at).toLocaleDateString('fr-DZ')}</strong></div>
-            </div>
-
-            <div className="space-y-3 pt-2">
-              <a
-                href={getWhatsAppAdminNotificationUrl(createdMerchant)}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full py-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-sm shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2"
-              >
-                <MessageCircle className="w-5 h-5" />
-                <span>1. Envoyer ma confirmation d&apos;inscription sur WhatsApp Admin</span>
-              </a>
-
-              <button
-                type="button"
-                onClick={() => router.push('/dashboard')}
-                className="w-full py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2"
-              >
-                <span>2. Ouvrir mon Espace Commerçant</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              {isAr ? 'إنشاء حساب تاجر جديد' : 'Créer votre compte commerce'}
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500">
+              Configurez votre programme de fidélité digitale en moins de 2 minutes.
+            </p>
           </div>
-        ) : (
-          <div className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-xl space-y-6">
-            <div className="text-center space-y-2">
-              <div className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full text-xs font-bold">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Essai gratuit 14 jours • Puis 3 900 DZD/mois</span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                {isAr ? 'إنشاء حساب تاجر جديد' : 'Créer votre compte commerce'}
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-500">
-                Synchronisé automatiquement entre votre PC, votre téléphone et Supabase.
-              </p>
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl text-xs font-semibold">
+              {error}
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleRegister} className="space-y-4">
+            {/* Nom du commerce */}
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-slate-700 block">
+                Nom de votre établissement <span className="text-emerald-500">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                placeholder="Ex: Café El Bahdja ou Boutique Tassili"
+                value={businessName}
+                onChange={(e) => handleNameChange(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3.5 text-sm outline-none focus:border-emerald-500 focus:bg-white transition-all"
+              />
             </div>
 
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl text-xs font-semibold">
-                {error}
-              </div>
-            )}
-
-            <form onSubmit={handleRegister} className="space-y-4">
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 block">
-                  Nom de votre établissement <span className="text-emerald-500">*</span>
-                </label>
+            {/* Slug URL */}
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-slate-700 block">
+                Lien personnalisé de votre carte client
+              </label>
+              <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-500 font-mono">
+                <span>fidelitydz.com/join/</span>
                 <input
                   type="text"
                   required
-                  placeholder="Ex: Pizzeria El Djazair ou Café El Bahdja"
-                  value={businessName}
-                  onChange={(e) => handleNameChange(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3.5 text-sm outline-none focus:border-emerald-500 focus:bg-white transition-all"
+                  value={slug}
+                  onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                  className="flex-1 bg-transparent text-slate-900 font-bold outline-none pl-1"
                 />
               </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 block">
-                  Lien QR Code unique de votre commerce
-                </label>
-                <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-500 font-mono">
-                  <span>/join/</span>
-                  <input
-                    type="text"
-                    required
-                    value={slug}
-                    onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-                    className="flex-1 bg-transparent text-slate-900 font-bold outline-none pl-1"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700 block">Catégorie</label>
-                  <select
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-semibold outline-none focus:border-emerald-500"
-                  >
-                    {categories.map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700 block">Wilaya</label>
-                  <select
-                    value={wilaya}
-                    onChange={(e) => setWilaya(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-semibold outline-none focus:border-emerald-500"
-                  >
-                    {algerianWilayas.map((w) => (
-                      <option key={w} value={w}>{w}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700 block">
-                    Téléphone Gérant (Identifiant) <span className="text-emerald-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input
-                      type="tel"
-                      required
-                      placeholder="0550 12 34 56"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-9 pr-3 text-sm font-mono outline-none focus:border-emerald-500"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700 block">
-                    Mot de passe Commerçant <span className="text-emerald-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input
-                      type="password"
-                      required
-                      placeholder="Min. 4 caractères"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-9 pr-3 text-sm outline-none focus:border-emerald-500"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 block">
-                  Email (Optionnel)
-                </label>
-                <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="email"
-                    placeholder="contact@moncommerce.dz"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-9 pr-3 text-sm outline-none focus:border-emerald-500"
-                  />
-                </div>
-              </div>
-
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full py-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-sm shadow-lg shadow-emerald-500/25 transition-all flex items-center justify-center gap-2"
-                >
-                  {loading ? (
-                    <span>Enregistrement sur Supabase en cours...</span>
-                  ) : (
-                    <>
-                      <span>Activer mes 14 jours d&apos;essai gratuit</span>
-                      <ArrowRight className="w-4 h-4 rtl:rotate-180" />
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-
-            <div className="text-center pt-2 text-xs text-slate-500">
-              Vous avez déjà un compte commerce ?{' '}
-              <Link href="/login" className="font-bold text-emerald-600 hover:text-emerald-700 underline">
-                Se connecter avec votre mot de passe
-              </Link>
             </div>
+
+            {/* Category */}
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-slate-700 block">
+                Catégorie d&apos;activité
+              </label>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3.5 text-sm outline-none focus:border-emerald-500 font-medium"
+              >
+                {categories.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Wilaya */}
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-slate-700 block">
+                Wilaya
+              </label>
+              <select
+                value={wilaya}
+                onChange={(e) => setWilaya(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3.5 text-sm outline-none focus:border-emerald-500 font-medium"
+              >
+                {algerianWilayas.map((w) => (
+                  <option key={w} value={w}>{w}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Phone */}
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-slate-700 block">
+                Numéro de téléphone du gérant <span className="text-emerald-500">*</span>
+              </label>
+              <input
+                type="tel"
+                required
+                placeholder="0550 12 34 56"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3.5 text-sm font-mono tracking-wider tabular-nums outline-none focus:border-emerald-500"
+              />
+              <p className="text-[11px] text-slate-400">Pour les notifications et l&apos;assistance WhatsApp dédiée.</p>
+            </div>
+
+            {/* Submit */}
+            <div className="pt-3">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-sm shadow-lg shadow-emerald-500/25 transition-all flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <span>Création en cours...</span>
+                ) : (
+                  <>
+                    <span>Activer mes 14 jours d&apos;essai gratuit</span>
+                    <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+
+          {/* Existing account link */}
+          <div className="text-center pt-2 text-xs text-slate-500">
+            Déjà inscrit ?{' '}
+            <Link href="/dashboard" className="font-bold text-emerald-600 hover:text-emerald-700">
+              Accéder à l&apos;espace commerçant
+            </Link>
           </div>
-        )}
+        </div>
       </main>
 
+      {/* Footer */}
       <footer className="text-center py-4 text-xs text-slate-400">
         FidelityDZ SaaS • Plateforme N°1 en Algérie 🇩🇿
       </footer>
