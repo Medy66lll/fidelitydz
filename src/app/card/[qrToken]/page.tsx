@@ -28,6 +28,8 @@ import {
   MapPin,
   ExternalLink,
   Star,
+  Bell,
+  BellRing,
 } from 'lucide-react';
 
 export default function CustomerCardPage() {
@@ -52,6 +54,53 @@ export default function CustomerCardPage() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [downloadingPass, setDownloadingPass] = useState(false);
   const [googleReviewClaimed, setGoogleReviewClaimed] = useState(false);
+  const [notifPermission, setNotifPermission] = useState<string>('default');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      setNotifPermission(Notification.permission);
+    }
+  }, []);
+
+  const handleRequestNotifications = async () => {
+    if (typeof window === 'undefined' || !('Notification' in window)) {
+      alert(isAr ? 'المتصفح لا يدعم الإشعارات' : 'Les notifications ne sont pas supportées sur ce navigateur.');
+      return;
+    }
+    try {
+      const perm = await Notification.requestPermission();
+      setNotifPermission(perm);
+      if (perm === 'granted') {
+        localStorage.setItem('fidelitydz_notifications_enabled', 'true');
+        const title = `🔔 ${merchant?.business_name || 'FidelityDZ'}`;
+        const body = isAr
+          ? 'تم تفعيل إشعارات العروض بنجاح! ستصلك التخفيضات فور نشرها.'
+          : 'Notifications activées avec succès ! Vous recevrez nos offres exclusives en direct.';
+        try {
+          new Notification(title, {
+            body,
+            icon: merchant?.logo_url || 'https://cdn-icons-png.flaticon.com/512/1041/1041888.png',
+          });
+        } catch {}
+      }
+    } catch {}
+  };
+
+  useEffect(() => {
+    if (notifPermission === 'granted' && offers.length > 0 && merchant) {
+      const latestOffer = offers[0];
+      const notifiedKey = `fidelitydz_notif_sent_${latestOffer.id}`;
+      if (typeof window !== 'undefined' && !localStorage.getItem(notifiedKey)) {
+        try {
+          new Notification(`📢 Offre Spéciale — ${merchant.business_name}`, {
+            body: isAr && latestOffer.title_ar ? latestOffer.title_ar : latestOffer.title_fr,
+            icon: merchant.logo_url || 'https://cdn-icons-png.flaticon.com/512/1041/1041888.png',
+          });
+          localStorage.setItem(notifiedKey, 'true');
+        } catch {}
+      }
+    }
+  }, [offers, notifPermission, merchant, isAr]);
   const hiddenQrRef = useRef<HTMLDivElement>(null);
 
   const loadCardLive = async (showSpinner = false) => {
@@ -875,6 +924,40 @@ export default function CustomerCardPage() {
             </div>
           </div>
         )}
+
+        {/* Notifications Phone Permission & Status Bar */}
+        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-3 flex items-center justify-between gap-2 shadow-sm">
+          <div className="flex items-center gap-2.5">
+            <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${notifPermission === 'granted' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-300'}`}>
+              {notifPermission === 'granted' ? <BellRing className="w-4 h-4" /> : <Bell className="w-4 h-4" />}
+            </div>
+            <div>
+              <div className="text-xs font-bold text-white">
+                {notifPermission === 'granted'
+                  ? (isAr ? 'الإشعارات مفعلة على هاتفك' : 'Notifications actives sur ce téléphone')
+                  : (isAr ? 'تفعيل إشعارات العروض الخاصة' : 'Recevoir les alertes promos & offres')}
+              </div>
+              <div className="text-[10px] text-slate-400">
+                {notifPermission === 'granted'
+                  ? (isAr ? 'ستصلك تنبيهات فورية بكل عروض المتجر' : 'Vous recevrez les alertes instantanément')
+                  : (isAr ? 'اضغط لتفعيل الإشعارات والتخفيضات' : 'Cliquez pour ne manquer aucune réduction')}
+              </div>
+            </div>
+          </div>
+          {notifPermission !== 'granted' ? (
+            <button
+              onClick={handleRequestNotifications}
+              type="button"
+              className="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-[11px] shadow-sm transition whitespace-nowrap"
+            >
+              {isAr ? 'تفعيل' : 'Activer'}
+            </button>
+          ) : (
+            <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800 px-2 py-0.5 rounded-full">
+              {isAr ? 'مفعل' : 'Actif'}
+            </span>
+          )}
+        </div>
 
         {/* Personalized Offers Section */}
         {offers.length > 0 && (

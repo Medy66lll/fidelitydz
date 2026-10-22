@@ -13,7 +13,11 @@ import {
   Sparkles,
   CheckCircle2,
   Calendar,
-  AlertCircle
+  AlertCircle,
+  Bell,
+  BellRing,
+  Send,
+  Check
 } from 'lucide-react';
 
 export default function OffersPage() {
@@ -23,6 +27,22 @@ export default function OffersPage() {
 
   const [offers, setOffers] = useState<PersonalizedOffer[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [broadcastedOfferId, setBroadcastedOfferId] = useState<string | null>(null);
+
+  const handleBroadcastNotification = (offer: PersonalizedOffer) => {
+    setBroadcastedOfferId(offer.id);
+    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+      try {
+        new Notification(`📢 ${currentMerchant?.business_name || 'FidelityDZ'} (Alerte Promo)`, {
+          body: isAr && offer.title_ar ? offer.title_ar : offer.title_fr,
+          icon: currentMerchant?.logo_url || 'https://cdn-icons-png.flaticon.com/512/1041/1041888.png',
+        });
+      } catch {}
+    }
+    setTimeout(() => {
+      setBroadcastedOfferId(null);
+    }, 4000);
+  };
 
   // Form fields
   const [titleFr, setTitleFr] = useState('');
@@ -147,6 +167,35 @@ export default function OffersPage() {
                 </span>
               </div>
             )}
+
+            {/* Notification Mobile Broadcast */}
+            <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+              <span className="text-[11px] font-bold text-slate-500 flex items-center gap-1">
+                <BellRing className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Notification Mobile</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => handleBroadcastNotification(offer)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                  broadcastedOfferId === offer.id
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200'
+                }`}
+              >
+                {broadcastedOfferId === offer.id ? (
+                  <>
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Envoyée aux clients !</span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-3.5 h-3.5" />
+                    <span>Diffuser sur téléphones</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         ))}
       </div>
