@@ -1,5 +1,7 @@
 'use client';
 
+import { getPublicOrigin } from '@/lib/url';
+
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
@@ -42,9 +44,7 @@ export default function DashboardOverviewPage() {
   const totalRewardsClaimed = transactions.filter(t => t.action_type === 'REDEEM_REWARD').length + 3; // + sample baseline
   const activeOffersCount = db.getOffers(currentMerchant?.id).filter(o => o.is_active).length;
 
-  const joinUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}/join/${currentMerchant?.slug || 'el-bahdja'}`
-    : `https://fidelitydz.com/join/${currentMerchant?.slug || 'el-bahdja'}`;
+  const joinUrl = `${getPublicOrigin()}/join/${currentMerchant?.slug || 'el-bahdja'}`;
 
   const handleCopyLink = () => {
     if (typeof window !== 'undefined') {

@@ -312,7 +312,7 @@ class FidelityDatabase {
   }> {
     const cleanToken = decodeURIComponent(token || '').trim();
     try {
-      const res = await fetch(`/api/db?type=card_by_token&token=${encodeURIComponent(cleanToken)}`, {
+      const res = await fetch(`/api/db?type=card_by_token&token=${encodeURIComponent(cleanToken)}&_t=${Date.now()}`, {
         cache: 'no-store',
       });
       if (res.ok) {
@@ -727,11 +727,34 @@ class FidelityDatabase {
       ...offer,
       id: toValidUuid(offer.id),
       merchant_id: toValidUuid(offer.merchant_id),
+      updated_at: offer.updated_at || new Date().toISOString(),
     };
     const all = this.getOffers();
     all.unshift(fixed);
     this.setStorage('offers', all);
     postApiDb({ action: 'save_offer', offer: fixed });
+  }
+
+  updateOffer(offer: PersonalizedOffer): void {
+    const fixed: PersonalizedOffer = {
+      ...offer,
+      id: toValidUuid(offer.id),
+      merchant_id: toValidUuid(offer.merchant_id),
+      updated_at: offer.updated_at || new Date().toISOString(),
+    };
+    const all = this.getOffers();
+    const idx = all.findIndex((o) => o.id === fixed.id);
+    if (idx >= 0) all[idx] = fixed;
+    else all.unshift(fixed);
+    this.setStorage('offers', all);
+    postApiDb({ action: 'save_offer', offer: fixed });
+  }
+
+  deleteOffer(offerId: string): void {
+    const id = toValidUuid(offerId);
+    const all = this.getOffers().filter((o) => o.id !== offerId && o.id !== id);
+    this.setStorage('offers', all);
+    postApiDb({ action: 'delete_offer', offer_id: id });
   }
 
   getOffersForCard(card: CustomerCard): PersonalizedOffer[] {

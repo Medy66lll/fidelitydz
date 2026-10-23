@@ -1,5 +1,7 @@
 'use client';
 
+import { getPublicOrigin } from '@/lib/url';
+
 import React, { useRef } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useMerchant } from '@/context/MerchantContext';
@@ -20,9 +22,7 @@ export default function CounterPosterPage() {
   const posterRef = useRef<HTMLDivElement>(null);
   const qrCanvasWrapRef = useRef<HTMLDivElement>(null);
 
-  const joinUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}/join/${currentMerchant?.slug || 'el-bahdja'}`
-    : `https://fidelitydz.com/join/${currentMerchant?.slug || 'el-bahdja'}`;
+  const joinUrl = `${getPublicOrigin()}/join/${currentMerchant?.slug || 'el-bahdja'}`;
 
   const handlePrint = () => {
     if (typeof window !== 'undefined') {

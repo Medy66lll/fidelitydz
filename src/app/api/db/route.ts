@@ -263,17 +263,53 @@ function packTxForDb(tx: any) {
 }
 
 function packOfferForDb(o: any) {
+  let rawDescAr = String(o.description_ar || '').trim();
+  if (rawDescAr.startsWith('__OFFER_META__:')) {
+    const parts = rawDescAr.split(':::');
+    rawDescAr = parts[1] || '';
+  }
+  const metaObj = {
+    img: o.image_url || '',
+    upd: o.updated_at || o.created_at || new Date().toISOString(),
+  };
+  const packedDescAr = `__OFFER_META__:${encodeURIComponent(JSON.stringify(metaObj))}:::${rawDescAr}`;
+
   return {
     id: ensureUuid(o.id),
     merchant_id: ensureUuid(o.merchant_id),
     title_fr: sanitizeString(o.title_fr, 120),
     title_ar: o.title_ar || '',
     description_fr: o.description_fr || '',
-    description_ar: o.description_ar || '',
+    description_ar: packedDescAr,
     target_segment: o.target_segment || 'ALL',
     valid_until: o.valid_until || new Date(Date.now() + 14 * 86400000).toISOString(),
     is_active: Boolean(o.is_active ?? true),
     created_at: o.created_at || new Date().toISOString(),
+  };
+}
+
+function unpackOfferFromDb(row: any) {
+  if (!row) return null;
+  let description_ar = row.description_ar || '';
+  let image_url = row.image_url || '';
+  let updated_at = row.updated_at || row.created_at || '';
+
+  if (typeof description_ar === 'string' && description_ar.startsWith('__OFFER_META__:')) {
+    const [metaPart, realDescAr] = description_ar.split(':::');
+    description_ar = realDescAr || '';
+    const content = metaPart.slice(15);
+    try {
+      const parsed = JSON.parse(decodeURIComponent(content));
+      if (parsed.img) image_url = parsed.img;
+      if (parsed.upd) updated_at = parsed.upd;
+    } catch {}
+  }
+
+  return {
+    ...row,
+    description_ar,
+    image_url,
+    updated_at,
   };
 }
 
@@ -405,21 +441,24 @@ export async function GET(req: NextRequest) {
     if (!card) {
       return NextResponse.json({ found: false }, { status: 200 });
     }
-    const [mRows, pRows, oRows] = await Promise.all([
+    const [mRows, pRows, oRows, txRows] = await Promise.all([
       sbSelect('merchants', `id=eq.${encodeURIComponent(card.merchant_id)}&limit=1`),
       sbSelect('loyalty_programs', `merchant_id=eq.${encodeURIComponent(card.merchant_id)}&limit=1`),
-      sbSelect('personalized_offers', `merchant_id=eq.${encodeURIComponent(card.merchant_id)}&is_active=eq.true`),
+      sbSelect('personalized_offers', `merchant_id=eq.${encodeURIComponent(card.merchant_id)}&is_active=eq.true&order=created_at.desc`),
+      sbSelect('loyalty_transactions', `card_id=eq.${encodeURIComponent(card.id)}`),
     ]);
     const merchant = mRows && mRows.length > 0 ? unpackMerchantFromDb(mRows[0]) : null;
     const program = pRows && pRows.length > 0 ? pRows[0] : null;
     const safeMerchant = merchant ? (() => { const { password: _p, ...rest } = merchant; return rest; })() : null;
+    const claimedGoogle = Array.isArray(txRows) && txRows.some((t: any) => t.action_type === 'GOOGLE_REVIEW_BONUS');
+    const unpackedOffers = Array.isArray(oRows) ? oRows.map(unpackOfferFromDb) : [];
     return NextResponse.json(
       {
         found: true,
-        card,
+        card: { ...card, google_review_claimed: claimedGoogle },
         merchant: safeMerchant,
         program,
-        offers: oRows || [],
+        offers: unpackedOffers,
       },
       { status: 200 }
     );
@@ -500,7 +539,7 @@ export async function GET(req: NextRequest) {
     merchants,
     programs: filterByMerchant(pRows),
     cards: filterByMerchant(cRows),
-    offers: filterByMerchant(oRows),
+    offers: filterByMerchant(Array.isArray(oRows) ? oRows.map(unpackOfferFromDb) : []),
     payments,
     transactions: filterByMerchant(txRows),
   });
@@ -626,6 +665,12 @@ export async function POST(req: NextRequest) {
     if (action === 'save_card') {
       const { card, transaction } = body;
       const dbCard = packCardForDb(card);
+      if (transaction && transaction.action_type === 'GOOGLE_REVIEW_BONUS') {
+        const existingTx = await sbSelect('loyalty_transactions', `card_id=eq.${encodeURIComponent(dbCard.id)}&action_type=eq.GOOGLE_REVIEW_BONUS&limit=1`);
+        if (existingTx && existingTx.length > 0) {
+          return NextResponse.json({ success: false, already_claimed: true, card: { ...dbCard, google_review_claimed: true } });
+        }
+      }
       const cRes = await sbUpsert('customer_cards', dbCard, 'id');
       if (transaction) {
         const dbTx = packTxForDb({ ...transaction, card_id: dbCard.id, merchant_id: dbCard.merchant_id });
@@ -722,10 +767,19 @@ export async function POST(req: NextRequest) {
       const { offer } = body;
       const dbOffer = packOfferForDb(offer);
       const oRes = await sbUpsert('personalized_offers', dbOffer, 'id');
+      const savedRow = Array.isArray(oRes.data) && oRes.data[0] ? oRes.data[0] : dbOffer;
       return NextResponse.json({
         success: oRes.ok,
-        offer: Array.isArray(oRes.data) && oRes.data[0] ? oRes.data[0] : dbOffer,
+        offer: unpackOfferFromDb(savedRow),
       });
+    }
+
+    if (action === 'delete_offer') {
+      const offerId = body.offer_id || body.id;
+      if (!offerId) return NextResponse.json({ success: false, error: 'offer_id manquant' }, { status: 400 });
+      const oUuid = ensureUuid(offerId);
+      const res = await sbRequest(`personalized_offers?id=eq.${encodeURIComponent(oUuid)}`, 'DELETE');
+      return NextResponse.json({ success: res.ok, error: res.ok ? null : res.errorText });
     }
 
     if (action === 'save_payment') {

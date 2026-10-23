@@ -169,6 +169,8 @@ export interface PersonalizedOffer {
   title_ar?: string;
   description_fr: string;
   description_ar?: string;
+  image_url?: string;
+  updated_at?: string;
   target_segment: TargetSegment;
   valid_until?: string;
   is_active: boolean;

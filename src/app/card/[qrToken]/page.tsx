@@ -1,5 +1,8 @@
 'use client';
 
+import { soundFX } from '@/lib/sound';
+import { getPublicOrigin } from '@/lib/url';
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
@@ -55,6 +58,7 @@ export default function CustomerCardPage() {
   const [downloadingPass, setDownloadingPass] = useState(false);
   const [googleReviewClaimed, setGoogleReviewClaimed] = useState(false);
   const [notifPermission, setNotifPermission] = useState<string>('default');
+  const [livePushOffer, setLivePushOffer] = useState<PersonalizedOffer | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && 'Notification' in window) {
@@ -62,9 +66,31 @@ export default function CustomerCardPage() {
     }
   }, []);
 
+  const triggerPhoneNotification = (title: string, body: string, tag: string) => {
+    const iconUrl = `/api/icon?token=${encodeURIComponent(qrToken)}`;
+    soundFX.playReward();
+    if (typeof window === 'undefined' || !('Notification' in window) || Notification.permission !== 'granted') return;
+    const options: any = {
+      body,
+      icon: iconUrl,
+      badge: iconUrl,
+      vibrate: [200, 100, 200, 100, 200],
+      tag,
+    };
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready
+        .then((reg) => reg.showNotification(title, options))
+        .catch(() => {
+          try { new Notification(title, options); } catch {}
+        });
+    } else {
+      try { new Notification(title, options); } catch {}
+    }
+  };
+
   const handleRequestNotifications = async () => {
     if (typeof window === 'undefined' || !('Notification' in window)) {
-      alert(isAr ? 'المتصفح لا يدعم الإشعارات' : 'Les notifications ne sont pas supportées sur ce navigateur.');
+      alert(isAr ? 'المتصفح لا يدعم الإشعارات' : 'Sur iPhone, ajoutez d’abord la carte « Sur l’écran d’accueil » puis activez les alertes.');
       return;
     }
     try {
@@ -72,35 +98,15 @@ export default function CustomerCardPage() {
       setNotifPermission(perm);
       if (perm === 'granted') {
         localStorage.setItem('fidelitydz_notifications_enabled', 'true');
-        const title = `🔔 ${merchant?.business_name || 'FidelityDZ'}`;
-        const body = isAr
-          ? 'تم تفعيل إشعارات العروض بنجاح! ستصلك التخفيضات فور نشرها.'
-          : 'Notifications activées avec succès ! Vous recevrez nos offres exclusives en direct.';
-        try {
-          new Notification(title, {
-            body,
-            icon: merchant?.logo_url || 'https://cdn-icons-png.flaticon.com/512/1041/1041888.png',
-          });
-        } catch {}
+        triggerPhoneNotification(
+          `🔔 ${merchant?.business_name || 'Club Fidélité'}`,
+          isAr ? 'تم تفعيل إشعارات العروض بنجاح!' : 'Alertes activées ! Vous recevrez nos offres en direct.',
+          'welcome-' + Date.now()
+        );
       }
     } catch {}
   };
 
-  useEffect(() => {
-    if (notifPermission === 'granted' && offers.length > 0 && merchant) {
-      const latestOffer = offers[0];
-      const notifiedKey = `fidelitydz_notif_sent_${latestOffer.id}`;
-      if (typeof window !== 'undefined' && !localStorage.getItem(notifiedKey)) {
-        try {
-          new Notification(`📢 Offre Spéciale — ${merchant.business_name}`, {
-            body: isAr && latestOffer.title_ar ? latestOffer.title_ar : latestOffer.title_fr,
-            icon: merchant.logo_url || 'https://cdn-icons-png.flaticon.com/512/1041/1041888.png',
-          });
-          localStorage.setItem(notifiedKey, 'true');
-        } catch {}
-      }
-    }
-  }, [offers, notifPermission, merchant, isAr]);
   const hiddenQrRef = useRef<HTMLDivElement>(null);
 
   const loadCardLive = async (showSpinner = false) => {
@@ -122,8 +128,26 @@ export default function CustomerCardPage() {
 
       if (typeof window !== 'undefined') {
         localStorage.setItem('fidelitydz_last_card_token', res.card.qr_token);
-        const claimed = localStorage.getItem(`fidelitydz_gr_claimed_${res.card.id}`) === 'true';
+        const claimed = Boolean(res.card.google_review_claimed) || localStorage.getItem(`fidelitydz_gr_claimed_${res.card.id}`) === 'true';
         setGoogleReviewClaimed(claimed);
+
+        if (Array.isArray(res.offers) && res.offers.length > 0) {
+          res.offers.forEach((off: PersonalizedOffer) => {
+            if (!off.is_active) return;
+            const stamp = off.updated_at || off.created_at || off.id;
+            const storageKey = `fidelitydz_offer_seen_${off.id}`;
+            const prevStamp = localStorage.getItem(storageKey);
+            if (prevStamp !== stamp) {
+              localStorage.setItem(storageKey, stamp);
+              setLivePushOffer(off);
+              triggerPhoneNotification(
+                `📢 ${res.merchant?.business_name} : Nouvelle Offre !`,
+                isAr && off.title_ar ? off.title_ar : off.title_fr,
+                `offer-${off.id}-${stamp}`
+              );
+            }
+          });
+        }
       }
 
       if (showSpinner && (res.card.rewards_available > 0 || res.card.stamps_balance >= res.program.stamps_required)) {
@@ -156,7 +180,14 @@ export default function CustomerCardPage() {
       link.rel = 'manifest';
       document.head.appendChild(link);
     }
+    const iconUrl = `/api/icon?token=${encodeURIComponent(card.qr_token)}`;
     link.href = `/api/manifest?token=${encodeURIComponent(card.qr_token)}&name=${encodeURIComponent(merchant.business_name)}`;
+    document.title = merchant.business_name;
+    document.querySelectorAll("link[rel='apple-touch-icon'], link[rel='icon']").forEach((el) => el.remove());
+    const appleLink = document.createElement('link');
+    appleLink.rel = 'apple-touch-icon';
+    appleLink.href = iconUrl;
+    document.head.appendChild(appleLink);
 
     const setMeta = (name: string, content: string) => {
       let m = document.querySelector(`meta[name='${name}']`) as HTMLMetaElement | null;
@@ -199,7 +230,17 @@ export default function CustomerCardPage() {
       updatedCard.points_balance += bonus * 10;
     }
     updatedCard.last_visit_at = new Date().toISOString();
-    db.saveCard(updatedCard);
+    updatedCard.google_review_claimed = true;
+    db.saveCard(updatedCard, {
+      id: `tx-gr-${card.id}`,
+      card_id: card.id,
+      merchant_id: merchant.id,
+      performed_by: 'Client (Google Maps)',
+      action_type: 'GOOGLE_REVIEW_BONUS',
+      delta_value: program?.program_type === 'STAMPS' ? bonus : bonus * 10,
+      purchase_amount_dzd: 0,
+      created_at: new Date().toISOString(),
+    });
     setCard(updatedCard);
     setGoogleReviewClaimed(true);
     if (typeof window !== 'undefined') {
@@ -219,11 +260,11 @@ export default function CustomerCardPage() {
           .share({
             title: `Carte Fidélité — ${merchant?.business_name}`,
             text: `Ma carte de fidélité digitale chez ${merchant?.business_name}`,
-            url: window.location.href,
+            url: `${getPublicOrigin()}/card/${card?.qr_token}`,
           })
           .catch(() => {});
       } else {
-        navigator.clipboard.writeText(window.location.href);
+        navigator.clipboard.writeText(`${getPublicOrigin()}/card/${card?.qr_token}`);
         setCopiedLink(true);
         setTimeout(() => setCopiedLink(false), 2500);
       }
@@ -626,6 +667,32 @@ export default function CustomerCardPage() {
         </div>
       </header>
 
+      {/* Bannière Push Temps Réel (Même téléphone déverrouillé) */}
+      {livePushOffer && (
+        <div className="fixed top-3 inset-x-3 z-50 max-w-md mx-auto bg-slate-900/95 backdrop-blur-md border-2 border-emerald-400 rounded-2xl p-3.5 shadow-2xl flex items-start gap-3 animate-bounce">
+          <div className="w-10 h-10 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center flex-shrink-0">
+            <BellRing className="w-5 h-5" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] font-black uppercase text-emerald-400">
+              {merchant.business_name} • Offre en direct
+            </p>
+            <h4 className="text-xs font-extrabold text-white truncate">
+              {isAr && livePushOffer.title_ar ? livePushOffer.title_ar : livePushOffer.title_fr}
+            </h4>
+            <p className="text-[11px] text-slate-300 line-clamp-2">
+              {isAr && livePushOffer.description_ar ? livePushOffer.description_ar : livePushOffer.description_fr}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setLivePushOffer(null)}
+            className="p-1 text-slate-400 hover:text-white"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
       {/* Main Content */}
       <main className="max-w-md mx-auto w-full px-4 pt-6 space-y-6">
         {/* Pass Card Container */}
@@ -988,6 +1055,11 @@ export default function CustomerCardPage() {
                       </span>
                     )}
                   </div>
+                  {offer.image_url && (
+                    <div className="rounded-xl overflow-hidden border border-slate-800 my-2 max-h-44">
+                      <img src={offer.image_url} alt={offer.title_fr} className="w-full h-full object-cover" />
+                    </div>
+                  )}
                   <p className="text-xs text-slate-400 leading-relaxed">
                     {isAr && offer.description_ar ? offer.description_ar : offer.description_fr}
                   </p>
