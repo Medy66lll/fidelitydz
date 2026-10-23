@@ -47,6 +47,7 @@ export default function CustomerCardPage() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [notifPermission, setNotifPermission] = useState<string>('default');
 
   // Apple / Google Wallet Pass & Kiosk Mode
   const [walletModalOpen, setWalletModalOpen] = useState(false);
@@ -122,7 +123,8 @@ export default function CustomerCardPage() {
 
       if (typeof window !== 'undefined') {
         localStorage.setItem('fidelitydz_last_card_token', res.card.qr_token);
-        const claimed = localStorage.getItem(`fidelitydz_gr_claimed_${res.card.id}`) === 'true';
+        const txs = db.getTransactions(res.card.id);
+        const claimed = txs.some(tx => tx.notes === 'GOOGLE_REVIEW');
         setGoogleReviewClaimed(claimed);
       }
 
@@ -147,9 +149,77 @@ export default function CustomerCardPage() {
     return () => clearInterval(interval);
   }, [qrToken]);
 
+  const handleEnableNotifications = async () => {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      const perm = await Notification.requestPermission();
+      setNotifPermission(perm);
+      if (perm === 'granted') {
+        localStorage.setItem('fidelitydz_notifications_enabled', 'true');
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.ready.then(reg => {
+            reg.showNotification(`🔔 ${merchant?.business_name || 'FidelityDZ'}`, {
+              body: isAr ? 'تم تفعيل الإشعارات بنجاح!' : 'Notifications activées avec succès !',
+              icon: merchant?.logo_url,
+              vibrate: [200, 100, 200]
+            } as any);
+          });
+        }
+      }
+    }
+  };
+
+  // Polling Real-Time pour les notifications Push (Client)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      setNotifPermission(Notification.permission);
+    }
+    
+    if (!merchant || !card) return;
+    
+    const interval = setInterval(() => {
+      const latestOffers = db.getOffersForCard(card);
+      setOffers(latestOffers);
+      
+      latestOffers.forEach(offer => {
+        const triggerTime = offer.updated_at || offer.created_at;
+        const lastNotified = localStorage.getItem(`notified_offer_${offer.id}`);
+        
+        if (offer.is_active && triggerTime !== lastNotified) {
+          if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+            const title = `🔔 ${merchant.business_name} : Nouvelle offre !`;
+            const options = {
+              body: isAr && offer.title_ar ? offer.title_ar : offer.title_fr,
+              icon: merchant.logo_url || 'https://cdn-icons-png.flaticon.com/512/1041/1041888.png',
+              vibrate: [200, 100, 200, 100, 200]
+            } as any;
+
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.ready.then(reg => {
+                reg.showNotification(title, options);
+              }).catch(() => { new Notification(title, options); });
+            } else {
+              new Notification(title, options);
+            }
+          }
+          localStorage.setItem(`notified_offer_${offer.id}`, triggerTime);
+        }
+      });
+    }, 10000); // Check toutes les 10 secondes
+
+    return () => clearInterval(interval);
+  }, [merchant, card, isAr]);
+
   // Inject iOS Web App meta tags + dynamic PWA manifest so iPhone "Add to Home Screen" opens in standalone Apple Wallet style
   useEffect(() => {
     if (typeof document === 'undefined' || !card || !merchant) return;
+    let link: HTMLLinkElement | null = document.querySelector("link[rel='manifest']");
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'manifest';
+      document.head.appendChild(link);
+    }
+    const logoUrl = merchant.logo_url || 'https://cdn-icons-png.flaticon.com/512/1041/1041888.png';
+    link.href = `/api/manifest?token=${encodeURIComponent(card.qr_token)}&name=${encodeURIComponent(merchant.business_name)}&logo=${encodeURIComponent(logoUrl)}`;
 
     const setMeta = (name: string, content: string) => {
       let m = document.querySelector(`meta[name='${name}']`) as HTMLMetaElement | null;
@@ -192,12 +262,23 @@ export default function CustomerCardPage() {
       updatedCard.points_balance += bonus * 10;
     }
     updatedCard.last_visit_at = new Date().toISOString();
-    db.saveCard(updatedCard);
+    
+    // Lock it permanently by recording a formal transaction in the DB
+    const tx = {
+      id: crypto.randomUUID(),
+      merchant_id: merchant.id,
+      card_id: card.id,
+      amount: 0,
+      stamps_earned: program?.program_type === 'STAMPS' ? bonus : 0,
+      points_earned: program?.program_type !== 'STAMPS' ? bonus * 10 : 0,
+      transaction_type: 'REWARD' as const,
+      notes: 'GOOGLE_REVIEW',
+      created_at: new Date().toISOString()
+    };
+    
+    db.saveCard(updatedCard, tx);
     setCard(updatedCard);
     setGoogleReviewClaimed(true);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(`fidelitydz_gr_claimed_${card.id}`, 'true');
-    }
     confetti({
       particleCount: 100,
       spread: 70,
@@ -352,56 +433,6 @@ export default function CustomerCardPage() {
       handleSaveAppleWalletPass();
     }
   };
-
-  // Polling Real-Time pour les notifications Push (Client)
-  useEffect(() => {
-    if (!merchant || !card) return;
-    
-    // Demander la permission Push dès le chargement si ce n'est pas fait
-    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
-
-    const interval = setInterval(() => {
-      const latestOffers = db.getOffersForCard(card);
-      setOffers(latestOffers);
-      
-      latestOffers.forEach(offer => {
-        // Le commerçant met à jour "updated_at" quand il clique sur "Diffuser"
-        const triggerTime = offer.updated_at || offer.created_at;
-        const lastNotified = localStorage.getItem(`notified_offer_${offer.id}`);
-        
-        if (offer.is_active && triggerTime !== lastNotified) {
-          // Nouvelle diffusion détectée !
-          if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
-            try {
-              const title = `🔔 ${merchant.business_name} : Nouvelle offre !`;
-              const options = {
-                body: isAr && offer.title_ar ? offer.title_ar : offer.title_fr,
-                icon: merchant.logo_url || 'https://cdn-icons-png.flaticon.com/512/1041/1041888.png',
-                vibrate: [200, 100, 200]
-              } as any;
-              
-              if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.ready.then(reg => {
-                  reg.showNotification(title, options);
-                }).catch(e => {
-                  new Notification(title, options);
-                });
-              } else {
-                new Notification(title, options);
-              }
-            } catch (e) {
-              console.log('Push notification failed', e);
-            }
-          }
-          localStorage.setItem(`notified_offer_${offer.id}`, triggerTime);
-        }
-      });
-    }, 10000); // Check toutes les 10 secondes
-
-    return () => clearInterval(interval);
-  }, [merchant, card, isAr]);
 
   if (loading) {
     return (

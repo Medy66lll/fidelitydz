@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useMerchant } from '@/context/MerchantContext';
 import { db } from '@/lib/db';
 import { PersonalizedOffer, TargetSegment } from '@/lib/types';
-import { Tag, Plus, Clock, Users, Sparkles, CheckCircle2, Calendar, AlertCircle, Bell, BellRing, Send, Check } from 'lucide-react';
+import { Tag, Plus, Clock, Users, Sparkles, CheckCircle2, Calendar, AlertCircle, Bell, BellRing, Send, Check, Image as ImageIcon, X } from 'lucide-react';
 
 export default function OffersPage() {
   const { t, language } = useLanguage();
@@ -25,12 +25,42 @@ export default function OffersPage() {
   const [targetSegment, setTargetSegment] = useState<TargetSegment>('ALL');
   const [isActive, setIsActive] = useState(true);
   const [validDays, setValidDays] = useState(14);
+  const [imageUrl, setImageUrl] = useState<string>('');
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (currentMerchant) {
       setOffers(db.getOffers(currentMerchant.id));
     }
   }, [currentMerchant]);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        alert(isAr ? 'حجم الصورة كبير جداً (الأقصى 2 ميغابايت)' : 'Image trop volumineuse (Max 2 MB)');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setImageUrl(event.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const resetForm = () => {
+    setEditingOfferId(null);
+    setTitleFr('');
+    setTitleAr('');
+    setDescFr('');
+    setDescAr('');
+    setTargetSegment('ALL');
+    setIsActive(true);
+    setValidDays(14);
+    setImageUrl('');
+  };
 
   const handleEdit = (offer: PersonalizedOffer) => {
     setEditingOfferId(offer.id);
@@ -40,6 +70,7 @@ export default function OffersPage() {
     setDescAr(offer.description_ar || '');
     setTargetSegment(offer.target_segment || 'ALL');
     setIsActive(offer.is_active ?? true);
+    setImageUrl(offer.image_url || '');
     setValidDays(14);
     setShowCreateModal(true);
   };
@@ -63,6 +94,24 @@ export default function OffersPage() {
       ...offer,
       updated_at: new Date().toISOString()
     });
+    
+    // Also try local notification for testing if on the same device
+    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+      try {
+        const title = `📢 ${currentMerchant?.business_name || 'FidelityDZ'} (Alerte Promo)`;
+        const options = {
+          body: isAr && offer.title_ar ? offer.title_ar : offer.title_fr,
+          icon: currentMerchant?.logo_url || 'https://cdn-icons-png.flaticon.com/512/1041/1041888.png',
+          vibrate: [200, 100, 200]
+        } as any;
+        
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.ready.then(reg => reg.showNotification(title, options)).catch(() => new Notification(title, options));
+        } else {
+          new Notification(title, options);
+        }
+      } catch {}
+    }
     setTimeout(() => setBroadcastedOfferId(null), 4000);
   };
 
@@ -79,8 +128,10 @@ export default function OffersPage() {
           title_ar: titleAr,
           description_fr: descFr,
           description_ar: descAr,
+          image_url: imageUrl,
           target_segment: targetSegment,
-          is_active: isActive
+          is_active: isActive,
+          updated_at: new Date().toISOString()
         });
       }
     } else {
@@ -91,6 +142,7 @@ export default function OffersPage() {
         title_ar: titleAr,
         description_fr: descFr,
         description_ar: descAr,
+        image_url: imageUrl,
         target_segment: targetSegment,
         valid_until: new Date(Date.now() + validDays * 86400000).toISOString(),
         is_active: isActive,
@@ -101,13 +153,7 @@ export default function OffersPage() {
     
     setOffers(db.getOffers(currentMerchant.id));
     setShowCreateModal(false);
-    setEditingOfferId(null);
-    setTitleFr('');
-    setTitleAr('');
-    setDescFr('');
-    setDescAr('');
-    setTargetSegment('ALL');
-    setIsActive(true);
+    resetForm();
   };
 
   return (
@@ -125,9 +171,7 @@ export default function OffersPage() {
         </div>
         <button
           onClick={() => {
-            setEditingOfferId(null);
-            setTitleFr(''); setTitleAr(''); setDescFr(''); setDescAr('');
-            setTargetSegment('ALL'); setIsActive(true); setValidDays(14);
+            resetForm();
             setShowCreateModal(true);
           }}
           className="flex items-center justify-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-medium transition-all shadow-lg shadow-emerald-500/20"
@@ -175,6 +219,12 @@ export default function OffersPage() {
                   </div>
                 </div>
               </div>
+
+              {offer.image_url && (
+                <div className="mb-4 rounded-xl overflow-hidden border border-slate-700">
+                  <img src={offer.image_url} alt="Promo" className="w-full h-32 object-cover" />
+                </div>
+              )}
 
               <p className="text-sm text-slate-300 mb-4 line-clamp-2">
                 {isAr && offer.description_ar ? offer.description_ar : offer.description_fr}
@@ -225,7 +275,7 @@ export default function OffersPage() {
                     ) : (
                       <>
                         <Send className="w-4 h-4" />
-                        <span>{isAr ? 'إرسال إشعار' : 'Diffuser l\'alerte'}</span>
+                        <span>{isAr ? 'إرسال إشعار' : 'Diffuser'}</span>
                       </>
                     )}
                   </button>
@@ -238,7 +288,7 @@ export default function OffersPage() {
 
       {showCreateModal && (
         <div className="fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-lg my-8">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-lg my-8 mt-24 sm:mt-8">
             <h3 className="text-xl font-bold text-white mb-6">
               {editingOfferId
                 ? (isAr ? 'تعديل العرض' : 'Modifier l\'offre')
@@ -246,6 +296,25 @@ export default function OffersPage() {
             </h3>
 
             <form onSubmit={handleSaveOffer} className="space-y-4">
+              
+              {/* Image Upload Section */}
+              <div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/50 text-center">
+                <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageUpload} className="hidden" />
+                {imageUrl ? (
+                  <div className="relative w-full h-32 rounded-lg overflow-hidden group">
+                    <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                    <button type="button" onClick={() => setImageUrl('')} className="absolute top-2 right-2 p-1.5 bg-black/50 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <button type="button" onClick={() => fileInputRef.current?.click()} className="w-full h-32 border-2 border-dashed border-slate-600 hover:border-emerald-500 rounded-lg flex flex-col items-center justify-center text-slate-400 hover:text-emerald-400 transition-colors">
+                    <ImageIcon className="w-8 h-8 mb-2" />
+                    <span className="text-sm font-medium">{isAr ? 'إضافة صورة للعرض' : 'Ajouter une image'}</span>
+                  </button>
+                )}
+              </div>
+
               <div className="space-y-4 p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
                 <h4 className="text-sm font-medium text-slate-400 flex items-center gap-2">
                   <span className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-xs">Fr</span>
@@ -343,9 +412,7 @@ export default function OffersPage() {
                   type="button"
                   onClick={() => {
                     setShowCreateModal(false);
-                    setEditingOfferId(null);
-                    setTitleFr(''); setTitleAr(''); setDescFr(''); setDescAr('');
-                    setTargetSegment('ALL'); setIsActive(true);
+                    resetForm();
                   }}
                   className="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-medium transition-all"
                 >

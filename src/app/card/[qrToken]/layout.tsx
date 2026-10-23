@@ -46,14 +46,13 @@ export async function generateMetadata({ params }: { params: { qrToken: string }
     icons: {
       icon: logoUrl,
       shortcut: logoUrl,
-      apple: logoUrl,
+      apple: logoUrl, // VITAL FOR IOS
     },
     appleWebApp: {
       capable: true,
       statusBarStyle: 'black-translucent',
       title: title,
     },
-    manifest: `/api/manifest?token=${token}&name=${encodeURIComponent(title)}&logo=${encodeURIComponent(logoUrl)}`,
   };
 }
 
