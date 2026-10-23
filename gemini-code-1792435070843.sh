@@ -1,3 +1,3 @@
 git add .
-git commit -m "feat v20: solid base from v12, real mobile push, server side pwa logo, google review anti-cheat and full offers management with images"
+git commit -m "rollback: retour propre a la version 12 stable"
 git push origin main
