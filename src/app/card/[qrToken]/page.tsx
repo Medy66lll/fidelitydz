@@ -55,7 +55,6 @@ export default function CustomerCardPage() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [downloadingPass, setDownloadingPass] = useState(false);
   const [googleReviewClaimed, setGoogleReviewClaimed] = useState(false);
-  const [notifPermission, setNotifPermission] = useState<string>('default');
 
   useEffect(() => {
     if (typeof window !== 'undefined' && 'Notification' in window) {
