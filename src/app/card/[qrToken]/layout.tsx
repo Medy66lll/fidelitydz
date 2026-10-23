@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: { params: { qrToken: string }
   } catch (e) {}
 
   return {
-    title: `${title} - Carte Fidélité`,
+    title: `${title}`,
     icons: {
       icon: logoUrl,
       shortcut: logoUrl,
@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: { params: { qrToken: string }
     appleWebApp: {
       capable: true,
       statusBarStyle: 'black-translucent',
-      title: title,
+      title: title, // FORCE APPLE TO USE THIS NAME
     },
     manifest: `/api/manifest?token=${token}&name=${encodeURIComponent(title)}&logo=${encodeURIComponent(logoUrl)}`,
   };

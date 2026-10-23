@@ -6,7 +6,8 @@ self.addEventListener('push', function (event) {
       icon: data.icon,
       badge: data.icon,
       vibrate: [200, 100, 200, 100, 200],
-      requireInteraction: true
+      requireInteraction: true,
+      tag: data.tag || 'fidelitydz-notification'
     };
     event.waitUntil(self.registration.showNotification(data.title, options));
   }

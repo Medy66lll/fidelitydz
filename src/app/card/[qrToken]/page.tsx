@@ -55,6 +55,7 @@ export default function CustomerCardPage() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [downloadingPass, setDownloadingPass] = useState(false);
   const [googleReviewClaimed, setGoogleReviewClaimed] = useState(false);
+  const [notifPermission, setNotifPermission] = useState<string>('default');
 
   useEffect(() => {
     if (typeof window !== 'undefined' && 'Notification' in window) {
@@ -201,7 +202,7 @@ export default function CustomerCardPage() {
     }
     updatedCard.last_visit_at = new Date().toISOString();
     
-    // Lock it permanently by recording a formal transaction in the DB
+    // Anti-Cheat: Record formal transaction
     const tx = {
       id: crypto.randomUUID(),
       card_id: card.id,

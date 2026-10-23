@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const token = searchParams.get('token') || '';
-  const name = searchParams.get('name') || 'Ma Carte Fidélité';
+  const name = searchParams.get('name') || 'FidelityDZ';
   const logo = searchParams.get('logo') || 'https://cdn-icons-png.flaticon.com/512/1041/1041888.png';
 
   const startUrl = token ? `/card/${token}` : '/';
@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   const manifest = {
     name: name,
     short_name: name.slice(0, 12),
-    description: 'Votre carte de fidélité digitale FidelityDZ toujours accessible en 1 clic.',
+    description: `Carte de fidélité ${name}`,
     start_url: startUrl,
     scope: '/',
     display: 'standalone',
