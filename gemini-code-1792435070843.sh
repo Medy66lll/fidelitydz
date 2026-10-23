@@ -1,3 +1,3 @@
 git add .
-git commit -m "fix v17: real service worker for push notifications and revert to v13 pwa logo"
+git commit -m "fix v18: SSR layout metadata for strict Apple PWA logo and stable push notifications"
 git push origin main

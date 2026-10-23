@@ -4,7 +4,9 @@ self.addEventListener('push', function (event) {
     const options = {
       body: data.body,
       icon: data.icon,
-      vibrate: [200, 100, 200],
+      badge: data.icon,
+      vibrate: [200, 100, 200, 100, 200],
+      requireInteraction: true
     };
     event.waitUntil(self.registration.showNotification(data.title, options));
   }

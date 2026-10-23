@@ -150,12 +150,7 @@ export default function CustomerCardPage() {
   // Inject iOS Web App meta tags + dynamic PWA manifest so iPhone "Add to Home Screen" opens in standalone Apple Wallet style
   useEffect(() => {
     if (typeof document === 'undefined' || !card || !merchant) return;
-    let link: HTMLLinkElement | null = document.querySelector("link[rel='manifest']");
-    if (!link) {
-      link = document.createElement('link');
-      link.rel = 'manifest';
-      document.head.appendChild(link);
-    }
+
     link.href = `/api/manifest?token=${encodeURIComponent(card.qr_token)}&name=${encodeURIComponent(merchant.business_name)}`;
 
     const setMeta = (name: string, content: string) => {
