@@ -751,6 +751,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true });
     }
 
+    if (action === 'delete_offer') {
+      const offerId = body.offer_id || body.id;
+      if (!offerId) {
+        return NextResponse.json({ success: false, error: 'offer_id manquant' }, { status: 400 });
+      }
+      const oUuid = ensureUuid(offerId);
+      const res = await sbRequest(`personalized_offers?id=eq.${encodeURIComponent(oUuid)}`, 'DELETE');
+      return NextResponse.json({ success: res.ok, error: res.ok ? null : res.errorText });
+    }
+
     if (action === 'delete_merchant') {
       const merchantId = body.merchant_id || body.id;
       if (!merchantId) {

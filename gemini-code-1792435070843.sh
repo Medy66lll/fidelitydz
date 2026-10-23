@@ -1,3 +1,3 @@
 git add .
-git commit -m "feat: push notifications on customer card, secret keys audit, and security hardening"
+git commit -m "feat: v13 notification flash, edit/delete offers, logo pwa"
 git push origin main
