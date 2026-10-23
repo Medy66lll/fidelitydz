@@ -9,8 +9,8 @@ export async function GET(req: NextRequest) {
   const startUrl = token ? `/card/${token}` : '/';
 
   const manifest = {
-    name: `${name} — FidelityDZ`,
-    short_name: name.slice(0, 15),
+    name: name,
+    short_name: name.slice(0, 12),
     description: 'Votre carte de fidélité digitale FidelityDZ toujours accessible en 1 clic.',
     start_url: startUrl,
     scope: '/',
