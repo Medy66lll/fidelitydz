@@ -42,36 +42,9 @@ export default function OffersPage() {
         alert(isAr ? 'حجم الصورة كبير جداً (الأقصى 2 ميغابايت)' : 'Image trop volumineuse (Max 2 MB)');
         return;
       }
-      // Compress image before saving to base64
       const reader = new FileReader();
       reader.onload = (event) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 800;
-          const MAX_HEIGHT = 800;
-          let width = img.width;
-          let height = img.height;
-
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height *= MAX_WIDTH / width;
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width *= MAX_HEIGHT / height;
-              height = MAX_HEIGHT;
-            }
-          }
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx?.drawImage(img, 0, 0, width, height);
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-          setImageUrl(dataUrl);
-        };
-        img.src = event.target?.result as string;
+        setImageUrl(event.target?.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -116,15 +89,11 @@ export default function OffersPage() {
 
   const handleBroadcastNotification = (offer: PersonalizedOffer) => {
     setBroadcastedOfferId(offer.id);
-    const newTime = new Date().toISOString();
     // Force a database update with 'updated_at' so clients polling will pick it up
     db.updateOffer({
       ...offer,
-      updated_at: newTime
+      updated_at: new Date().toISOString()
     });
-    
-    // Mettre à jour l'état local pour refléter ce changement instantanément
-    setOffers(prev => prev.map(o => o.id === offer.id ? { ...o, updated_at: newTime } : o));
     
     // Also try local notification for testing if on the same device
     if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
@@ -319,7 +288,7 @@ export default function OffersPage() {
 
       {showCreateModal && (
         <div className="fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-lg my-8 mt-24 sm:mt-8">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl p-5 w-full max-w-lg max-h-[85vh] overflow-y-auto">
             <h3 className="text-xl font-bold text-white mb-6">
               {editingOfferId
                 ? (isAr ? 'تعديل العرض' : 'Modifier l\'offre')
