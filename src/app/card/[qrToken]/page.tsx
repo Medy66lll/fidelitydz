@@ -386,7 +386,7 @@ export default function CustomerCardPage() {
                 body: isAr && offer.title_ar ? offer.title_ar : offer.title_fr,
                 icon: merchant.logo_url || 'https://cdn-icons-png.flaticon.com/512/1041/1041888.png',
                 vibrate: [200, 100, 200]
-              });
+              } as any);
             } catch (e) {
               console.log('Push notification failed', e);
             }
