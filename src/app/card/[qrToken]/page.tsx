@@ -360,6 +360,45 @@ export default function CustomerCardPage() {
     }
   };
 
+  // Polling Real-Time pour les notifications Push (Client)
+  useEffect(() => {
+    if (!merchant || !card) return;
+    
+    // Demander la permission Push dès le chargement si ce n'est pas fait
+    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+
+    const interval = setInterval(() => {
+      const latestOffers = db.getOffersForCard(card);
+      setOffers(latestOffers);
+      
+      latestOffers.forEach(offer => {
+        // Le commerçant met à jour "updated_at" quand il clique sur "Diffuser"
+        const triggerTime = offer.updated_at || offer.created_at;
+        const lastNotified = localStorage.getItem(`notified_offer_${offer.id}`);
+        
+        if (offer.is_active && triggerTime !== lastNotified) {
+          // Nouvelle diffusion détectée !
+          if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+            try {
+              new Notification(`🔔 ${merchant.business_name} : Nouvelle offre !`, {
+                body: isAr && offer.title_ar ? offer.title_ar : offer.title_fr,
+                icon: merchant.logo_url || 'https://cdn-icons-png.flaticon.com/512/1041/1041888.png',
+                vibrate: [200, 100, 200]
+              });
+            } catch (e) {
+              console.log('Push notification failed', e);
+            }
+          }
+          localStorage.setItem(`notified_offer_${offer.id}`, triggerTime);
+        }
+      });
+    }, 10000); // Check toutes les 10 secondes
+
+    return () => clearInterval(interval);
+  }, [merchant, card, isAr]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white p-4">

@@ -58,14 +58,11 @@ export default function OffersPage() {
 
   const handleBroadcastNotification = (offer: PersonalizedOffer) => {
     setBroadcastedOfferId(offer.id);
-    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
-      try {
-        new Notification(`📢 ${currentMerchant?.business_name || 'FidelityDZ'} (Alerte Promo)`, {
-          body: isAr && offer.title_ar ? offer.title_ar : offer.title_fr,
-          icon: currentMerchant?.logo_url || 'https://cdn-icons-png.flaticon.com/512/1041/1041888.png',
-        });
-      } catch {}
-    }
+    // Force a database update with 'updated_at' so clients polling will pick it up
+    db.updateOffer({
+      ...offer,
+      updated_at: new Date().toISOString()
+    });
     setTimeout(() => setBroadcastedOfferId(null), 4000);
   };
 
