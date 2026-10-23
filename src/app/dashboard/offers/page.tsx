@@ -27,7 +27,31 @@ export default function OffersPage() {
 
   const [offers, setOffers] = useState<PersonalizedOffer[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editingOfferId, setEditingOfferId] = useState<string | null>(null);
   const [broadcastedOfferId, setBroadcastedOfferId] = useState<string | null>(null);
+
+  const handleEdit = (offer: PersonalizedOffer) => {
+    setEditingOfferId(offer.id);
+    setTitleFr(offer.title_fr);
+    setTitleAr(offer.title_ar || '');
+    setDescFr(offer.description_fr || '');
+    setDescAr(offer.description_ar || '');
+    setSegment(offer.target_segment || 'ALL');
+    setIsActive(offer.is_active ?? true);
+    setShowCreateModal(true);
+  };
+
+  const handleDelete = (offerId: string) => {
+    if (confirm(isAr ? 'هل أنت متأكد من حذف هذا العرض؟' : 'Voulez-vous vraiment supprimer cette offre ?')) {
+      db.deleteOffer(offerId);
+      setOffers(db.getOffers(currentMerchant?.id));
+    }
+  };
+
+  const handleToggleActive = (offer: PersonalizedOffer) => {
+    db.updateOffer({ ...offer, is_active: !offer.is_active });
+    setOffers(db.getOffers(currentMerchant?.id));
+  };
 
   const handleBroadcastNotification = (offer: PersonalizedOffer) => {
     setBroadcastedOfferId(offer.id);
@@ -209,7 +233,16 @@ export default function OffersPage() {
                 {t('create_offer')}
               </h3>
               <button
-                onClick={() => setShowCreateModal(false)}
+                onClick={() => {
+                setShowCreateModal(false);
+                setEditingOfferId(null);
+                setTitleFr('');
+                setTitleAr('');
+                setDescFr('');
+                setDescAr('');
+                setSegment('ALL');
+                setIsActive(true);
+              }}
                 className="text-slate-400 hover:text-slate-600 font-bold"
                 type="button"
               >
