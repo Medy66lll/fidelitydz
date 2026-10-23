@@ -1,3 +1,3 @@
 git add .
-git commit -m "fix v15: true client push notifications, aggressive pwa logo fix, google review anti-cheat"
+git commit -m "fix v17: real service worker for push notifications and revert to v13 pwa logo"
 git push origin main

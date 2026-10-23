@@ -382,11 +382,22 @@ export default function CustomerCardPage() {
           // Nouvelle diffusion détectée !
           if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
             try {
-              new Notification(`🔔 ${merchant.business_name} : Nouvelle offre !`, {
+              const title = `🔔 ${merchant.business_name} : Nouvelle offre !`;
+              const options = {
                 body: isAr && offer.title_ar ? offer.title_ar : offer.title_fr,
                 icon: merchant.logo_url || 'https://cdn-icons-png.flaticon.com/512/1041/1041888.png',
                 vibrate: [200, 100, 200]
-              } as any);
+              } as any;
+              
+              if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.ready.then(reg => {
+                  reg.showNotification(title, options);
+                }).catch(e => {
+                  new Notification(title, options);
+                });
+              } else {
+                new Notification(title, options);
+              }
             } catch (e) {
               console.log('Push notification failed', e);
             }
