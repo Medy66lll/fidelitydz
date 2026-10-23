@@ -151,8 +151,6 @@ export default function CustomerCardPage() {
   useEffect(() => {
     if (typeof document === 'undefined' || !card || !merchant) return;
 
-    link.href = `/api/manifest?token=${encodeURIComponent(card.qr_token)}&name=${encodeURIComponent(merchant.business_name)}`;
-
     const setMeta = (name: string, content: string) => {
       let m = document.querySelector(`meta[name='${name}']`) as HTMLMetaElement | null;
       if (!m) {
