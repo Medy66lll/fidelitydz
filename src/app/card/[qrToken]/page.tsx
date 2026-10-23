@@ -86,7 +86,21 @@ export default function CustomerCardPage() {
     } catch {}
   };
 
-
+  useEffect(() => {
+    if (notifPermission === 'granted' && offers.length > 0 && merchant) {
+      const latestOffer = offers[0];
+      const notifiedKey = `fidelitydz_notif_sent_${latestOffer.id}`;
+      if (typeof window !== 'undefined' && !localStorage.getItem(notifiedKey)) {
+        try {
+          new Notification(`📢 Offre Spéciale — ${merchant.business_name}`, {
+            body: isAr && latestOffer.title_ar ? latestOffer.title_ar : latestOffer.title_fr,
+            icon: merchant.logo_url || 'https://cdn-icons-png.flaticon.com/512/1041/1041888.png',
+          });
+          localStorage.setItem(notifiedKey, 'true');
+        } catch {}
+      }
+    }
+  }, [offers, notifPermission, merchant, isAr]);
   const hiddenQrRef = useRef<HTMLDivElement>(null);
 
   const loadCardLive = async (showSpinner = false) => {
@@ -108,8 +122,7 @@ export default function CustomerCardPage() {
 
       if (typeof window !== 'undefined') {
         localStorage.setItem('fidelitydz_last_card_token', res.card.qr_token);
-        const txs = db.getTransactions(res.card.id);
-        const claimed = txs.some(tx => tx.action_type === 'GOOGLE_REVIEW_BONUS');
+        const claimed = localStorage.getItem(`fidelitydz_gr_claimed_${res.card.id}`) === 'true';
         setGoogleReviewClaimed(claimed);
       }
 
@@ -186,22 +199,12 @@ export default function CustomerCardPage() {
       updatedCard.points_balance += bonus * 10;
     }
     updatedCard.last_visit_at = new Date().toISOString();
-    
-    // Anti-Cheat: Record formal transaction
-    const tx = {
-      id: crypto.randomUUID(),
-      card_id: card.id,
-      merchant_id: merchant.id,
-      performed_by: 'CLIENT',
-      action_type: 'GOOGLE_REVIEW_BONUS' as any,
-      delta_value: program?.program_type === 'STAMPS' ? bonus : bonus * 10,
-      purchase_amount_dzd: 0,
-      created_at: new Date().toISOString()
-    };
-    
-    db.saveCard(updatedCard, tx as any);
+    db.saveCard(updatedCard);
     setCard(updatedCard);
     setGoogleReviewClaimed(true);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(`fidelitydz_gr_claimed_${card.id}`, 'true');
+    }
     confetti({
       particleCount: 100,
       spread: 70,

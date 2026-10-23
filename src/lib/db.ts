@@ -734,23 +734,6 @@ class FidelityDatabase {
     postApiDb({ action: 'save_offer', offer: fixed });
   }
 
-  updateOffer(offer: PersonalizedOffer): void {
-    const fixed = { ...offer, id: toValidUuid(offer.id), merchant_id: toValidUuid(offer.merchant_id) };
-    const all = this.getOffers();
-    const idx = all.findIndex((o) => o.id === fixed.id);
-    if (idx >= 0) all[idx] = fixed as PersonalizedOffer;
-    else all.unshift(fixed as PersonalizedOffer);
-    this.setStorage('offers', all);
-    postApiDb({ action: 'save_offer', offer: fixed });
-  }
-
-  deleteOffer(offerId: string): void {
-    const id = toValidUuid(offerId);
-    const all = this.getOffers().filter((o) => o.id !== id);
-    this.setStorage('offers', all);
-    postApiDb({ action: 'delete_offer', offer_id: id });
-  }
-
   getOffersForCard(card: CustomerCard): PersonalizedOffer[] {
     const offers = this.getOffers(card.merchant_id).filter((o) => o.is_active);
     const daysSinceLastVisit = (Date.now() - new Date(card.last_visit_at).getTime()) / (1000 * 3600 * 24);

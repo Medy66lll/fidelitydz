@@ -108,7 +108,6 @@ export interface Merchant {
   subscription_status: SubscriptionStatus;
   subscription_ends_at: string;
   created_at: string;
-  updated_at?: string;
 }
 
 export type ProgramType = 'STAMPS' | 'POINTS';
@@ -146,7 +145,6 @@ export interface CustomerCard {
   last_visit_at: string;
   google_review_claimed?: boolean;
   created_at: string;
-  updated_at?: string;
 }
 
 export type ActionType = 'ADD_STAMP' | 'ADD_POINTS' | 'REDEEM_REWARD' | 'GOOGLE_REVIEW_BONUS';
@@ -160,7 +158,6 @@ export interface LoyaltyTransaction {
   delta_value: number;
   purchase_amount_dzd: number;
   created_at: string;
-  updated_at?: string;
 }
 
 export type TargetSegment = 'ALL' | 'VIP' | 'INACTIVE_30D';
@@ -172,12 +169,10 @@ export interface PersonalizedOffer {
   title_ar?: string;
   description_fr: string;
   description_ar?: string;
-  image_url?: string;
   target_segment: TargetSegment;
   valid_until?: string;
   is_active: boolean;
   created_at: string;
-  updated_at?: string;
 }
 
 export type PaymentMethod = 'BARIDIMOB' | 'CCP_RECEIPT' | 'CHARGILY_PAY';
@@ -194,6 +189,5 @@ export interface SubscriptionPayment {
   chargily_checkout_id?: string;
   status: PaymentStatus;
   created_at: string;
-  updated_at?: string;
   reviewed_at?: string;
 }

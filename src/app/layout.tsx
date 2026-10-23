@@ -6,7 +6,9 @@ import { MerchantProvider } from '@/context/MerchantContext';
 export const metadata: Metadata = {
   title: 'FidelityDZ - Plateforme de Carte de Fidélité Digitale en Algérie',
   description: 'Fidélisez vos clients en Algérie sans application à installer. Mode tampons ou points, scanner caissier, paiements Chargily Pay et BaridiMob.',
-
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({
