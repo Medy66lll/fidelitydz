@@ -156,16 +156,7 @@ export default function CustomerCardPage() {
       link.rel = 'manifest';
       document.head.appendChild(link);
     }
-    const logoUrl = merchant.logo_url || 'https://cdn-icons-png.flaticon.com/512/1041/1041888.png';
-    link.href = `/api/manifest?token=${encodeURIComponent(card.qr_token)}&name=${encodeURIComponent(merchant.business_name)}&logo=${encodeURIComponent(logoUrl)}`;
-
-    let appleIcon: HTMLLinkElement | null = document.querySelector("link[rel='apple-touch-icon']");
-    if (!appleIcon) {
-      appleIcon = document.createElement('link');
-      appleIcon.rel = 'apple-touch-icon';
-      document.head.appendChild(appleIcon);
-    }
-    appleIcon.href = logoUrl;
+    link.href = `/api/manifest?token=${encodeURIComponent(card.qr_token)}&name=${encodeURIComponent(merchant.business_name)}`;
 
     const setMeta = (name: string, content: string) => {
       let m = document.querySelector(`meta[name='${name}']`) as HTMLMetaElement | null;

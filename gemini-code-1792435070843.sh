@@ -1,3 +1,3 @@
 git add .
-git commit -m "feat v13: live push notification banner, edit/delete offers, and dynamic pwa merchant logo"
+git commit -m "fix(offers): resolved setSegment state error and finalized features"
 git push origin main

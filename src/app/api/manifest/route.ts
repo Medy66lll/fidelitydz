@@ -19,25 +19,12 @@ export async function GET(req: NextRequest) {
     theme_color: '#10B981',
     orientation: 'portrait',
     icons: [
-      {
-        src: logo,
-        sizes: '192x192',
-        type: 'image/png',
-        purpose: 'any maskable',
-      },
-      {
-        src: logo,
-        sizes: '512x512',
-        type: 'image/png',
-        purpose: 'any maskable',
-      },
+      { src: logo, sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
+      { src: logo, sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
     ],
   };
 
   return new NextResponse(JSON.stringify(manifest), {
-    headers: {
-      'Content-Type': 'application/manifest+json',
-      'Cache-Control': 'no-store',
-    },
+    headers: { 'Content-Type': 'application/manifest+json', 'Cache-Control': 'no-store' },
   });
 }

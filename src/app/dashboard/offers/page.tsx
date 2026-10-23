@@ -5,20 +5,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { useMerchant } from '@/context/MerchantContext';
 import { db } from '@/lib/db';
 import { PersonalizedOffer, TargetSegment } from '@/lib/types';
-import {
-  Tag,
-  Plus,
-  Clock,
-  Users,
-  Sparkles,
-  CheckCircle2,
-  Calendar,
-  AlertCircle,
-  Bell,
-  BellRing,
-  Send,
-  Check
-} from 'lucide-react';
+import { Tag, Plus, Clock, Users, Sparkles, CheckCircle2, Calendar, AlertCircle, Bell, BellRing, Send, Check } from 'lucide-react';
 
 export default function OffersPage() {
   const { t, language } = useLanguage();
@@ -30,7 +17,22 @@ export default function OffersPage() {
   const [editingOfferId, setEditingOfferId] = useState<string | null>(null);
   const [broadcastedOfferId, setBroadcastedOfferId] = useState<string | null>(null);
 
-    const handleEdit = (offer: PersonalizedOffer) => {
+  // Form fields
+  const [titleFr, setTitleFr] = useState('');
+  const [titleAr, setTitleAr] = useState('');
+  const [descFr, setDescFr] = useState('');
+  const [descAr, setDescAr] = useState('');
+  const [targetSegment, setTargetSegment] = useState<TargetSegment>('ALL');
+  const [isActive, setIsActive] = useState(true);
+  const [validDays, setValidDays] = useState(14);
+
+  useEffect(() => {
+    if (currentMerchant) {
+      setOffers(db.getOffers(currentMerchant.id));
+    }
+  }, [currentMerchant]);
+
+  const handleEdit = (offer: PersonalizedOffer) => {
     setEditingOfferId(offer.id);
     setTitleFr(offer.title_fr);
     setTitleAr(offer.title_ar || '');
@@ -38,6 +40,7 @@ export default function OffersPage() {
     setDescAr(offer.description_ar || '');
     setTargetSegment(offer.target_segment || 'ALL');
     setIsActive(offer.is_active ?? true);
+    setValidDays(14);
     setShowCreateModal(true);
   };
 
@@ -63,25 +66,8 @@ export default function OffersPage() {
         });
       } catch {}
     }
-    setTimeout(() => {
-      setBroadcastedOfferId(null);
-    }, 4000);
+    setTimeout(() => setBroadcastedOfferId(null), 4000);
   };
-
-  // Form fields
-  const [titleFr, setTitleFr] = useState('');
-  const [titleAr, setTitleAr] = useState('');
-  const [descFr, setDescFr] = useState('');
-  const [descAr, setDescAr] = useState('');
-  const [targetSegment, setTargetSegment] = useState<TargetSegment>('ALL');
-  const [isActive, setIsActive] = useState(true);
-  const [validDays, setValidDays] = useState(14);
-
-  useEffect(() => {
-    if (currentMerchant) {
-      setOffers(db.getOffers(currentMerchant.id));
-    }
-  }, [currentMerchant]);
 
   const handleSaveOffer = (e: React.FormEvent) => {
     e.preventDefault();
@@ -110,11 +96,12 @@ export default function OffersPage() {
         description_ar: descAr,
         target_segment: targetSegment,
         valid_until: new Date(Date.now() + validDays * 86400000).toISOString(),
-        is_active: true,
+        is_active: isActive,
         created_at: new Date().toISOString(),
       };
       db.createOffer(newOffer);
     }
+    
     setOffers(db.getOffers(currentMerchant.id));
     setShowCreateModal(false);
     setEditingOfferId(null);
@@ -127,244 +114,252 @@ export default function OffersPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            {t('offers_title')}
+          <h2 className="text-2xl font-bold text-white mb-1">
+            {isAr ? 'العروض والحملات' : 'Offres & Campagnes'}
           </h2>
-          <p className="text-sm text-slate-600">
-            {t('offers_subtitle')}
+          <p className="text-slate-400">
+            {isAr
+              ? 'إنشاء عروض ترويجية مستهدفة لعملائك'
+              : 'Créez des promotions ciblées pour vos clients'}
           </p>
         </div>
-
         <button
-          onClick={() => setShowCreateModal(true)}
-          className="inline-flex items-center gap-2 px-5 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm rounded-xl shadow-md shadow-emerald-500/20 transition-all hover:scale-105"
-          type="button"
+          onClick={() => {
+            setEditingOfferId(null);
+            setTitleFr(''); setTitleAr(''); setDescFr(''); setDescAr('');
+            setTargetSegment('ALL'); setIsActive(true); setValidDays(14);
+            setShowCreateModal(true);
+          }}
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-medium transition-all shadow-lg shadow-emerald-500/20"
         >
           <Plus className="w-5 h-5" />
-          <span>{t('create_offer')}</span>
+          <span>{isAr ? 'عرض جديد' : 'Nouvelle offre'}</span>
         </button>
       </div>
 
-      {/* Offers Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {offers.map((offer) => (
-          <div
-            key={offer.id}
-            className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-4 hover:shadow-md transition-shadow relative overflow-hidden"
-          >
-            {/* Segment Badge */}
-            <div className="flex items-center justify-between">
-              <span
-                className={`text-[11px] font-black uppercase px-2.5 py-1 rounded-full border ${
-                  offer.target_segment === 'VIP'
-                    ? 'bg-amber-50 text-amber-800 border-amber-200'
-                    : offer.target_segment === 'INACTIVE_30D'
-                    ? 'bg-blue-50 text-blue-800 border-blue-200'
-                    : 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                }`}
-              >
-                {offer.target_segment === 'VIP'
-                  ? 'Segment VIP'
-                  : offer.target_segment === 'INACTIVE_30D'
-                  ? 'Clients Inactifs 30j'
-                  : 'Tous les clients'}
-              </span>
-
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-            </div>
-
-            {/* Titles */}
-            <div className="space-y-1">
-              <h3 className="text-base font-extrabold text-slate-900">
-                {offer.title_fr}
-              </h3>
-              {offer.title_ar && (
-                <p className="text-sm font-arabic font-bold text-slate-700" dir="rtl">
-                  {offer.title_ar}
-                </p>
-              )}
-            </div>
-
-            {/* Descriptions */}
-            <div className="space-y-1 text-xs text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
-              <p>{offer.description_fr}</p>
-              {offer.description_ar && (
-                <p className="font-arabic pt-1 border-t border-slate-200/60" dir="rtl">
-                  {offer.description_ar}
-                </p>
-              )}
-            </div>
-
-            {/* Expiry */}
-            {offer.valid_until && (
-              <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium pt-1">
-                <Clock className="w-3.5 h-3.5" />
-                <span>
-                  Expire le : {new Date(offer.valid_until).toLocaleDateString('fr-DZ')}
-                </span>
-              </div>
-            )}
-
-            {/* Notification Mobile Broadcast */}
-            <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
-              <span className="text-[11px] font-bold text-slate-500 flex items-center gap-1">
-                <BellRing className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Notification Mobile</span>
-              </span>
-              <button
-                type="button"
-                onClick={() => handleBroadcastNotification(offer)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
-                  broadcastedOfferId === offer.id
-                    ? 'bg-emerald-600 text-white shadow-sm'
-                    : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200'
-                }`}
-              >
-                {broadcastedOfferId === offer.id ? (
-                  <>
-                    <Check className="w-3.5 h-3.5" />
-                    <span>Envoyée aux clients !</span>
-                  </>
-                ) : (
-                  <>
-                    <Send className="w-3.5 h-3.5" />
-                    <span>Diffuser sur téléphones</span>
-                  </>
-                )}
-              </button>
-            </div>
+      {offers.length === 0 ? (
+        <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-12 text-center">
+          <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Sparkles className="w-8 h-8 text-slate-400" />
           </div>
-        ))}
-      </div>
+          <h3 className="text-lg font-bold text-white mb-2">
+            {isAr ? 'لا توجد عروض نشطة' : 'Aucune offre active'}
+          </h3>
+          <p className="text-slate-400 max-w-md mx-auto">
+            {isAr
+              ? 'قم بإنشاء عرضك الأول لجذب عملائك وزيادة مبيعاتك.'
+              : 'Créez votre première offre pour attirer vos clients et booster vos ventes.'}
+          </p>
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 gap-4">
+          {offers.map((offer) => (
+            <div
+              key={offer.id}
+              className={`bg-slate-800 border ${offer.is_active ? 'border-slate-700' : 'border-slate-700/50 opacity-75'} rounded-2xl p-5 hover:border-emerald-500/30 transition-all`}
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 ${offer.is_active ? 'bg-emerald-500/10' : 'bg-slate-700/50'} rounded-xl flex items-center justify-center`}>
+                    <Tag className={`w-5 h-5 ${offer.is_active ? 'text-emerald-400' : 'text-slate-400'}`} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-white">
+                      {isAr && offer.title_ar ? offer.title_ar : offer.title_fr}
+                    </h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${offer.is_active ? 'bg-emerald-500/10 text-emerald-400' : 'bg-slate-700 text-slate-400'}`}>
+                        {offer.is_active ? (isAr ? 'نشط' : 'Actif') : (isAr ? 'غير نشط' : 'Inactif')}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-      {/* CREATE OFFER MODAL */}
-      {showCreateModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-slate-200 space-y-5 animate-scale-in">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="text-lg font-extrabold text-slate-900">
-                {t('create_offer')}
-              </h3>
-              <button
-                onClick={() => { setShowCreateModal(false); setEditingOfferId(null); setTitleFr(''); setTitleAr(''); setDescFr(''); setDescAr(''); setTargetSegment('ALL'); setIsActive(true); }}
-                className="text-slate-400 hover:text-slate-600 font-bold"
-                type="button"
-              >
-                ✕
-              </button>
+              <p className="text-sm text-slate-300 mb-4 line-clamp-2">
+                {isAr && offer.description_ar ? offer.description_ar : offer.description_fr}
+              </p>
+
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-4 border-t border-slate-700/50">
+                
+                <div className="flex gap-2 w-full sm:w-auto">
+                  <button
+                    onClick={() => handleToggleActive(offer)}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium border flex-1 sm:flex-none text-center ${
+                      offer.is_active
+                        ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'
+                        : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20'
+                    }`}
+                  >
+                    {offer.is_active ? (isAr ? 'إيقاف' : 'Désactiver') : (isAr ? 'تفعيل' : 'Activer')}
+                  </button>
+                  <button
+                    onClick={() => handleEdit(offer)}
+                    className="px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-sm font-medium text-slate-300 flex-1 sm:flex-none text-center"
+                  >
+                    {isAr ? 'تعديل' : 'Modifier'}
+                  </button>
+                  <button
+                    onClick={() => handleDelete(offer.id)}
+                    className="px-3 py-2 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 rounded-lg text-sm font-medium text-rose-400 flex-1 sm:flex-none text-center"
+                  >
+                    {isAr ? 'حذف' : 'Supprimer'}
+                  </button>
+                </div>
+                
+                {offer.is_active && (
+                  <button
+                    onClick={() => handleBroadcastNotification(offer)}
+                    disabled={broadcastedOfferId === offer.id}
+                    className={`w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                      broadcastedOfferId === offer.id
+                        ? 'bg-emerald-500/20 text-emerald-400'
+                        : 'bg-indigo-500 hover:bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                    }`}
+                  >
+                    {broadcastedOfferId === offer.id ? (
+                      <>
+                        <Check className="w-4 h-4" />
+                        <span>{isAr ? 'تم الإرسال' : 'Envoyé'}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" />
+                        <span>{isAr ? 'إرسال إشعار' : 'Diffuser l\'alerte'}</span>
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
             </div>
+          ))}
+        </div>
+      )}
+
+      {showCreateModal && (
+        <div className="fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-lg my-8">
+            <h3 className="text-xl font-bold text-white mb-6">
+              {editingOfferId
+                ? (isAr ? 'تعديل العرض' : 'Modifier l\'offre')
+                : (isAr ? 'إنشاء عرض جديد' : 'Créer une nouvelle offre')}
+            </h3>
 
             <form onSubmit={handleSaveOffer} className="space-y-4">
-              {/* Segment */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 block">
-                  {t('target_segment')}
+              <div className="space-y-4 p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
+                <h4 className="text-sm font-medium text-slate-400 flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-xs">Fr</span>
+                  Version Française
+                </h4>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Titre de l'offre *</label>
+                  <input
+                    type="text"
+                    required
+                    value={titleFr}
+                    onChange={(e) => setTitleFr(e.target.value)}
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-emerald-500"
+                    placeholder="ex: -20% sur les cafés"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Description</label>
+                  <textarea
+                    value={descFr}
+                    onChange={(e) => setDescFr(e.target.value)}
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-emerald-500 h-20 resize-none"
+                    placeholder="Détails de l'offre..."
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4 p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
+                <h4 className="text-sm font-medium text-slate-400 flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-xs">Ar</span>
+                  النسخة العربية
+                </h4>
+                <div dir="rtl">
+                  <label className="block text-sm font-medium text-slate-300 mb-1">عنوان العرض</label>
+                  <input
+                    type="text"
+                    value={titleAr}
+                    onChange={(e) => setTitleAr(e.target.value)}
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-emerald-500"
+                    placeholder="مثال: خصم 20٪ على القهوة"
+                  />
+                </div>
+                <div dir="rtl">
+                  <label className="block text-sm font-medium text-slate-300 mb-1">الوصف</label>
+                  <textarea
+                    value={descAr}
+                    onChange={(e) => setDescAr(e.target.value)}
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-emerald-500 h-20 resize-none"
+                    placeholder="تفاصيل العرض..."
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  {isAr ? 'العملاء المستهدفون' : 'Clients ciblés'}
                 </label>
                 <select
                   value={targetSegment}
                   onChange={(e) => setTargetSegment(e.target.value as TargetSegment)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm font-semibold outline-none focus:border-emerald-500"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500"
                 >
-                  <option value="ALL">{t('segment_all')}</option>
-                  <option value="VIP">{t('segment_vip')}</option>
-                  <option value="INACTIVE_30D">{t('segment_inactive')}</option>
+                  <option value="ALL">{isAr ? 'جميع العملاء' : 'Tous les clients'}</option>
+                  <option value="VIP">{isAr ? 'العملاء الدائمين (VIP)' : 'Clients Fidèles (VIP)'}</option>
+                  <option value="INACTIVE_30D">{isAr ? 'عملاء غائبين (+30 يوم)' : 'Clients Inactifs (+30j)'}</option>
                 </select>
               </div>
 
-              {/* Title FR */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 block">
-                  Titre en français
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Ex: Croissant offert chaque matin"
-                  value={titleFr}
-                  onChange={(e) => setTitleFr(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-sm outline-none focus:border-emerald-500"
-                />
-              </div>
+              {!editingOfferId && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    {isAr ? 'صالح لمدة' : 'Valable pour'}
+                  </label>
+                  <div className="flex gap-2">
+                    {[7, 14, 30].map((days) => (
+                      <button
+                        key={days}
+                        type="button"
+                        onClick={() => setValidDays(days)}
+                        className={`flex-1 py-2 rounded-xl text-sm font-medium transition-all ${
+                          validDays === days
+                            ? 'bg-emerald-500 text-white'
+                            : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                        }`}
+                      >
+                        {days} {isAr ? 'أيام' : 'jours'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-              {/* Title AR */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 block font-arabic text-right">
-                  العنوان بالعربية
-                </label>
-                <input
-                  type="text"
-                  dir="rtl"
-                  placeholder="مثال: كرواسون زبدة مجاناً كل صباح"
-                  value={titleAr}
-                  onChange={(e) => setTitleAr(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-sm font-arabic outline-none focus:border-emerald-500"
-                />
-              </div>
-
-              {/* Desc FR */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 block">
-                  Description en français
-                </label>
-                <textarea
-                  rows={2}
-                  required
-                  placeholder="Ex: Valable pour tout grand café acheté entre 8h et 10h."
-                  value={descFr}
-                  onChange={(e) => setDescFr(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-sm outline-none focus:border-emerald-500"
-                />
-              </div>
-
-              {/* Desc AR */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 block font-arabic text-right">
-                  الوصف بالعربية
-                </label>
-                <textarea
-                  rows={2}
-                  dir="rtl"
-                  placeholder="مثال: ساري المفعول مع كل قهوة كبيرة تُطلب صباحاً."
-                  value={descAr}
-                  onChange={(e) => setDescAr(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-sm font-arabic outline-none focus:border-emerald-500"
-                />
-              </div>
-
-              {/* Validity */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 block">
-                  Durée de validité
-                </label>
-                <select
-                  value={validDays}
-                  onChange={(e) => setValidDays(parseInt(e.target.value, 10))}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm outline-none"
-                >
-                  <option value={7}>7 jours (1 semaine)</option>
-                  <option value={14}>14 jours (2 semaines)</option>
-                  <option value={30}>30 jours (1 mois)</option>
-                  <option value={60}>60 jours (2 mois)</option>
-                </select>
-              </div>
-
-              <div className="pt-3 flex justify-end gap-2 border-t border-slate-100">
+              <div className="flex gap-3 pt-4">
                 <button
                   type="button"
-                  onClick={() => { setShowCreateModal(false); setEditingOfferId(null); setTitleFr(''); setTitleAr(''); setDescFr(''); setDescAr(''); setTargetSegment('ALL'); setIsActive(true); }}
-                  className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl"
+                  onClick={() => {
+                    setShowCreateModal(false);
+                    setEditingOfferId(null);
+                    setTitleFr(''); setTitleAr(''); setDescFr(''); setDescAr('');
+                    setTargetSegment('ALL'); setIsActive(true);
+                  }}
+                  className="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-medium transition-all"
                 >
-                  Annuler
+                  {isAr ? 'إلغاء' : 'Annuler'}
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-500/20"
+                  disabled={!titleFr}
+                  className="flex-1 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-xl font-medium transition-all"
                 >
-                  {t('publish_offer')}
+                  {editingOfferId ? (isAr ? 'حفظ التعديلات' : 'Enregistrer') : (isAr ? 'إنشاء العرض' : 'Créer l\'offre')}
                 </button>
               </div>
             </form>
