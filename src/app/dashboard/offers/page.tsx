@@ -30,13 +30,13 @@ export default function OffersPage() {
   const [editingOfferId, setEditingOfferId] = useState<string | null>(null);
   const [broadcastedOfferId, setBroadcastedOfferId] = useState<string | null>(null);
 
-  const handleEdit = (offer: PersonalizedOffer) => {
+    const handleEdit = (offer: PersonalizedOffer) => {
     setEditingOfferId(offer.id);
     setTitleFr(offer.title_fr);
     setTitleAr(offer.title_ar || '');
     setDescFr(offer.description_fr || '');
     setDescAr(offer.description_ar || '');
-    setSegment(offer.target_segment || 'ALL');
+    setTargetSegment(offer.target_segment || 'ALL');
     setIsActive(offer.is_active ?? true);
     setShowCreateModal(true);
   };
@@ -74,6 +74,7 @@ export default function OffersPage() {
   const [descFr, setDescFr] = useState('');
   const [descAr, setDescAr] = useState('');
   const [targetSegment, setTargetSegment] = useState<TargetSegment>('ALL');
+  const [isActive, setIsActive] = useState(true);
   const [validDays, setValidDays] = useState(14);
 
   useEffect(() => {
@@ -82,31 +83,47 @@ export default function OffersPage() {
     }
   }, [currentMerchant]);
 
-  const handleCreateOffer = (e: React.FormEvent) => {
+  const handleSaveOffer = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentMerchant) return;
 
-    const newOffer: PersonalizedOffer = {
-      id: `off-${Date.now()}`,
-      merchant_id: currentMerchant.id,
-      title_fr: titleFr,
-      title_ar: titleAr,
-      description_fr: descFr,
-      description_ar: descAr,
-      target_segment: targetSegment,
-      valid_until: new Date(Date.now() + validDays * 86400000).toISOString(),
-      is_active: true,
-      created_at: new Date().toISOString(),
-    };
-
-    db.createOffer(newOffer);
-    setOffers([newOffer, ...offers]);
+    if (editingOfferId) {
+      const offer = offers.find(o => o.id === editingOfferId);
+      if (offer) {
+        db.updateOffer({
+          ...offer,
+          title_fr: titleFr,
+          title_ar: titleAr,
+          description_fr: descFr,
+          description_ar: descAr,
+          target_segment: targetSegment,
+          is_active: isActive
+        });
+      }
+    } else {
+      const newOffer: PersonalizedOffer = {
+        id: crypto.randomUUID(),
+        merchant_id: currentMerchant.id,
+        title_fr: titleFr,
+        title_ar: titleAr,
+        description_fr: descFr,
+        description_ar: descAr,
+        target_segment: targetSegment,
+        valid_until: new Date(Date.now() + validDays * 86400000).toISOString(),
+        is_active: true,
+        created_at: new Date().toISOString(),
+      };
+      db.createOffer(newOffer);
+    }
+    setOffers(db.getOffers(currentMerchant.id));
     setShowCreateModal(false);
-    // Reset form
+    setEditingOfferId(null);
     setTitleFr('');
     setTitleAr('');
     setDescFr('');
     setDescAr('');
+    setTargetSegment('ALL');
+    setIsActive(true);
   };
 
   return (
@@ -233,16 +250,7 @@ export default function OffersPage() {
                 {t('create_offer')}
               </h3>
               <button
-                onClick={() => {
-                setShowCreateModal(false);
-                setEditingOfferId(null);
-                setTitleFr('');
-                setTitleAr('');
-                setDescFr('');
-                setDescAr('');
-                setSegment('ALL');
-                setIsActive(true);
-              }}
+                onClick={() => { setShowCreateModal(false); setEditingOfferId(null); setTitleFr(''); setTitleAr(''); setDescFr(''); setDescAr(''); setTargetSegment('ALL'); setIsActive(true); }}
                 className="text-slate-400 hover:text-slate-600 font-bold"
                 type="button"
               >
@@ -250,7 +258,7 @@ export default function OffersPage() {
               </button>
             </div>
 
-            <form onSubmit={handleCreateOffer} className="space-y-4">
+            <form onSubmit={handleSaveOffer} className="space-y-4">
               {/* Segment */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-700 block">
@@ -347,7 +355,7 @@ export default function OffersPage() {
               <div className="pt-3 flex justify-end gap-2 border-t border-slate-100">
                 <button
                   type="button"
-                  onClick={() => setShowCreateModal(false)}
+                  onClick={() => { setShowCreateModal(false); setEditingOfferId(null); setTitleFr(''); setTitleAr(''); setDescFr(''); setDescAr(''); setTargetSegment('ALL'); setIsActive(true); }}
                   className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl"
                 >
                   Annuler

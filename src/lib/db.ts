@@ -735,7 +735,7 @@ class FidelityDatabase {
   }
 
   updateOffer(offer: PersonalizedOffer): void {
-    const fixed: PersonalizedOffer = {
+    const fixed = {
       ...offer,
       id: toValidUuid(offer.id),
       merchant_id: toValidUuid(offer.merchant_id),
@@ -743,9 +743,9 @@ class FidelityDatabase {
     const all = this.getOffers();
     const idx = all.findIndex((o) => o.id === fixed.id);
     if (idx >= 0) {
-      all[idx] = fixed;
+      all[idx] = fixed as PersonalizedOffer;
     } else {
-      all.unshift(fixed);
+      all.unshift(fixed as PersonalizedOffer);
     }
     this.setStorage('offers', all);
     postApiDb({ action: 'save_offer', offer: fixed });
