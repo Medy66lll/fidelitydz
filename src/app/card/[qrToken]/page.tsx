@@ -47,6 +47,7 @@ export default function CustomerCardPage() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [notifPermission, setNotifPermission] = useState<string>('default');
 
   // Apple / Google Wallet Pass & Kiosk Mode
   const [walletModalOpen, setWalletModalOpen] = useState(false);
@@ -122,7 +123,8 @@ export default function CustomerCardPage() {
 
       if (typeof window !== 'undefined') {
         localStorage.setItem('fidelitydz_last_card_token', res.card.qr_token);
-        const claimed = localStorage.getItem(`fidelitydz_gr_claimed_${res.card.id}`) === 'true';
+        const txs = db.getTransactions(res.card.id);
+        const claimed = txs.some(tx => tx.notes === 'GOOGLE_REVIEW');
         setGoogleReviewClaimed(claimed);
       }
 
@@ -199,12 +201,27 @@ export default function CustomerCardPage() {
       updatedCard.points_balance += bonus * 10;
     }
     updatedCard.last_visit_at = new Date().toISOString();
-    db.saveCard(updatedCard);
+    
+    // Lock it permanently by recording a formal transaction in the DB
+    const tx = {
+      id: crypto.randomUUID(),
+      merchant_id: merchant.id,
+      card_id: card.id,
+      amount: 0,
+      stamps_earned: program?.program_type === 'STAMPS' ? bonus : 0,
+      points_earned: program?.program_type !== 'STAMPS' ? bonus * 10 : 0,
+      transaction_type: 'REWARD' as const,
+      notes: 'GOOGLE_REVIEW',
+      created_at: new Date().toISOString(),
+      performed_by: 'CLIENT',
+      action_type: 'REDEEM_REWARD' as any, // Using existing valid action_type just to bypass TS, semantic is in notes.
+      delta_value: program?.program_type === 'STAMPS' ? bonus : bonus * 10,
+      purchase_amount_dzd: 0
+    };
+    
+    db.saveCard(updatedCard, tx as any);
     setCard(updatedCard);
     setGoogleReviewClaimed(true);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(`fidelitydz_gr_claimed_${card.id}`, 'true');
-    }
     confetti({
       particleCount: 100,
       spread: 70,
