@@ -47,7 +47,6 @@ export default function CustomerCardPage() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
-  const [notifPermission, setNotifPermission] = useState<string>('default');
 
   // Apple / Google Wallet Pass & Kiosk Mode
   const [walletModalOpen, setWalletModalOpen] = useState(false);
@@ -55,6 +54,7 @@ export default function CustomerCardPage() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [downloadingPass, setDownloadingPass] = useState(false);
   const [googleReviewClaimed, setGoogleReviewClaimed] = useState(false);
+  const [notifPermission, setNotifPermission] = useState<string>('default');
 
   useEffect(() => {
     if (typeof window !== 'undefined' && 'Notification' in window) {
@@ -86,21 +86,7 @@ export default function CustomerCardPage() {
     } catch {}
   };
 
-  useEffect(() => {
-    if (notifPermission === 'granted' && offers.length > 0 && merchant) {
-      const latestOffer = offers[0];
-      const notifiedKey = `fidelitydz_notif_sent_${latestOffer.id}`;
-      if (typeof window !== 'undefined' && !localStorage.getItem(notifiedKey)) {
-        try {
-          new Notification(`📢 Offre Spéciale — ${merchant.business_name}`, {
-            body: isAr && latestOffer.title_ar ? latestOffer.title_ar : latestOffer.title_fr,
-            icon: merchant.logo_url || 'https://cdn-icons-png.flaticon.com/512/1041/1041888.png',
-          });
-          localStorage.setItem(notifiedKey, 'true');
-        } catch {}
-      }
-    }
-  }, [offers, notifPermission, merchant, isAr]);
+
   const hiddenQrRef = useRef<HTMLDivElement>(null);
 
   const loadCardLive = async (showSpinner = false) => {

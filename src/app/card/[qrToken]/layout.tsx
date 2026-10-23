@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: { params: { qrToken: string }
     appleWebApp: {
       capable: true,
       statusBarStyle: 'black-translucent',
-      title: title, // FORCE APPLE TO USE THIS NAME
+      title: title, // FORCE APPLE PWA TITLE
     },
     manifest: `/api/manifest?token=${token}&name=${encodeURIComponent(title)}&logo=${encodeURIComponent(logoUrl)}`,
   };
