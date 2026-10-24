@@ -190,16 +190,36 @@ export default function DashboardOverviewPage() {
             </Link>
           </div>
 
-          {/* QR Box */}
-          <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200/80 flex flex-col items-center text-center space-y-3">
-            <div className="bg-white p-3 rounded-2xl shadow-sm border border-slate-200">
-              <QRCodeSVG value={joinUrl} size={150} level="M" />
+          {/* QR Box Élégant */}
+          <div className="relative group overflow-hidden bg-gradient-to-b from-slate-50 to-slate-100/50 p-8 rounded-[2rem] border border-slate-200 shadow-[inset_0_2px_10px_rgba(255,255,255,0.7)] flex flex-col items-center text-center">
+            
+            {/* Lueur d'arrière-plan douce */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-emerald-100/40 via-transparent to-blue-50/40 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+            
+            <div className="relative z-10 bg-white p-5 rounded-[1.75rem] shadow-xl shadow-slate-200/50 border border-slate-100 transition-transform duration-500 group-hover:scale-[1.02]">
+              <QRCodeSVG 
+                value={joinUrl} 
+                size={160} 
+                level="Q" 
+                includeMargin={false}
+                fgColor="#0F172A"
+                className="drop-shadow-sm"
+              />
+              
+              {/* Petit logo ou icône au centre (Optionnel, design épuré) */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-1.5 rounded-xl shadow-sm">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center">
+                  <QrCode className="w-4 h-4" />
+                </div>
+              </div>
             </div>
-            <div className="space-y-1">
-              <p className="text-xs font-extrabold text-slate-800">
-                /{currentMerchant?.slug}
-              </p>
-              <p className="text-[11px] text-slate-500 font-mono break-all px-2">
+            
+            <div className="mt-6 space-y-1.5 relative z-10">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-200/50 text-slate-700 text-[11px] font-black uppercase tracking-widest">
+                <Sparkles className="w-3 h-3 text-emerald-500" />
+                {currentMerchant?.slug}
+              </div>
+              <p className="text-[10px] text-slate-400 font-mono break-all max-w-[220px] mx-auto opacity-70 group-hover:opacity-100 transition-opacity">
                 {joinUrl}
               </p>
             </div>

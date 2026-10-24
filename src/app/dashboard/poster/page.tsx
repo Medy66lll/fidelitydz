@@ -193,12 +193,28 @@ export default function CounterPosterPage() {
             </p>
           </div>
 
-          {/* Crisp Large QR Code */}
-          <div className="bg-slate-50 p-6 rounded-3xl border-2 border-slate-200 inline-block mx-auto shadow-inner">
-            <QRCodeSVG value={joinUrl} size={210} level="H" includeMargin={false} />
-            <p className="mt-3 text-[11px] font-mono font-bold text-slate-500 break-all">
-              {joinUrl}
-            </p>
+          {/* Crisp Large QR Code (Design Raffiné) */}
+          <div className="relative inline-block mx-auto">
+            <div className="absolute -inset-1 bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-[2.5rem] blur opacity-20"></div>
+            <div className="relative bg-white p-8 rounded-[2rem] border border-slate-100 shadow-2xl flex flex-col items-center">
+              <div className="relative">
+                <QRCodeSVG 
+                  value={joinUrl} 
+                  size={200} 
+                  level="H" 
+                  includeMargin={false}
+                  fgColor="#0F172A" 
+                />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-2 rounded-2xl shadow-sm">
+                  <div className="w-10 h-10 rounded-xl bg-slate-900 text-emerald-400 flex items-center justify-center">
+                    <QrCode className="w-5 h-5" />
+                  </div>
+                </div>
+              </div>
+              <p className="mt-4 text-[10px] font-mono font-bold text-slate-400 tracking-wider">
+                {currentMerchant?.slug}
+              </p>
+            </div>
           </div>
 
           {/* Reward Preview */}
