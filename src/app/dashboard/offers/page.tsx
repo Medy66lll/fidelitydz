@@ -16,6 +16,8 @@ import {
   Pencil,
   Trash2,
   X,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
 
 export default function OffersPage() {
