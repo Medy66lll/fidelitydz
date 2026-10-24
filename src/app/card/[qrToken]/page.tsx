@@ -629,27 +629,34 @@ export default function CustomerCardPage() {
         </div>
       )}
 
-      {/* Top Header */}
-      <header className="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80 px-4 py-3">
+      {/* Top Header Design Premium */}
+      <header className="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-xl border-b border-white/5 px-4 py-3 shadow-sm">
         <div className="max-w-md mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {merchant.logo_url ? (
-              <img
-                src={merchant.logo_url}
-                alt={merchant.business_name}
-                className="w-8 h-8 rounded-lg object-cover shadow-sm border border-emerald-500/30 bg-white"
-              />
+              <div className="relative">
+                <div className="absolute inset-0 bg-emerald-500 blur-md opacity-30 rounded-full"></div>
+                <img
+                  src={merchant.logo_url}
+                  alt={`Logo ${merchant.business_name}`}
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                  className="relative w-12 h-12 rounded-full object-cover border-2 border-slate-800 bg-white shadow-lg"
+                />
+              </div>
             ) : (
-              <div className="w-8 h-8 rounded-lg bg-emerald-500 text-slate-950 flex items-center justify-center font-black">
-                <QrCode className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-600 to-emerald-400 text-slate-950 flex items-center justify-center font-black shadow-lg">
+                {merchant.business_name.charAt(0).toUpperCase()}
               </div>
             )}
-            <div>
-              <span className="font-extrabold text-sm tracking-tight text-white block">
+            <div className="flex flex-col">
+              <span className="font-black text-base tracking-tight text-white leading-none mb-1">
                 {merchant.business_name}
               </span>
-              <span className="text-[10px] text-emerald-400 font-semibold">
-                {isAr ? 'عضو الولاء' : 'Membre Club Fidélité'}
+              <span className="inline-flex items-center gap-1 text-[9px] uppercase tracking-widest font-bold text-emerald-400">
+                <Sparkles className="w-3 h-3" />
+                {isAr ? 'نادي الولاء' : 'VIP Club'}
               </span>
             </div>
           </div>
@@ -657,8 +664,8 @@ export default function CustomerCardPage() {
             <button
               type="button"
               onClick={() => loadCardLive(false)}
-              className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white"
-              title="Actualiser mes points"
+              className="p-2 rounded-full bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors"
+              title="Actualiser"
             >
               <RefreshCw className="w-4 h-4" />
             </button>
@@ -784,7 +791,8 @@ export default function CustomerCardPage() {
                 </span>
               </div>
 
-              <div className="grid grid-cols-5 gap-2.5">
+              {/* Grille de Tampons Design Moderne */}
+              <div className="grid grid-cols-5 gap-3 mt-4">
                 {Array.from({ length: program.stamps_required }).map((_, index) => {
                   const isFilled = index < card.stamps_balance;
                   const isLast = index === program.stamps_required - 1;
@@ -792,29 +800,35 @@ export default function CustomerCardPage() {
                   return (
                     <div
                       key={index}
-                      className={`h-12 rounded-2xl flex items-center justify-center text-xs font-bold transition-all ${
+                      className={`relative h-14 rounded-2xl flex items-center justify-center transition-all duration-300 ${
                         isFilled
-                          ? 'shadow-lg text-white scale-100'
-                          : 'border-2 border-dashed border-white/15 bg-white/5 text-slate-500'
+                          ? 'shadow-[inset_0_1px_3px_rgba(255,255,255,0.3)] scale-[1.02] transform'
+                          : 'border border-white/10 bg-slate-900/40 backdrop-blur-sm'
                       }`}
                       style={{
-                        backgroundColor: isFilled
+                        background: isFilled
                           ? isLast
-                            ? '#F59E0B'
-                            : program.primary_color || '#10B981'
+                            ? 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)' // Amber gradient
+                            : `linear-gradient(135deg, ${program.primary_color || '#10B981'} 0%, #047857 100%)`
                           : undefined,
+                        boxShadow: isFilled ? `0 4px 14px 0 ${(program.primary_color || '#10B981')}40` : 'none'
                       }}
                     >
+                      {/* Inner Ring for Empty Stamps */}
+                      {!isFilled && !isLast && (
+                        <div className="absolute inset-2 rounded-full border border-dashed border-white/20"></div>
+                      )}
+                      
                       {isFilled ? (
                         isLast ? (
-                          <Trophy className="w-5 h-5 text-white animate-bounce" />
+                          <Trophy className="w-6 h-6 text-white drop-shadow-md animate-pulse" />
                         ) : (
-                          <Check className="w-5 h-5 stroke-[3]" />
+                          <Check className="w-6 h-6 text-white drop-shadow-md stroke-[3]" />
                         )
                       ) : isLast ? (
-                        <Gift className="w-5 h-5 text-amber-400/60" />
+                        <Gift className="w-6 h-6 text-amber-400/40" />
                       ) : (
-                        <span>{index + 1}</span>
+                        <span className="text-xs font-black text-white/20">{index + 1}</span>
                       )}
                     </div>
                   );
@@ -842,15 +856,28 @@ export default function CustomerCardPage() {
             </div>
           )}
 
-          {/* Cashier QR Presentation */}
-          <div className="mt-6 pt-6 border-t border-white/10 flex flex-col items-center bg-white rounded-2xl p-5 text-slate-900 shadow-xl relative z-10">
-            <QRCodeSVG value={card.qr_token} size={145} level="M" includeMargin={false} />
-            <p className="mt-3 text-[11px] font-black uppercase tracking-wider text-slate-600">
-              {t('show_qr_to_cashier')}
-            </p>
-            <p className="text-xs font-mono font-bold text-slate-800 mt-0.5">
-              {card.customer_phone}
-            </p>
+          {/* Cashier QR Presentation Premium */}
+          <div className="mt-8 pt-8 border-t border-white/10 flex flex-col items-center relative z-10">
+            <div className="bg-white p-5 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 transition-transform hover:scale-105 duration-300">
+              <QRCodeSVG 
+                value={card.qr_token} 
+                size={160} 
+                level="Q" 
+                includeMargin={false}
+                fgColor="#0F172A"
+              />
+            </div>
+            <div className="mt-4 text-center">
+              <p className="text-[11px] font-black uppercase tracking-widest text-emerald-400 mb-1">
+                {t('show_qr_to_cashier')}
+              </p>
+              <div className="inline-flex items-center gap-2 bg-slate-900/50 backdrop-blur px-4 py-1.5 rounded-full border border-white/10">
+                <Smartphone className="w-3.5 h-3.5 text-slate-400" />
+                <p className="text-sm font-mono font-bold text-white tracking-widest">
+                  {card.customer_phone.replace(/(.{2})/g, '$1 ').trim()}
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Pass Stats Footer */}
