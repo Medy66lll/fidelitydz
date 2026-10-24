@@ -212,7 +212,7 @@ export default function CustomerJoinPage() {
             {/* Name Input - OBLIGATOIRE */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-300 block">
-                {t('customer_name_label')} <span className="text-emerald-400">* (Obligatoire)</span>
+                {t('customer_name_label')} <span className="text-emerald-400">*</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 rtl:left-auto rtl:right-0 pl-3 rtl:pr-3 flex items-center pointer-events-none text-slate-500">

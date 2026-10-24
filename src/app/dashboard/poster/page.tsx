@@ -40,49 +40,56 @@ export default function CounterPosterPage() {
     const bName = currentMerchant?.business_name || 'Commerce';
     const rewardText = program?.reward_title_fr || '10eme Offert';
     
-    // --- Design Premium de l'Affiche PDF ---
+    // --- Ultra-Premium PDF Design ---
 
-    // 1. Fond principal (très léger gris pour le contraste)
-    doc.setFillColor(248, 250, 252); // slate-50
+    // 1. Fond principal Sombre & Luxueux
+    doc.setFillColor(15, 23, 42); // slate-900 pour un look très haut de gamme
     doc.rect(0, 0, 210, 297, 'F');
-
-    // 2. En-tête / Header (Design arrondi moderne)
-    doc.setFillColor(15, 23, 42); // slate-900
-    // Draw a large rounded rectangle at the top, shifted up to hide top corners
-    doc.roundedRect(-10, -10, 230, 70, 8, 8, 'F'); 
-
-    // Logo / Titre
-    doc.setTextColor(16, 185, 129); // emerald-500
-    doc.setFontSize(26);
-    doc.setFont('helvetica', 'bold');
-    doc.text(bName.toUpperCase(), 105, 28, { align: 'center' });
     
+    // Ajout d'une bande émeraude décorative subtile en haut
+    doc.setFillColor(16, 185, 129);
+    doc.rect(0, 0, 210, 5, 'F');
+
+    // 2. En-tête / Logo Central
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Programme de Fidelite Exclusif', 105, 38, { align: 'center' });
+    doc.setFontSize(36);
+    doc.setFont('helvetica', 'bold');
+    doc.text(bName.toUpperCase(), 105, 35, { align: 'center' });
+    
+    doc.setTextColor(16, 185, 129); // emerald-500
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('CLUB FIDÉLITÉ VIP', 105, 45, { align: 'center' });
     
     doc.setTextColor(148, 163, 184); // slate-400
-    doc.setFontSize(10);
-    doc.text(`${currentMerchant?.wilaya || 'Algerie'} ${currentMerchant?.address ? `• ${currentMerchant.address}` : ''}`, 105, 46, { align: 'center' });
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${currentMerchant?.wilaya || 'Algérie'} ${currentMerchant?.address ? `• ${currentMerchant.address}` : ''}`, 105, 53, { align: 'center' });
 
-    // 3. Cadre central blanc pour le QR Code avec effet d'ombre simulée
-    doc.setFillColor(226, 232, 240); // ombre légère slate-200
-    doc.roundedRect(36, 76, 138, 142, 10, 10, 'F');
-    doc.setFillColor(255, 255, 255); // cadre principal
-    doc.roundedRect(35, 75, 138, 142, 10, 10, 'F');
+    // 3. Cadre central du QR Code - Effet Carte de Visite Métallisée / Glassmorphism
+    // Ombre du cadre
+    doc.setFillColor(2, 6, 23); // slate-950
+    doc.roundedRect(36, 76, 138, 148, 8, 8, 'F');
+    
+    // Cadre Blanc (Effet Pop)
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(35, 75, 138, 148, 8, 8, 'F');
+    
+    // Liseré supérieur émeraude sur le cadre blanc
+    doc.setFillColor(16, 185, 129);
+    doc.roundedRect(35, 75, 138, 4, 3, 3, 'F');
 
     doc.setTextColor(15, 23, 42);
-    doc.setFontSize(20);
+    doc.setFontSize(22);
     doc.setFont('helvetica', 'bold');
-    doc.text('Scannez pour rejoindre', 105, 95, { align: 'center' });
+    doc.text('REJOIGNEZ LE CLUB', 105, 95, { align: 'center' });
     
     doc.setTextColor(100, 116, 139);
-    doc.setFontSize(12);
+    doc.setFontSize(13);
     doc.setFont('helvetica', 'normal');
-    doc.text('Zéro application a installer', 105, 103, { align: 'center' });
+    doc.text('Scannez pour ouvrir votre carte digitale', 105, 103, { align: 'center' });
 
-    // Insertion du QR Code
+    // Insertion du QR Code HD
     const canvasEl = qrCanvasWrapRef.current?.querySelector('canvas');
     if (canvasEl) {
       try {
@@ -93,42 +100,39 @@ export default function CounterPosterPage() {
       }
     }
     
-    // Lien sous le QR
-    doc.setTextColor(148, 163, 184);
-    doc.setFontSize(10);
-    doc.text(joinUrl.replace('https://', ''), 105, 205, { align: 'center' });
-
-    // 4. Bloc Récompense (Design coloré)
-    doc.setFillColor(254, 243, 199); // amber-50
-    doc.setDrawColor(252, 211, 77); // amber-300
-    doc.roundedRect(25, 225, 160, 24, 6, 6, 'FD');
+    // Ligne décorative séparatrice dans le cadre
+    doc.setDrawColor(226, 232, 240); // slate-200
+    doc.line(75, 204, 135, 204);
     
-    doc.setTextColor(180, 83, 9); // amber-700
-    doc.setFontSize(13);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`🎁 Recompense : ${rewardText}`, 105, 240, { align: 'center' });
-
-    // 5. Instructions (Icônes simulées avec numéros)
-    doc.setTextColor(51, 65, 85); // slate-700
+    // Lien sous le QR
+    doc.setTextColor(148, 163, 184); // slate-400
     doc.setFontSize(11);
+    doc.text(joinUrl.replace('https://', ''), 105, 215, { align: 'center' });
+
+    // 4. Bloc Récompense en bas (Style Plaque Dorée / Ambre)
+    doc.setFillColor(245, 158, 11); // amber-500
+    doc.roundedRect(25, 240, 160, 26, 8, 8, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(15);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`🎁 RÉCOMPENSE : ${rewardText.toUpperCase()}`, 105, 257, { align: 'center' });
+
+    // 5. Instruction minimale 1, 2, 3 en bas
+    doc.setTextColor(203, 213, 225); // slate-300
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
     
-    doc.setFillColor(16, 185, 129); // emerald-500
-    doc.circle(30, 260, 3, 'F');
-    doc.text('Entrez simplement votre numero de mobile (05/06/07)', 38, 261);
-    
-    doc.circle(30, 270, 3, 'F');
-    doc.text('Presentez la carte digitale en caisse pour cumuler', 38, 271);
-    
-    doc.circle(30, 280, 3, 'F');
-    doc.text(`Le 1er tampon vous est offert automatiquement !`, 38, 281);
+    doc.text('1. SCANNEZ CE CODE', 50, 280, { align: 'center' });
+    doc.text('2. ENTREZ VOTRE NUMÉRO', 105, 280, { align: 'center' });
+    doc.text('3. GAGNEZ DES CADEAUX', 160, 280, { align: 'center' });
 
     // 6. Footer discret
-    doc.setTextColor(203, 213, 225); // slate-300
+    doc.setTextColor(71, 85, 105); // slate-600
     doc.setFontSize(8);
-    doc.text('Propulse par FidelityDZ - Plateforme de Fidelite Digitale', 105, 290, { align: 'center' });
+    doc.text('Propulsé par FidelityDZ - Zéro application à télécharger', 105, 292, { align: 'center' });
 
-    doc.save(`Affiche_Fidelite_${currentMerchant?.slug || 'comptoir'}.pdf`);
+    doc.save(`FidelityDZ_${currentMerchant?.slug || 'club'}.pdf`);
   };
 
   return (

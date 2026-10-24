@@ -652,16 +652,30 @@ export default function CustomerCardPage() {
               </div>
             )}
             <div className="flex flex-col">
-              <span className="font-black text-base tracking-tight text-white leading-none mb-1">
+              <span className="font-black text-base tracking-tight text-white leading-none mb-1 truncate max-w-[140px]">
                 {merchant.business_name}
               </span>
               <span className="inline-flex items-center gap-1 text-[9px] uppercase tracking-widest font-bold text-emerald-400">
                 <Sparkles className="w-3 h-3" />
-                {isAr ? 'نادي الولاء' : 'VIP Club'}
+                VIP Club
               </span>
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {/* Cloche Notification Rapide dans le header */}
+            <button
+              type="button"
+              onClick={notifPermission !== 'granted' ? handleRequestNotifications : undefined}
+              className={`p-2 rounded-full border transition-all ${
+                notifPermission === 'granted'
+                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 cursor-default'
+                  : 'bg-amber-500/10 border-amber-500/30 text-amber-400 animate-pulse hover:bg-amber-500/20'
+              }`}
+              title={notifPermission === 'granted' ? 'Notifications Actives' : 'Activer les notifications'}
+            >
+              {notifPermission === 'granted' ? <BellRing className="w-4 h-4" /> : <Bell className="w-4 h-4" />}
+            </button>
+
             <button
               type="button"
               onClick={() => loadCardLive(false)}
@@ -914,21 +928,24 @@ export default function CustomerCardPage() {
           </button>
         </div>
 
-        {/* Google Maps Review Reward Banner */}
-        {merchant.google_review_reward_enabled && (merchant.social_maps || merchant.address) && (
-          <div className="bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-transparent border border-amber-500/40 rounded-2xl p-4 text-white space-y-3 shadow-lg">
-            <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-black text-lg flex-shrink-0">
-                ⭐
+        {/* Quête Google Maps (Google Review Reward) - Compact & Elegant */}
+        {merchant.google_review_reward_enabled && (merchant.social_maps || merchant.address) && !googleReviewClaimed && (
+          <div className="bg-slate-900/80 border border-amber-500/30 rounded-[1.5rem] p-4 flex flex-col gap-3 shadow-lg relative overflow-hidden group">
+            {/* Lueur arrière-plan */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
+            
+            <div className="flex items-center gap-3 relative z-10">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-300 text-slate-950 flex items-center justify-center font-black shadow-inner flex-shrink-0">
+                <Star className="w-5 h-5 fill-slate-950" />
               </div>
-              <div>
-                <h4 className="text-xs font-black uppercase text-amber-300 tracking-wider">
-                  {isAr ? 'مكافأة تقييم المتجر على Google Maps' : 'Cadeau Fidélité : Avis Google Maps'}
+              <div className="flex-1 min-w-0">
+                <h4 className="text-xs font-black uppercase text-amber-400 tracking-wider">
+                  {isAr ? 'مكافأة خرائط جوجل' : 'Mission : Avis Google Maps'}
                 </h4>
-                <p className="text-xs text-slate-200 mt-0.5 leading-relaxed">
+                <p className="text-[11px] text-slate-300 mt-0.5 leading-snug">
                   {isAr
-                    ? `اترك تقييماً على خرائط جوجل واكسب +${merchant.google_review_reward_bonus || 1} أختام/نقاط مجاناً !`
-                    : `Laissez un avis 5 étoiles sur Google Maps et recevez +${merchant.google_review_reward_bonus || 1} ${program.program_type === 'STAMPS' ? 'tampon(s)' : 'points'} cadeau(x) sur votre carte !`}
+                    ? `اترك تقييماً واكسب +${merchant.google_review_reward_bonus || 1} أختام/نقاط مجاناً`
+                    : `Laissez 5 étoiles et gagnez +${merchant.google_review_reward_bonus || 1} ${program.program_type === 'STAMPS' ? 'tampon(s)' : 'points'}.`}
                 </p>
               </div>
             </div>
@@ -936,25 +953,10 @@ export default function CustomerCardPage() {
             <button
               type="button"
               onClick={handleClaimGoogleReview}
-              disabled={googleReviewClaimed}
-              className={`w-full py-3 px-4 rounded-xl text-xs font-black flex items-center justify-center gap-2 transition-all shadow-md ${
-                googleReviewClaimed
-                  ? 'bg-emerald-950/90 border border-emerald-600 text-emerald-300 cursor-default'
-                  : 'bg-amber-400 hover:bg-amber-300 text-slate-950 hover:scale-[1.01]'
-              }`}
+              className="w-full py-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/50 text-amber-400 text-[11px] font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all relative z-10"
             >
-              {googleReviewClaimed ? (
-                <>
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span>{isAr ? '✔ تم استلام هدية التقييم بنجاح' : '✔ Cadeau avis Google déjà crédité sur votre carte !'}</span>
-                </>
-              ) : (
-                <>
-                  <Star className="w-4 h-4 fill-current" />
-                  <span>{isAr ? 'تقييم المتجر واستلام الهدية فوراً' : 'Déposer mon avis Google & Recevoir mon cadeau'}</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </>
-              )}
+              <span>{isAr ? 'تقييم الآن واستلام الهدية' : 'Noter et débloquer mon cadeau'}</span>
+              <ExternalLink className="w-3.5 h-3.5" />
             </button>
           </div>
         )}
@@ -1023,39 +1025,7 @@ export default function CustomerCardPage() {
           </div>
         )}
 
-        {/* Notifications Phone Permission & Status Bar */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-3 flex items-center justify-between gap-2 shadow-sm">
-          <div className="flex items-center gap-2.5">
-            <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${notifPermission === 'granted' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-300'}`}>
-              {notifPermission === 'granted' ? <BellRing className="w-4 h-4" /> : <Bell className="w-4 h-4" />}
-            </div>
-            <div>
-              <div className="text-xs font-bold text-white">
-                {notifPermission === 'granted'
-                  ? (isAr ? 'الإشعارات مفعلة على هاتفك' : 'Notifications actives sur ce téléphone')
-                  : (isAr ? 'تفعيل إشعارات العروض الخاصة' : 'Recevoir les alertes promos & offres')}
-              </div>
-              <div className="text-[10px] text-slate-400">
-                {notifPermission === 'granted'
-                  ? (isAr ? 'ستصلك تنبيهات فورية بكل عروض المتجر' : 'Vous recevrez les alertes instantanément')
-                  : (isAr ? 'اضغط لتفعيل الإشعارات والتخفيضات' : 'Cliquez pour ne manquer aucune réduction')}
-              </div>
-            </div>
-          </div>
-          {notifPermission !== 'granted' ? (
-            <button
-              onClick={handleRequestNotifications}
-              type="button"
-              className="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-[11px] shadow-sm transition whitespace-nowrap"
-            >
-              {isAr ? 'تفعيل' : 'Activer'}
-            </button>
-          ) : (
-            <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800 px-2 py-0.5 rounded-full">
-              {isAr ? 'مفعل' : 'Actif'}
-            </span>
-          )}
-        </div>
+
 
         {/* Personalized Offers Section */}
         {offers.length > 0 && (
