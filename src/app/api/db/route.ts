@@ -92,6 +92,13 @@ function buildHeaders(key: string, preferRepresentation = true): Record<string, 
 }
 
 // Convertit n'importe quel identifiant en UUID v4 valide (compatible colonnes UUID et TEXT dans PostgreSQL)
+function sanitizeHtml(text: string): string {
+  if (!text) return '';
+  return text.replace(/[<>]/g, function(c) {
+    return {'<': '&lt;', '>': '&gt;'}[c] || c;
+  });
+}
+
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function ensureUuid(val?: string): string {
@@ -279,7 +286,7 @@ function packOfferForDb(o: any) {
     merchant_id: ensureUuid(o.merchant_id),
     title_fr: sanitizeString(o.title_fr, 120),
     title_ar: o.title_ar || '',
-    description_fr: o.description_fr || '',
+    description_fr: sanitizeHtml(o.description_fr || ''),
     description_ar: packedDescAr,
     target_segment: o.target_segment || 'ALL',
     valid_until: o.valid_until || new Date(Date.now() + 14 * 86400000).toISOString(),

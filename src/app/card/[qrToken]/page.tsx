@@ -722,7 +722,10 @@ export default function CustomerCardPage() {
             {merchant.logo_url ? (
               <img
                 src={merchant.logo_url}
-                alt={merchant.business_name}
+                alt={`Logo ${merchant.business_name}`}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
                 className="w-12 h-12 rounded-2xl object-cover shadow-lg border-2 border-white/20 bg-white"
               />
             ) : (

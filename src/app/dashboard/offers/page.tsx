@@ -35,6 +35,12 @@ export default function OffersPage() {
   const [imageUrl, setImageUrl] = useState('');
   const [targetSegment, setTargetSegment] = useState<TargetSegment>('ALL');
   const [validDays, setValidDays] = useState(14);
+  const [toastMessage, setToastMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
+
+  const showToast = (text: string, type: 'success' | 'error' = 'success') => {
+    setToastMessage({ text, type });
+    setTimeout(() => setToastMessage(null), 3000);
+  };
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -151,10 +157,18 @@ export default function OffersPage() {
     setOffers(db.getOffers(currentMerchant.id));
     setShowCreateModal(false);
     resetForm();
+    showToast(isAr ? 'تم حفظ العرض بنجاح' : 'Offre enregistrée avec succès');
   };
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className={`fixed bottom-4 right-4 z-[60] px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 animate-bounce-in text-white text-sm font-bold ${toastMessage.type === 'success' ? 'bg-emerald-600' : 'bg-red-600'}`}>
+          {toastMessage.type === 'success' ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+          <span>{toastMessage.text}</span>
+        </div>
+      )}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
