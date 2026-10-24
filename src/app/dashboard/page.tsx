@@ -56,8 +56,13 @@ export default function DashboardOverviewPage() {
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
-      {/* Top Banner / Welcome */}
-      <div className="bg-gradient-to-r from-slate-900 to-slate-950 text-white p-6 sm:p-8 rounded-3xl shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden border border-slate-800">
+      {/* Top Banner / Welcome - Premium UI */}
+      <div className="bg-slate-950 text-white p-8 sm:p-10 rounded-[2.5rem] shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-8 relative overflow-hidden border border-slate-800/60">
+        {/* Glow Effects */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[150%] bg-gradient-to-r from-emerald-500/20 to-transparent rotate-12 blur-3xl" />
+          <div className="absolute top-[80%] right-[10%] w-[30%] h-[100%] bg-blue-500/20 rounded-full blur-3xl" />
+        </div>
         <div className="space-y-2 relative z-10">
           <div className="inline-flex items-center gap-1.5 bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full text-xs font-bold border border-emerald-500/30">
             <Sparkles className="w-3.5 h-3.5" />
@@ -74,17 +79,17 @@ export default function DashboardOverviewPage() {
         </div>
 
         {/* Quick Cashier Button */}
-        <div className="flex flex-wrap items-center gap-3 relative z-10 w-full sm:w-auto">
+        <div className="flex flex-wrap items-center gap-4 relative z-10 w-full sm:w-auto">
           <Link
             href="/scanner"
-            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm rounded-xl shadow-lg shadow-emerald-500/20 transition-all hover:scale-105"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm rounded-2xl shadow-[0_8px_30px_rgb(16,185,129,0.3)] transition-all hover:scale-105 hover:-translate-y-1"
           >
-            <QrCode className="w-5 h-5" />
+            <QrCode className="w-6 h-6 relative z-10" />
             <span>{t('open_scanner')}</span>
           </Link>
           <Link
             href="/dashboard/poster"
-            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm rounded-xl transition-all"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 text-white font-bold text-sm rounded-2xl transition-all hover:-translate-y-1"
           >
             <Printer className="w-4 h-4 text-emerald-400" />
             <span>Affiche PDF</span>
@@ -95,13 +100,14 @@ export default function DashboardOverviewPage() {
       {/* 4 KPIs CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {/* KPI 1 */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-2 hover:shadow-md transition-shadow">
+        <div className="bg-white p-7 rounded-[2rem] border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] space-y-3 hover:shadow-[0_8px_30px_rgb(16,185,129,0.08)] hover:-translate-y-1 hover:border-emerald-100 transition-all duration-300 relative overflow-hidden group">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
               {t('kpi_total_customers')}
             </span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-              <Users className="w-5 h-5" />
+            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center relative z-10 group-hover:scale-110 transition-transform duration-300">
+              <div className="absolute inset-0 bg-current opacity-20 blur-md rounded-full"></div>
+              <Users className="w-6 h-6 relative z-10" />
             </div>
           </div>
           <div className="text-3xl font-black text-slate-900 tracking-tight">
@@ -114,13 +120,14 @@ export default function DashboardOverviewPage() {
         </div>
 
         {/* KPI 2 */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-2 hover:shadow-md transition-shadow">
+        <div className="bg-white p-7 rounded-[2rem] border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] space-y-3 hover:shadow-[0_8px_30px_rgb(16,185,129,0.08)] hover:-translate-y-1 hover:border-emerald-100 transition-all duration-300 relative overflow-hidden group">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
               {t('kpi_total_visits')}
             </span>
-            <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-              <Eye className="w-5 h-5" />
+            <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center relative z-10 group-hover:scale-110 transition-transform duration-300">
+              <div className="absolute inset-0 bg-current opacity-20 blur-md rounded-full"></div>
+              <Eye className="w-6 h-6 relative z-10" />
             </div>
           </div>
           <div className="text-3xl font-black text-slate-900 tracking-tight">
@@ -132,13 +139,14 @@ export default function DashboardOverviewPage() {
         </div>
 
         {/* KPI 3 */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-2 hover:shadow-md transition-shadow">
+        <div className="bg-white p-7 rounded-[2rem] border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] space-y-3 hover:shadow-[0_8px_30px_rgb(16,185,129,0.08)] hover:-translate-y-1 hover:border-emerald-100 transition-all duration-300 relative overflow-hidden group">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
               {t('kpi_rewards_unlocked')}
             </span>
-            <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-              <Trophy className="w-5 h-5" />
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center relative z-10 group-hover:scale-110 transition-transform duration-300">
+              <div className="absolute inset-0 bg-current opacity-20 blur-md rounded-full"></div>
+              <Trophy className="w-6 h-6 relative z-10" />
             </div>
           </div>
           <div className="text-3xl font-black text-slate-900 tracking-tight">
@@ -150,13 +158,14 @@ export default function DashboardOverviewPage() {
         </div>
 
         {/* KPI 4 */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-2 hover:shadow-md transition-shadow">
+        <div className="bg-white p-7 rounded-[2rem] border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] space-y-3 hover:shadow-[0_8px_30px_rgb(16,185,129,0.08)] hover:-translate-y-1 hover:border-emerald-100 transition-all duration-300 relative overflow-hidden group">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
               {t('kpi_active_offers')}
             </span>
-            <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-              <Tag className="w-5 h-5" />
+            <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center relative z-10 group-hover:scale-110 transition-transform duration-300">
+              <div className="absolute inset-0 bg-current opacity-20 blur-md rounded-full"></div>
+              <Tag className="w-6 h-6 relative z-10" />
             </div>
           </div>
           <div className="text-3xl font-black text-slate-900 tracking-tight">
@@ -171,7 +180,7 @@ export default function DashboardOverviewPage() {
       {/* MIDDLE SECTION: QUICK JOIN LINK & RECENT TRANSACTIONS */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left: Quick Join QR & Link Box */}
-        <div className="lg:col-span-5 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-5">
+        <div className="lg:col-span-5 bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-5">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-base font-extrabold text-slate-900">
@@ -237,7 +246,7 @@ export default function DashboardOverviewPage() {
         </div>
 
         {/* Right: Recent Customer Transactions */}
-        <div className="lg:col-span-7 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-5">
+        <div className="lg:col-span-7 bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-5">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-base font-extrabold text-slate-900">

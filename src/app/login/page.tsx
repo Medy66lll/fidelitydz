@@ -42,7 +42,10 @@ export default function MerchantLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex flex-col justify-between">
+    <div className="min-h-screen relative flex flex-col justify-between text-white overflow-hidden bg-slate-950">
+      {/* Decorative blurred backgrounds */}
+      <div className="absolute top-[-15%] left-[-10%] w-[60%] h-[60%] bg-emerald-500/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-15%] right-[-10%] w-[60%] h-[60%] bg-blue-500/20 rounded-full blur-[120px] pointer-events-none" />>
       {/* Header */}
       <header className="border-b border-slate-800/80 px-6 py-4 bg-slate-900/60 backdrop-blur-md">
         <div className="max-w-7xl mx-auto flex items-center justify-between">

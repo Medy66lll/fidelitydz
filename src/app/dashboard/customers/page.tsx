@@ -57,24 +57,24 @@ export default function CustomersPage() {
       </div>
 
       {/* Search Input */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-        <div className="relative">
-          <Search className="w-5 h-5 absolute left-3 rtl:left-auto rtl:right-3 top-1/2 -translate-y-1/2 text-slate-400" />
+      <div className="bg-white p-4 rounded-3xl border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] transition-all hover:shadow-[0_4px_25px_rgb(0,0,0,0.06)]">
+        <div className="relative group">
+          <Search className="w-5 h-5 absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors" />
           <input
             type="text"
             placeholder={isAr ? 'ابحث برقم الهاتف أو اسم الزبون...' : 'Rechercher par numéro ou prénom...'}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-10 rtl:pl-3 rtl:pr-10 text-sm outline-none focus:bg-white focus:border-emerald-500 transition-all"
+            className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-2xl py-3.5 pl-12 rtl:pl-4 rtl:pr-12 text-sm outline-none focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium"
           />
         </div>
       </div>
 
       {/* Customers Table */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left rtl:text-right text-sm">
-            <thead className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
+            <thead className="bg-slate-50/80 border-b border-slate-100 text-[11px] font-black text-slate-500 uppercase tracking-widest">
               <tr>
                 <th className="p-4 sm:px-6">Client</th>
                 <th className="p-4 sm:px-6">Téléphone</th>
@@ -129,7 +129,7 @@ export default function CustomersPage() {
                       <Link
                         href={`/card/${card.qr_token}`}
                         target="_blank"
-                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-lg transition-colors"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-50 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 text-xs font-bold rounded-xl transition-all border border-slate-200 hover:border-emerald-200 shadow-sm hover:shadow"
                       >
                         <span>Voir</span>
                         <ExternalLink className="w-3 h-3" />

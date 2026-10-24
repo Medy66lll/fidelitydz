@@ -123,7 +123,10 @@ export default function CustomerJoinPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 text-white flex flex-col justify-between p-4 sm:p-6">
+    <div className="min-h-screen relative flex flex-col justify-between p-4 sm:p-6 text-white overflow-hidden bg-slate-950">
+      {/* Decorative blurred backgrounds */}
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-emerald-500/20 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-500/20 rounded-full blur-[100px] pointer-events-none" />>
       {/* Top Header */}
       <header className="max-w-md mx-auto w-full flex items-center justify-between py-2">
         <div className="flex items-center gap-2">
@@ -139,7 +142,7 @@ export default function CustomerJoinPage() {
 
       {/* Main Join Container */}
       <main className="max-w-md mx-auto w-full my-auto py-6">
-        <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
+        <div className="relative z-10 bg-slate-900/60 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-6 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.5)]">
           <div className="text-center space-y-2 pb-6 border-b border-slate-800">
             {merchant?.logo_url && (
               <img
@@ -200,7 +203,7 @@ export default function CustomerJoinPage() {
                   placeholder="0555 12 34 56"
                   value={phone}
                   onChange={(e) => handlePhoneChange(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl py-3.5 pl-10 rtl:pl-3 rtl:pr-10 text-white text-base placeholder-slate-600 font-mono tracking-wider tabular-nums outline-none transition-all"
+                  className="w-full bg-slate-950/50 hover:bg-slate-950 border border-slate-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 rounded-2xl py-4 pl-12 rtl:pl-4 rtl:pr-12 text-white text-lg placeholder-slate-500 font-mono tracking-wider tabular-nums outline-none transition-all"
                 />
               </div>
               <p className="text-[11px] text-slate-500">{t('phone_hint')}</p>
@@ -221,7 +224,7 @@ export default function CustomerJoinPage() {
                   placeholder={isAr ? 'مثال: أمين أو سارة' : 'Ex: Amine ou Sara'}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl py-3.5 pl-10 rtl:pl-3 rtl:pr-10 text-white text-base placeholder-slate-600 outline-none transition-all"
+                  className="w-full bg-slate-950/50 hover:bg-slate-950 border border-slate-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 rounded-2xl py-4 pl-12 rtl:pl-4 rtl:pr-12 text-white text-lg placeholder-slate-500 outline-none transition-all"
                 />
               </div>
             </div>
@@ -230,7 +233,7 @@ export default function CustomerJoinPage() {
               <button
                 type="submit"
                 disabled={loading || !merchant}
-                className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-[0.99] text-slate-950 font-black text-base shadow-lg shadow-emerald-500/25 transition-all disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 active:scale-[0.98] text-slate-950 font-black text-lg shadow-[0_8px_25px_rgba(16,185,129,0.4)] hover:shadow-[0_8px_35px_rgba(16,185,129,0.6)] transition-all disabled:opacity-50"
               >
                 {loading ? (
                   <span>{isAr ? 'جاري التحميل...' : 'Ouverture de votre carte...'}</span>
