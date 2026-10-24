@@ -33,8 +33,8 @@ import {
   Star,
   Bell,
   BellRing,
-,
-  Sparkles} from 'lucide-react';
+  Sparkles
+} from 'lucide-react';
 
 export default function CustomerCardPage() {
   const params = useParams();
