@@ -33,7 +33,10 @@ import {
   Star,
   Bell,
   BellRing,
-  Sparkles
+  Sparkles,
+  Facebook,
+  Instagram,
+  Music
 } from 'lucide-react';
 
 export default function CustomerCardPage() {
@@ -600,27 +603,23 @@ export default function CustomerCardPage() {
             )}
           </div>
 
-          {/* QR CODE CAISSE INTÉGRÉ DANS LA CARTE */}
-          <div className="relative z-10 bg-white rounded-2xl p-4 flex items-center gap-4 shadow-xl">
-            <div className="bg-white p-1 rounded-xl shadow-sm border border-slate-100 flex-shrink-0">
+          {/* QR CODE CAISSE INTÉGRÉ DANS LA CARTE (Cliquable pour plein écran) */}
+          <button 
+            onClick={() => setAppleWalletFullscreen(true)}
+            className="w-full relative z-10 bg-white rounded-2xl p-4 flex items-center gap-4 shadow-xl hover:bg-slate-50 transition-colors group text-left"
+          >
+            <div className="bg-white p-1 rounded-xl shadow-sm border border-slate-100 flex-shrink-0 relative">
               <QRCodeSVG value={card.qr_token} size={80} level="M" includeMargin={false} fgColor="#0F172A" />
+              <div className="absolute inset-0 bg-slate-900/5 backdrop-blur-[1px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-xl">
+                <Maximize2 className="w-6 h-6 text-slate-900 drop-shadow-md" />
+              </div>
             </div>
-            <div>
-              <p className="text-[10px] font-black uppercase text-slate-500 mb-1 leading-tight">{t('show_qr_to_cashier')}</p>
+            <div className="flex-1">
+              <p className="text-[10px] font-black uppercase text-slate-500 mb-1 leading-tight">
+                {isAr ? 'اضغط لتكبير الرمز' : 'Cliquez pour agrandir'}
+              </p>
               <p className="text-xs font-bold text-slate-800">{isAr ? program.reward_title_ar : program.reward_title_fr}</p>
             </div>
-          </div>
-        </div>
-
-        {/* BOUTONS D'ACTION */}
-        <div className="grid grid-cols-2 gap-3">
-          <button onClick={() => setWalletModalOpen(true)} className="flex flex-col items-center justify-center gap-2 py-4 bg-slate-900 border border-slate-800 rounded-[1.5rem] text-white hover:bg-slate-800 transition">
-            <Wallet className="w-6 h-6 text-emerald-400" />
-            <span className="text-[10px] font-bold uppercase tracking-wider">Pass Wallet</span>
-          </button>
-          <button onClick={handleShare} className="flex flex-col items-center justify-center gap-2 py-4 bg-slate-900 border border-slate-800 rounded-[1.5rem] text-white hover:bg-slate-800 transition">
-            <Share2 className="w-6 h-6 text-blue-400" />
-            <span className="text-[10px] font-bold uppercase tracking-wider">{copiedLink ? 'Copié !' : 'Partager'}</span>
           </button>
         </div>
 
@@ -678,12 +677,31 @@ export default function CustomerCardPage() {
         {/* LIENS SOCIAUX */}
         {(merchant.social_instagram || merchant.social_facebook || merchant.social_tiktok || merchant.social_maps) && (
           <div className="flex justify-center gap-4 pt-4 border-t border-slate-800/50">
-            {merchant.social_instagram && <a href={merchant.social_instagram.startsWith('http') ? merchant.social_instagram : `https://instagram.com/${merchant.social_instagram.replace('@', '')}`} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-pink-400 hover:scale-110 transition"><ExternalLink className="w-4 h-4"/></a>}
-            {merchant.social_facebook && <a href={merchant.social_facebook.startsWith('http') ? merchant.social_facebook : `https://facebook.com/${merchant.social_facebook}`} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-blue-400 hover:scale-110 transition"><ExternalLink className="w-4 h-4"/></a>}
-            {merchant.social_tiktok && <a href={merchant.social_tiktok.startsWith('http') ? merchant.social_tiktok : `https://tiktok.com/@${merchant.social_tiktok.replace('@', '')}`} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-300 hover:scale-110 transition"><ExternalLink className="w-4 h-4"/></a>}
-            {merchant.social_maps && <a href={merchant.social_maps.startsWith('http') ? merchant.social_maps : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(merchant.business_name)}`} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-emerald-400 hover:scale-110 transition"><MapPin className="w-4 h-4"/></a>}
+            {merchant.social_instagram && <a href={merchant.social_instagram.startsWith('http') ? merchant.social_instagram : `https://instagram.com/${merchant.social_instagram.replace('@', '')}`} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-pink-500 hover:bg-slate-800 hover:scale-110 transition shadow-sm"><Instagram className="w-4 h-4"/></a>}
+            {merchant.social_facebook && <a href={merchant.social_facebook.startsWith('http') ? merchant.social_facebook : `https://facebook.com/${merchant.social_facebook}`} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-blue-500 hover:bg-slate-800 hover:scale-110 transition shadow-sm"><Facebook className="w-4 h-4 fill-current"/></a>}
+            {merchant.social_tiktok && <a href={merchant.social_tiktok.startsWith('http') ? merchant.social_tiktok : `https://tiktok.com/@${merchant.social_tiktok.replace('@', '')}`} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-white hover:bg-slate-800 hover:scale-110 transition shadow-sm"><Music className="w-4 h-4"/></a>}
+            {merchant.social_maps && <a href={merchant.social_maps.startsWith('http') ? merchant.social_maps : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(merchant.business_name)}`} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-emerald-500 hover:bg-slate-800 hover:scale-110 transition shadow-sm"><MapPin className="w-4 h-4"/></a>}
           </div>
         )}
+        
+        {/* BANNIÈRE DE PROSPECTION FIDELITYDZ */}
+        <div className="mt-8 pt-6 border-t border-slate-800/30">
+          <a href="/" target="_blank" className="block bg-gradient-to-r from-slate-900 to-slate-800 border border-slate-700/50 rounded-2xl p-4 shadow-lg hover:shadow-emerald-500/10 hover:border-emerald-500/30 transition-all group">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-[11px] font-black uppercase tracking-wider text-emerald-400 group-hover:text-emerald-300 transition-colors">
+                  {isAr ? 'هل أنت تاجر؟' : 'Vous êtes commerçant ?'}
+                </h4>
+                <p className="text-[10px] text-slate-400 mt-1">
+                  {isAr ? 'احصل على نظام ولاء مشابه لمحلك' : 'Créez un programme de fidélité pour votre boutique'}
+                </p>
+              </div>
+              <div className="w-8 h-8 rounded-full bg-slate-950 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-slate-950 text-slate-500 transition-colors">
+                <ExternalLink className="w-3.5 h-3.5" />
+              </div>
+            </div>
+          </a>
+        </div>
       </main>
       
       <footer className="text-center py-6 text-[10px] text-slate-600 font-medium">
