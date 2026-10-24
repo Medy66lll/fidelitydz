@@ -30,7 +30,7 @@ export default function CounterPosterPage() {
     }
   };
 
-  const handleDownloadPdf = () => {
+    const handleDownloadPdf = () => {
     const doc = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
@@ -38,99 +38,93 @@ export default function CounterPosterPage() {
     });
 
     const bName = currentMerchant?.business_name || 'Commerce';
-    const rewardText = program?.reward_title_fr || '10eme Offert';
-    
-    // --- Ultra-Premium PDF Design ---
+    let rewardText = program?.reward_title_fr || 'Un Cadeau Offert';
+    rewardText = rewardText.replace(/[🎁⭐🎉]/g, '').trim();
 
-    // 1. Fond principal Sombre & Luxueux
-    doc.setFillColor(15, 23, 42); // slate-900 pour un look très haut de gamme
+    // Fond global - Blanc cassé élégant
+    doc.setFillColor(250, 250, 250);
     doc.rect(0, 0, 210, 297, 'F');
-    
-    // Ajout d'une bande émeraude décorative subtile en haut
-    doc.setFillColor(16, 185, 129);
-    doc.rect(0, 0, 210, 5, 'F');
 
-    // 2. En-tête / Logo Central
+    // En-tête incurvé (simulé par un grand cercle)
+    doc.setFillColor(15, 23, 42); // slate-900
+    doc.circle(105, -150, 220, 'F');
+    
+    // Titre principal
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(36);
+    doc.setFontSize(32);
     doc.setFont('helvetica', 'bold');
-    doc.text(bName.toUpperCase(), 105, 35, { align: 'center' });
+    doc.text(bName.toUpperCase(), 105, 30, { align: 'center' });
     
     doc.setTextColor(16, 185, 129); // emerald-500
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.text('CLUB FIDÉLITÉ VIP', 105, 45, { align: 'center' });
-    
-    doc.setTextColor(148, 163, 184); // slate-400
-    doc.setFontSize(11);
+    doc.setFontSize(14);
     doc.setFont('helvetica', 'normal');
-    doc.text(`${currentMerchant?.wilaya || 'Algérie'} ${currentMerchant?.address ? `• ${currentMerchant.address}` : ''}`, 105, 53, { align: 'center' });
+    doc.text('PROGRAMME DE FIDÉLITÉ DIGITAL', 105, 40, { align: 'center', charSpace: 1.5 });
 
-    // 3. Cadre central du QR Code - Effet Carte de Visite Métallisée / Glassmorphism
-    // Ombre du cadre
-    doc.setFillColor(2, 6, 23); // slate-950
-    doc.roundedRect(36, 76, 138, 148, 8, 8, 'F');
+    // La Carte Digitale (Le conteneur du QR)
+    // Ombre
+    doc.setFillColor(220, 220, 220);
+    doc.roundedRect(36, 76, 138, 158, 6, 6, 'F');
     
-    // Cadre Blanc (Effet Pop)
+    // Carte
     doc.setFillColor(255, 255, 255);
-    doc.roundedRect(35, 75, 138, 148, 8, 8, 'F');
+    doc.setDrawColor(226, 232, 240);
+    doc.setLineWidth(0.5);
+    doc.roundedRect(35, 75, 138, 158, 6, 6, 'FD');
     
-    // Liseré supérieur émeraude sur le cadre blanc
+    // Déco haut de carte
     doc.setFillColor(16, 185, 129);
-    doc.roundedRect(35, 75, 138, 4, 3, 3, 'F');
-
+    doc.roundedRect(35, 75, 138, 6, 3, 3, 'F');
+    doc.rect(35, 78, 138, 3, 'F'); // Raccord droit en bas
+    
     doc.setTextColor(15, 23, 42);
-    doc.setFontSize(22);
+    doc.setFontSize(18);
     doc.setFont('helvetica', 'bold');
-    doc.text('REJOIGNEZ LE CLUB', 105, 95, { align: 'center' });
+    doc.text('Votre Carte VIP', 105, 95, { align: 'center' });
     
     doc.setTextColor(100, 116, 139);
-    doc.setFontSize(13);
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'normal');
-    doc.text('Scannez pour ouvrir votre carte digitale', 105, 103, { align: 'center' });
+    doc.text('Scannez pour rejoindre le club en 5 secondes.', 105, 102, { align: 'center' });
 
-    // Insertion du QR Code HD
+    // Le QR CODE
     const canvasEl = qrCanvasWrapRef.current?.querySelector('canvas');
     if (canvasEl) {
       try {
         const qrDataUrl = canvasEl.toDataURL('image/png');
-        doc.addImage(qrDataUrl, 'PNG', 65, 115, 80, 80);
+        doc.addImage(qrDataUrl, 'PNG', 55, 110, 100, 100);
       } catch (err) {
         console.warn('Could not embed QR canvas in PDF:', err);
       }
     }
     
-    // Ligne décorative séparatrice dans le cadre
-    doc.setDrawColor(226, 232, 240); // slate-200
-    doc.line(75, 204, 135, 204);
+    // Séparateur
+    doc.setDrawColor(241, 245, 249);
+    doc.line(45, 218, 165, 218);
     
-    // Lien sous le QR
-    doc.setTextColor(148, 163, 184); // slate-400
-    doc.setFontSize(11);
-    doc.text(joinUrl.replace('https://', ''), 105, 215, { align: 'center' });
-
-    // 4. Bloc Récompense en bas (Style Plaque Dorée / Ambre)
-    doc.setFillColor(245, 158, 11); // amber-500
-    doc.roundedRect(25, 240, 160, 26, 8, 8, 'F');
-    
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(15);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`🎁 RÉCOMPENSE : ${rewardText.toUpperCase()}`, 105, 257, { align: 'center' });
-
-    // 5. Instruction minimale 1, 2, 3 en bas
-    doc.setTextColor(203, 213, 225); // slate-300
+    doc.setTextColor(148, 163, 184);
     doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    
-    doc.text('1. SCANNEZ CE CODE', 50, 280, { align: 'center' });
-    doc.text('2. ENTREZ VOTRE NUMÉRO', 105, 280, { align: 'center' });
-    doc.text('3. GAGNEZ DES CADEAUX', 160, 280, { align: 'center' });
+    doc.text(joinUrl.replace('https://', ''), 105, 226, { align: 'center' });
 
-    // 6. Footer discret
-    doc.setTextColor(71, 85, 105); // slate-600
-    doc.setFontSize(8);
-    doc.text('Propulsé par FidelityDZ - Zéro application à télécharger', 105, 292, { align: 'center' });
+    // Bloc Récompense
+    doc.setFillColor(245, 158, 11);
+    doc.roundedRect(25, 245, 160, 20, 4, 4, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`CADEAU : ${rewardText.toUpperCase()}`, 105, 258, { align: 'center', charSpace: 1 });
+
+    // Instructions en bas
+    doc.setTextColor(71, 85, 105);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('1. SCANNEZ CE CODE', 45, 275, { align: 'center' });
+    doc.text('2. ENTREZ VOTRE NUMÉRO', 105, 275, { align: 'center' });
+    doc.text('3. GAGNEZ DES CADEAUX', 165, 275, { align: 'center' });
+
+    doc.setTextColor(148, 163, 184);
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.text('FidelityDZ - La fidélité réinventée, sans application.', 105, 290, { align: 'center' });
 
     doc.save(`FidelityDZ_${currentMerchant?.slug || 'club'}.pdf`);
   };

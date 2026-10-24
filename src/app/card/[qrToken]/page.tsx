@@ -457,28 +457,14 @@ export default function CustomerCardPage() {
             <Wallet className="w-4 h-4" />
             <span>Mode Pass Wallet Actif</span>
           </span>
-          <button
-            type="button"
-            onClick={() => setAppleWalletFullscreen(false)}
-            className="px-3 py-1.5 rounded-full bg-white/15 text-xs font-bold"
-          >
+          <button type="button" onClick={() => setAppleWalletFullscreen(false)} className="px-3 py-1.5 rounded-full bg-white/15 text-xs font-bold">
             Fermer ✕
           </button>
         </div>
-
-        <div
-          className="max-w-sm mx-auto w-full rounded-[2rem] p-6 shadow-2xl border-2 border-emerald-500/50 space-y-5 my-auto"
-          style={{ backgroundColor: program.background_color || '#0F172A' }}
-        >
+        <div className="max-w-sm mx-auto w-full rounded-[2rem] p-6 shadow-2xl border-2 border-emerald-500/50 space-y-5 my-auto" style={{ backgroundColor: program.background_color || '#0F172A' }}>
           <div className="flex items-center justify-between border-b border-white/15 pb-4">
             <div className="flex items-center gap-3">
-              {merchant.logo_url && (
-                <img
-                  src={merchant.logo_url}
-                  alt={merchant.business_name}
-                  className="w-10 h-10 rounded-xl object-cover shadow-md border border-white/20 bg-white"
-                />
-              )}
+              {merchant.logo_url && <img src={merchant.logo_url} alt="Logo" className="w-10 h-10 rounded-xl object-cover bg-white" />}
               <div>
                 <p className="text-[10px] font-black uppercase text-emerald-400">FidelityDZ Pass</p>
                 <h2 className="text-xl font-black">{merchant.business_name}</h2>
@@ -486,34 +472,20 @@ export default function CustomerCardPage() {
               </div>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-black text-emerald-400">
-                {card.stamps_balance}/{program.stamps_required}
-              </div>
+              <div className="text-2xl font-black text-emerald-400">{card.stamps_balance}/{program.stamps_required}</div>
               <span className="text-[10px] text-slate-400 uppercase">Tampons</span>
             </div>
           </div>
-
           <div className="bg-white rounded-3xl p-6 text-slate-950 flex flex-col items-center shadow-2xl">
             <QRCodeSVG value={card.qr_token} size={200} level="H" includeMargin={false} />
             <p className="mt-3 font-mono font-black text-base tracking-wider">{card.customer_phone}</p>
-            <span className="text-[11px] font-bold text-emerald-600 mt-0.5">
-              ● Luminosité optimale pour scan en caisse
-            </span>
           </div>
-
-          <div className="text-center text-xs text-amber-300 font-bold">
-            🎁 Récompense : {isAr ? program.reward_title_ar : program.reward_title_fr}
-          </div>
+          <div className="text-center text-xs text-amber-300 font-bold">🎁 Récompense : {isAr ? program.reward_title_ar : program.reward_title_fr}</div>
         </div>
-
         <div className="max-w-sm mx-auto w-full pb-4">
-          <button
-            type="button"
-            onClick={handleSaveAppleWalletPass}
-            className="w-full py-3.5 rounded-2xl bg-emerald-500 text-slate-950 font-black text-xs flex items-center justify-center gap-2"
-          >
+          <button type="button" onClick={handleSaveAppleWalletPass} className="w-full py-3.5 rounded-2xl bg-emerald-500 text-slate-950 font-black text-xs flex items-center justify-center gap-2">
             <Download className="w-4 h-4" />
-            <span>Enregistrer cette carte sur mon iPhone / Android</span>
+            <span>Enregistrer dans Photos/Wallet</span>
           </button>
         </div>
       </div>
@@ -521,509 +493,205 @@ export default function CustomerCardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between pb-10">
-      {/* Hidden high-res QR Canvas for Wallet Pass download */}
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col pb-10 font-sans selection:bg-emerald-500/30">
       <div ref={hiddenQrRef} className="hidden" aria-hidden="true">
         <QRCodeCanvas value={card.qr_token} size={360} level="H" includeMargin={false} />
       </div>
 
-      {/* APPLE / GOOGLE WALLET MODAL */}
       {walletModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl text-white">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center font-black">
-                  <Wallet className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="font-extrabold text-base">Carte Wallet Mobile (iPhone & Android)</h3>
-                  <p className="text-[11px] text-slate-400">Accès rapide sans application à télécharger</p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setWalletModalOpen(false)}
-                className="p-1.5 rounded-xl bg-slate-800 text-slate-400 hover:text-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl">
+            <div className="flex justify-between items-center pb-3 border-b border-slate-800">
+              <h3 className="font-extrabold">Carte Mobile</h3>
+              <button onClick={() => setWalletModalOpen(false)} className="text-slate-400 hover:text-white"><X className="w-5 h-5"/></button>
             </div>
-
             <div className="space-y-3">
-              {/* Option 1: Open Fullscreen Apple Wallet Pass Mode */}
-              <button
-                type="button"
-                onClick={() => {
-                  setWalletModalOpen(false);
-                  setAppleWalletFullscreen(true);
-                }}
-                className="w-full p-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-left flex items-center justify-between transition-all shadow-lg shadow-emerald-500/20"
-              >
-                <div className="flex items-center gap-3">
-                  <Maximize2 className="w-6 h-6 flex-shrink-0" />
-                  <div>
-                    <div className="text-sm">Ouvrir en Mode Apple Wallet Plein Écran</div>
-                    <div className="text-[11px] font-semibold opacity-80">
-                      Affiche votre Pass plein écran prêt à scanner en caisse
-                    </div>
-                  </div>
-                </div>
+              <button onClick={() => { setWalletModalOpen(false); setAppleWalletFullscreen(true); }} className="w-full p-4 rounded-2xl bg-emerald-500 text-slate-950 font-bold text-left flex items-center gap-3">
+                <Maximize2 className="w-6 h-6"/>
+                <div><div className="text-sm">Plein Écran (Caisse)</div><div className="text-[11px] opacity-80">Affiche le Pass pour le scan</div></div>
               </button>
-
-              {/* Option 2: Save / Share Pass Image directly to iPhone Photos / Android Gallery */}
-              <button
-                type="button"
-                onClick={handleSaveAppleWalletPass}
-                disabled={downloadingPass}
-                className="w-full p-4 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold text-left flex items-center justify-between transition-all"
-              >
-                <div className="flex items-center gap-3">
-                  <Download className="w-6 h-6 text-emerald-400 flex-shrink-0" />
-                  <div>
-                    <div className="text-sm">Enregistrer le Pass dans mon Téléphone (Hors-ligne)</div>
-                    <div className="text-[11px] text-slate-400">
-                      Sauvegarde votre carte avec QR Code dans vos Photos / Fichiers
-                    </div>
-                  </div>
-                </div>
+              <button onClick={handleSaveAppleWalletPass} className="w-full p-4 rounded-2xl bg-slate-800 text-white font-bold text-left flex items-center gap-3">
+                <Download className="w-6 h-6 text-emerald-400"/>
+                <div><div className="text-sm">Enregistrer l'image</div><div className="text-[11px] text-slate-400">Sauvegarde dans vos Photos</div></div>
               </button>
-
-              {/* Option 3: Direct Android Install if supported */}
-              {deferredPrompt && (
-                <button
-                  type="button"
-                  onClick={handleTriggerPwaInstall}
-                  className="w-full p-4 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-emerald-500/40 text-white font-bold text-left flex items-center justify-between transition-all"
-                >
-                  <div className="flex items-center gap-3">
-                    <Smartphone className="w-6 h-6 text-emerald-400 flex-shrink-0" />
-                    <div>
-                      <div className="text-sm">Installer l&apos;application Carte en 1 clic</div>
-                      <div className="text-[11px] text-slate-400">
-                        Ajoute l&apos;icône directe sur l&apos;écran d&apos;accueil
-                      </div>
-                    </div>
-                  </div>
-                </button>
-              )}
-
-              {/* Guide iPhone Safari */}
-              <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-1.5 text-xs text-slate-300">
-                <div className="font-bold text-amber-400">
-                  📲 Astuce iPhone (Safari) & Android (Chrome) :
-                </div>
-                <p className="text-[11px] text-slate-400 leading-relaxed">
-                  Pour avoir l&apos;icône de votre carte sur l&apos;écran d&apos;accueil comme une application Wallet : appuyez sur <strong>Partager</strong> (ou <strong>⋮</strong>) dans votre navigateur puis sur <strong>« Sur l&apos;écran d&apos;accueil »</strong>. Vos tampons se mettront à jour en direct !
-                </p>
-              </div>
             </div>
-
-            <button
-              type="button"
-              onClick={() => setWalletModalOpen(false)}
-              className="w-full py-2.5 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs"
-            >
-              Fermer
-            </button>
           </div>
         </div>
       )}
 
-      {/* Top Header Design Premium */}
-      <header className="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-xl border-b border-white/5 px-4 py-3 shadow-sm">
+      {livePushOffer && (
+        <div className="fixed top-3 inset-x-3 z-50 max-w-md mx-auto bg-slate-900/95 backdrop-blur-md border border-emerald-500/50 rounded-2xl p-4 shadow-2xl flex gap-3 animate-bounce-in">
+          <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
+            <BellRing className="w-5 h-5" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h4 className="text-xs font-black text-white">{isAr && livePushOffer.title_ar ? livePushOffer.title_ar : livePushOffer.title_fr}</h4>
+            <p className="text-[11px] text-slate-300 line-clamp-1">{isAr && livePushOffer.description_ar ? livePushOffer.description_ar : livePushOffer.description_fr}</p>
+          </div>
+          <button onClick={() => setLivePushOffer(null)} className="text-slate-400"><X className="w-4 h-4"/></button>
+        </div>
+      )}
+
+      {/* HEADER COMPACT */}
+      <header className="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-xl border-b border-white/5 px-4 py-3">
         <div className="max-w-md mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             {merchant.logo_url ? (
-              <div className="relative">
-                <div className="absolute inset-0 bg-emerald-500 blur-md opacity-30 rounded-full"></div>
-                <img
-                  src={merchant.logo_url}
-                  alt={`Logo ${merchant.business_name}`}
-                  loading="eager"
-                  fetchPriority="high"
-                  decoding="async"
-                  className="relative w-12 h-12 rounded-full object-cover border-2 border-slate-800 bg-white shadow-lg"
-                />
-              </div>
+              <img src={merchant.logo_url} alt="Logo" className="w-10 h-10 rounded-full border border-slate-800 object-cover bg-white" />
             ) : (
-              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-600 to-emerald-400 text-slate-950 flex items-center justify-center font-black shadow-lg">
-                {merchant.business_name.charAt(0).toUpperCase()}
-              </div>
+              <div className="w-10 h-10 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center font-black">{merchant.business_name[0]}</div>
             )}
             <div className="flex flex-col">
-              <span className="font-black text-base tracking-tight text-white leading-none mb-1 truncate max-w-[140px]">
-                {merchant.business_name}
-              </span>
-              <span className="inline-flex items-center gap-1 text-[9px] uppercase tracking-widest font-bold text-emerald-400">
-                <Sparkles className="w-3 h-3" />
-                VIP Club
-              </span>
+              <span className="font-bold text-sm text-white truncate max-w-[140px]">{merchant.business_name}</span>
+              <span className="text-[10px] text-emerald-400 flex items-center gap-1"><Sparkles className="w-3 h-3"/> VIP CLUB</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {/* Cloche Notification Rapide dans le header */}
-            <button
-              type="button"
-              onClick={notifPermission !== 'granted' ? handleRequestNotifications : undefined}
-              className={`p-2 rounded-full border transition-all ${
-                notifPermission === 'granted'
-                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 cursor-default'
-                  : 'bg-amber-500/10 border-amber-500/30 text-amber-400 animate-pulse hover:bg-amber-500/20'
-              }`}
-              title={notifPermission === 'granted' ? 'Notifications Actives' : 'Activer les notifications'}
-            >
+            <button onClick={notifPermission !== 'granted' ? handleRequestNotifications : undefined} className={`p-2 rounded-full ${notifPermission === 'granted' ? 'text-emerald-400' : 'bg-amber-500/20 text-amber-400 animate-pulse'}`}>
               {notifPermission === 'granted' ? <BellRing className="w-4 h-4" /> : <Bell className="w-4 h-4" />}
             </button>
-
-            <button
-              type="button"
-              onClick={() => loadCardLive(false)}
-              className="p-2 rounded-full bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors"
-              title="Actualiser"
-            >
-              <RefreshCw className="w-4 h-4" />
-            </button>
+            <button onClick={() => loadCardLive(false)} className="p-2 text-slate-300"><RefreshCw className="w-4 h-4" /></button>
             <LanguageToggle />
           </div>
         </div>
       </header>
 
-      {/* Bannière Push Temps Réel (Même téléphone déverrouillé) */}
-      {livePushOffer && (
-        <div className="fixed top-3 inset-x-3 z-50 max-w-md mx-auto bg-slate-900/95 backdrop-blur-md border-2 border-emerald-400 rounded-2xl p-3.5 shadow-2xl flex items-start gap-3 animate-bounce">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center flex-shrink-0">
-            <BellRing className="w-5 h-5" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[10px] font-black uppercase text-emerald-400">
-              {merchant.business_name} • Offre en direct
-            </p>
-            <h4 className="text-xs font-extrabold text-white truncate">
-              {isAr && livePushOffer.title_ar ? livePushOffer.title_ar : livePushOffer.title_fr}
-            </h4>
-            <p className="text-[11px] text-slate-300 line-clamp-2">
-              {isAr && livePushOffer.description_ar ? livePushOffer.description_ar : livePushOffer.description_fr}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setLivePushOffer(null)}
-            className="p-1 text-slate-400 hover:text-white"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      )}
-      {/* Main Content */}
       <main className="max-w-md mx-auto w-full px-4 pt-6 space-y-6">
-        {/* Pass Card Container */}
-        <div
-          className="rounded-3xl p-6 shadow-2xl relative overflow-hidden border border-white/10"
-          style={{ backgroundColor: program.background_color || '#0F172A' }}
-        >
-          <div
-            className="absolute -top-14 -right-14 w-44 h-44 rounded-full blur-3xl opacity-30 pointer-events-none"
-            style={{ backgroundColor: program.primary_color || '#10B981' }}
-          ></div>
-
-          {/* Pass Header */}
-          <div className="flex items-start justify-between pb-5 border-b border-white/10 relative z-10">
+        
+        {/* LA CARTE DIGITALE (HERO) */}
+        <div className="relative rounded-[2rem] p-6 shadow-2xl overflow-hidden" style={{ backgroundColor: program.background_color || '#0F172A' }}>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+          
+          <div className="flex justify-between items-start mb-6 relative z-10">
             <div>
-              <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-400 block mb-1">
-                {isAr ? 'بطاقة الولاء الرقمية' : 'Pass Fidélité Numérique'}
-              </span>
-              <h2 className="text-xl font-black text-white tracking-tight">
-                {card.customer_name}
-              </h2>
-              <p className="text-xs text-slate-400 font-mono tracking-wider pt-0.5">
-                {card.customer_phone}
-              </p>
+              <h2 className="text-xl font-black text-white">{card.customer_name}</h2>
+              <p className="text-xs font-mono text-slate-300 opacity-80">{card.customer_phone}</p>
             </div>
-
-            {merchant.logo_url ? (
-              <img
-                src={merchant.logo_url}
-                alt={`Logo ${merchant.business_name}`}
-                loading="eager"
-                fetchPriority="high"
-                decoding="async"
-                className="w-12 h-12 rounded-2xl object-cover shadow-lg border-2 border-white/20 bg-white"
-              />
-            ) : (
-              <div
-                className="w-11 h-11 rounded-2xl flex items-center justify-center text-white shadow-lg font-bold"
-                style={{ backgroundColor: program.primary_color || '#10B981' }}
-              >
-                <Coffee className="w-6 h-6" />
+            {isRewardReady && (
+              <div className="bg-amber-500 text-slate-900 px-3 py-1 rounded-full text-[10px] font-black uppercase flex items-center gap-1 animate-pulse shadow-[0_0_15px_rgba(245,158,11,0.5)]">
+                <Gift className="w-3 h-3" /> {isAr ? 'هدية جاهزة' : 'Cadeau Prêt'}
               </div>
             )}
           </div>
 
-          {/* Reward Ready Alert */}
-          {isRewardReady ? (
-            <div className="my-5 p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 to-amber-600/30 border border-amber-400/40 relative z-10 animate-pulse">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center flex-shrink-0 font-bold">
-                  <Gift className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="text-xs font-black uppercase tracking-wider text-amber-300">
-                    {isAr ? '🎉 مبروك ! هديتك جاهزة' : '🎉 Récompense débloquée !'}
-                  </h4>
-                  <p className="text-sm font-bold text-white">
-                    {isAr ? program.reward_title_ar : program.reward_title_fr}
-                  </p>
-                </div>
-              </div>
+          {/* SECTION PROGRESSION (TAMPONS/POINTS) */}
+          <div className="relative z-10 bg-slate-900/40 backdrop-blur-md rounded-2xl p-4 border border-white/10 mb-6">
+            <div className="flex justify-between text-[11px] font-bold text-slate-300 mb-3">
+              <span>{program.program_type === 'STAMPS' ? t('stamps_progress') : t('points_balance')}</span>
+              <span className="text-emerald-400">{program.program_type === 'STAMPS' ? `${card.stamps_balance} / ${program.stamps_required}` : `${card.points_balance} pts`}</span>
             </div>
-          ) : (
-            <div className="my-5 py-3 px-4 rounded-2xl bg-white/5 border border-white/10 relative z-10 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <Gift className="w-5 h-5 text-amber-400" />
-                <div>
-                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">
-                    {isAr ? 'الهدية القادمة' : 'Prochaine récompense'}
-                  </p>
-                  <p className="text-xs font-bold text-white">
-                    {isAr ? program.reward_title_ar : program.reward_title_fr}
-                  </p>
-                </div>
-              </div>
-              <span className="text-xs font-bold text-emerald-400 bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-800">
-                {isAr ? `${stampsRemaining} متبقي` : `${stampsRemaining} restant(s)`}
-              </span>
-            </div>
-          )}
-
-          {/* Stamps Progression Grid */}
-          {program.program_type === 'STAMPS' ? (
-            <div className="my-5 relative z-10">
-              <div className="flex items-center justify-between text-xs text-slate-300 mb-3 font-semibold">
-                <span>{t('stamps_progress')}</span>
-                <span className="text-emerald-400 font-bold">
-                  {card.stamps_balance} / {program.stamps_required}
-                </span>
-              </div>
-
-              {/* Grille de Tampons Design Moderne */}
-              <div className="grid grid-cols-5 gap-3 mt-4">
-                {Array.from({ length: program.stamps_required }).map((_, index) => {
-                  const isFilled = index < card.stamps_balance;
-                  const isLast = index === program.stamps_required - 1;
-
+            
+            {program.program_type === 'STAMPS' ? (
+              <div className="grid grid-cols-5 gap-2">
+                {Array.from({ length: program.stamps_required }).map((_, i) => {
+                  const isFilled = i < card.stamps_balance;
+                  const isLast = i === program.stamps_required - 1;
                   return (
-                    <div
-                      key={index}
-                      className={`relative h-14 rounded-2xl flex items-center justify-center transition-all duration-300 ${
-                        isFilled
-                          ? 'shadow-[inset_0_1px_3px_rgba(255,255,255,0.3)] scale-[1.02] transform'
-                          : 'border border-white/10 bg-slate-900/40 backdrop-blur-sm'
-                      }`}
-                      style={{
-                        background: isFilled
-                          ? isLast
-                            ? 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)' // Amber gradient
-                            : `linear-gradient(135deg, ${program.primary_color || '#10B981'} 0%, #047857 100%)`
-                          : undefined,
-                        boxShadow: isFilled ? `0 4px 14px 0 ${(program.primary_color || '#10B981')}40` : 'none'
-                      }}
-                    >
-                      {/* Inner Ring for Empty Stamps */}
-                      {!isFilled && !isLast && (
-                        <div className="absolute inset-2 rounded-full border border-dashed border-white/20"></div>
-                      )}
-                      
-                      {isFilled ? (
-                        isLast ? (
-                          <Trophy className="w-6 h-6 text-white drop-shadow-md animate-pulse" />
-                        ) : (
-                          <Check className="w-6 h-6 text-white drop-shadow-md stroke-[3]" />
-                        )
-                      ) : isLast ? (
-                        <Gift className="w-6 h-6 text-amber-400/40" />
-                      ) : (
-                        <span className="text-xs font-black text-white/20">{index + 1}</span>
-                      )}
+                    <div key={i} className={`h-12 rounded-xl flex items-center justify-center ${isFilled ? 'shadow-md' : 'border border-dashed border-white/20'}`} style={{ background: isFilled ? (isLast ? 'linear-gradient(135deg, #F59E0B, #D97706)' : `linear-gradient(135deg, ${program.primary_color || '#10B981'}, #047857)`) : 'transparent' }}>
+                      {isFilled ? (isLast ? <Trophy className="w-5 h-5 text-white" /> : <Check className="w-5 h-5 text-white stroke-[3]" />) : (isLast ? <Gift className="w-5 h-5 text-amber-400/30" /> : null)}
                     </div>
                   );
                 })}
               </div>
-            </div>
-          ) : (
-            <div className="my-5 p-4 rounded-2xl bg-white/5 border border-white/10 relative z-10 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-300 font-semibold">{t('points_balance')}</span>
-                <span className="text-2xl font-black text-amber-400">{card.points_balance} pts</span>
+            ) : (
+              <div className="w-full h-3 bg-slate-900 rounded-full overflow-hidden">
+                <div className="h-full" style={{ width: `${Math.min(100, (card.points_balance / 200) * 100)}%`, backgroundColor: program.primary_color || '#10B981' }}></div>
               </div>
-              <div className="w-full h-3 bg-white/10 rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{
-                    width: `${Math.min(100, (card.points_balance / 200) * 100)}%`,
-                    backgroundColor: program.primary_color || '#10B981',
-                  }}
-                ></div>
-              </div>
-              <p className="text-[11px] text-slate-400 text-right">
-                {isAr ? 'اجمع النقاط مع كل عملية شراء واستبدلها بهدايا' : "1 point par tranche de 100 DZD d'achat"}
-              </p>
-            </div>
-          )}
-
-          {/* Cashier QR Presentation Premium */}
-          <div className="mt-8 pt-8 border-t border-white/10 flex flex-col items-center relative z-10">
-            <div className="bg-white p-5 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 transition-transform hover:scale-105 duration-300">
-              <QRCodeSVG 
-                value={card.qr_token} 
-                size={160} 
-                level="Q" 
-                includeMargin={false}
-                fgColor="#0F172A"
-              />
-            </div>
-            <div className="mt-4 text-center">
-              <p className="text-[11px] font-black uppercase tracking-widest text-emerald-400 mb-1">
-                {t('show_qr_to_cashier')}
-              </p>
-              <div className="inline-flex items-center gap-2 bg-slate-900/50 backdrop-blur px-4 py-1.5 rounded-full border border-white/10">
-                <Smartphone className="w-3.5 h-3.5 text-slate-400" />
-                <p className="text-sm font-mono font-bold text-white tracking-widest">
-                  {card.customer_phone.replace(/(.{2})/g, '$1 ').trim()}
-                </p>
-              </div>
-            </div>
+            )}
           </div>
 
-          {/* Pass Stats Footer */}
-          <div className="mt-4 pt-3 flex items-center justify-between text-[11px] text-slate-400 relative z-10">
-            <span className="flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-              <span>{card.total_visits} {t('total_visits_count')}</span>
-            </span>
-            <span>
-              {t('member_since')} {new Date(card.created_at).toLocaleDateString('fr-DZ')}
-            </span>
+          {/* QR CODE CAISSE INTÉGRÉ DANS LA CARTE */}
+          <div className="relative z-10 bg-white rounded-2xl p-4 flex items-center gap-4 shadow-xl">
+            <div className="bg-white p-1 rounded-xl shadow-sm border border-slate-100 flex-shrink-0">
+              <QRCodeSVG value={card.qr_token} size={80} level="M" includeMargin={false} fgColor="#0F172A" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase text-slate-500 mb-1 leading-tight">{t('show_qr_to_cashier')}</p>
+              <p className="text-xs font-bold text-slate-800">{isAr ? program.reward_title_ar : program.reward_title_fr}</p>
+            </div>
           </div>
         </div>
 
-        {/* Action Buttons: Apple/Google Wallet Pass & Share */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <button
-            onClick={() => setWalletModalOpen(true)}
-            className="flex items-center justify-center gap-2 py-3.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black rounded-xl transition-all shadow-lg shadow-emerald-500/20"
-            type="button"
-          >
-            <Wallet className="w-4 h-4" />
-            <span>{isAr ? 'فتح / حفظ في Wallet' : 'Pass Apple / Google Wallet'}</span>
+        {/* BOUTONS D'ACTION */}
+        <div className="grid grid-cols-2 gap-3">
+          <button onClick={() => setWalletModalOpen(true)} className="flex flex-col items-center justify-center gap-2 py-4 bg-slate-900 border border-slate-800 rounded-[1.5rem] text-white hover:bg-slate-800 transition">
+            <Wallet className="w-6 h-6 text-emerald-400" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">Pass Wallet</span>
           </button>
-
-          <button
-            onClick={handleShare}
-            className="flex items-center justify-center gap-2 py-3.5 px-4 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 text-xs font-bold rounded-xl transition-all shadow-sm"
-            type="button"
-          >
-            <Share2 className="w-4 h-4 text-emerald-400" />
-            <span>{copiedLink ? (isAr ? 'تم نسخ الرابط !' : 'Lien copié !') : (isAr ? 'مشاركة بطاقتي' : 'Partager / Copier lien')}</span>
+          <button onClick={handleShare} className="flex flex-col items-center justify-center gap-2 py-4 bg-slate-900 border border-slate-800 rounded-[1.5rem] text-white hover:bg-slate-800 transition">
+            <Share2 className="w-6 h-6 text-blue-400" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">{copiedLink ? 'Copié !' : 'Partager'}</span>
           </button>
         </div>
 
-        {/* Quête Google Maps (Google Review Reward) - Compact & Elegant */}
+        {/* MISSION GOOGLE MAPS (Si non réclamée) */}
         {merchant.google_review_reward_enabled && (merchant.social_maps || merchant.address) && !googleReviewClaimed && (
-          <div className="bg-slate-900/80 border border-amber-500/30 rounded-[1.5rem] p-4 flex flex-col gap-3 shadow-lg relative overflow-hidden group">
-            {/* Lueur arrière-plan */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
-            
-            <div className="flex items-center gap-3 relative z-10">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-300 text-slate-950 flex items-center justify-center font-black shadow-inner flex-shrink-0">
-                <Star className="w-5 h-5 fill-slate-950" />
+          <div className="bg-gradient-to-r from-amber-500/10 to-amber-900/10 border border-amber-500/30 rounded-[1.5rem] p-5 shadow-lg relative overflow-hidden">
+            <div className="flex items-center gap-4 relative z-10">
+              <div className="w-12 h-12 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.4)]">
+                <Star className="w-6 h-6 fill-slate-950" />
               </div>
-              <div className="flex-1 min-w-0">
-                <h4 className="text-xs font-black uppercase text-amber-400 tracking-wider">
-                  {isAr ? 'مكافأة خرائط جوجل' : 'Mission : Avis Google Maps'}
-                </h4>
-                <p className="text-[11px] text-slate-300 mt-0.5 leading-snug">
-                  {isAr
-                    ? `اترك تقييماً واكسب +${merchant.google_review_reward_bonus || 1} أختام/نقاط مجاناً`
-                    : `Laissez 5 étoiles et gagnez +${merchant.google_review_reward_bonus || 1} ${program.program_type === 'STAMPS' ? 'tampon(s)' : 'points'}.`}
+              <div className="flex-1">
+                <h4 className="text-xs font-black uppercase text-amber-400">{isAr ? 'مكافأة التقييم' : 'Mission Google Maps'}</h4>
+                <p className="text-[11px] text-slate-300 mt-1">
+                  {isAr ? `قيّمنا واكسب +${merchant.google_review_reward_bonus || 1} رصيد` : `Laissez un avis et gagnez +${merchant.google_review_reward_bonus || 1} bonus`}
                 </p>
               </div>
             </div>
-
-            <button
-              type="button"
-              onClick={handleClaimGoogleReview}
-              className="w-full py-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/50 text-amber-400 text-[11px] font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all relative z-10"
-            >
-              <span>{isAr ? 'تقييم الآن واستلام الهدية' : 'Noter et débloquer mon cadeau'}</span>
-              <ExternalLink className="w-3.5 h-3.5" />
+            <button onClick={handleClaimGoogleReview} className="w-full mt-4 py-3 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 text-xs font-black uppercase flex items-center justify-center gap-2 transition">
+              <span>{isAr ? 'تقييم الآن' : 'Noter & Débloquer'}</span>
+              <ExternalLink className="w-4 h-4" />
             </button>
           </div>
         )}
 
-        {/* Social Networks & Google Maps Location Links */}
-        {(merchant.social_instagram || merchant.social_facebook || merchant.social_tiktok || merchant.social_maps || merchant.address) && (
-          <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 space-y-2.5 shadow-md">
-            <div className="flex items-center justify-between text-xs font-bold text-slate-300">
-              <span>{isAr ? 'تابعنا على مواقع التواصل' : 'Suivre le commerce'}</span>
-              {merchant.address && (
-                <span className="text-[11px] text-slate-400 font-normal truncate max-w-[200px]">
-                  📍 {merchant.address}
-                </span>
-              )}
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2 pt-1">
-              {merchant.social_instagram && (
-                <a
-                  href={merchant.social_instagram.startsWith('http') ? merchant.social_instagram : `https://instagram.com/${merchant.social_instagram.replace('@', '')}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-600/30 to-pink-600/30 border border-pink-500/40 text-pink-300 hover:text-white text-xs font-bold flex items-center gap-1.5 transition"
-                >
-                  <span>📸 Instagram</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              )}
-
-              {merchant.social_facebook && (
-                <a
-                  href={merchant.social_facebook.startsWith('http') ? merchant.social_facebook : `https://facebook.com/${merchant.social_facebook}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="px-3 py-1.5 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-300 hover:text-white text-xs font-bold flex items-center gap-1.5 transition"
-                >
-                  <span>👍 Facebook</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              )}
-
-              {merchant.social_tiktok && (
-                <a
-                  href={merchant.social_tiktok.startsWith('http') ? merchant.social_tiktok : `https://tiktok.com/@${merchant.social_tiktok.replace('@', '')}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 hover:text-white text-xs font-bold flex items-center gap-1.5 transition"
-                >
-                  <span>🎵 TikTok</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              )}
-
-              {(merchant.social_maps || merchant.address) && (
-                <a
-                  href={merchant.social_maps && merchant.social_maps.startsWith('http') ? merchant.social_maps : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(merchant.business_name + ' ' + (merchant.address || merchant.wilaya))}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="px-3 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 hover:text-white text-xs font-bold flex items-center gap-1.5 transition"
-                >
-                  <span>📍 Itinéraire Google Maps</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              )}
+        {/* OFFRES EXCLUSIVES */}
+        {offers.length > 0 && (
+          <div className="space-y-4">
+            <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 pl-1">{t('exclusive_offers')}</h3>
+            <div className="space-y-3">
+              {offers.map(offer => (
+                <div key={offer.id} className="bg-slate-900 border border-slate-800 rounded-[1.5rem] overflow-hidden shadow-lg">
+                  {offer.image_url && (
+                    <div className="h-40 w-full overflow-hidden">
+                      <img src={offer.image_url} alt="Offre" className="w-full h-full object-cover" loading="lazy" />
+                    </div>
+                  )}
+                  <div className="p-5 space-y-2">
+                    <div className="flex justify-between items-start">
+                      <h4 className="font-bold text-white text-sm">{isAr && offer.title_ar ? offer.title_ar : offer.title_fr}</h4>
+                      {offer.target_segment === 'VIP' && <span className="bg-amber-500/20 text-amber-400 text-[9px] px-2 py-0.5 rounded-full font-bold">VIP</span>}
+                    </div>
+                    <p className="text-xs text-slate-400 leading-relaxed">{isAr && offer.description_ar ? offer.description_ar : offer.description_fr}</p>
+                    {offer.valid_until && (
+                      <div className="text-[10px] text-emerald-500 font-medium pt-2 flex items-center gap-1">
+                        <Clock className="w-3 h-3" /> Expire le {new Date(offer.valid_until).toLocaleDateString('fr-DZ')}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
+
+        {/* LIENS SOCIAUX */}
+        {(merchant.social_instagram || merchant.social_facebook || merchant.social_tiktok || merchant.social_maps) && (
+          <div className="flex justify-center gap-4 pt-4 border-t border-slate-800/50">
+            {merchant.social_instagram && <a href={merchant.social_instagram.startsWith('http') ? merchant.social_instagram : `https://instagram.com/${merchant.social_instagram.replace('@', '')}`} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-pink-400 hover:scale-110 transition"><ExternalLink className="w-4 h-4"/></a>}
+            {merchant.social_facebook && <a href={merchant.social_facebook.startsWith('http') ? merchant.social_facebook : `https://facebook.com/${merchant.social_facebook}`} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-blue-400 hover:scale-110 transition"><ExternalLink className="w-4 h-4"/></a>}
+            {merchant.social_tiktok && <a href={merchant.social_tiktok.startsWith('http') ? merchant.social_tiktok : `https://tiktok.com/@${merchant.social_tiktok.replace('@', '')}`} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-300 hover:scale-110 transition"><ExternalLink className="w-4 h-4"/></a>}
+            {merchant.social_maps && <a href={merchant.social_maps.startsWith('http') ? merchant.social_maps : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(merchant.business_name)}`} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-emerald-400 hover:scale-110 transition"><MapPin className="w-4 h-4"/></a>}
+          </div>
+        )}
+      </main>
+      
+      <footer className="text-center py-6 text-[10px] text-slate-600 font-medium">
+        FidelityDZ • {merchant.business_name}
+      </footer>
+    </div>
+  );
+}
 
 
 
