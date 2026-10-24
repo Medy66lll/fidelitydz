@@ -126,7 +126,7 @@ export default function CustomerJoinPage() {
     <div className="min-h-screen relative flex flex-col justify-between p-4 sm:p-6 text-white overflow-hidden bg-slate-950">
       {/* Decorative blurred backgrounds */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-emerald-500/20 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-500/20 rounded-full blur-[100px] pointer-events-none" />>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-500/20 rounded-full blur-[100px] pointer-events-none" />
       {/* Top Header */}
       <header className="max-w-md mx-auto w-full flex items-center justify-between py-2">
         <div className="flex items-center gap-2">
