@@ -371,19 +371,19 @@ export default function LandingPage() {
 
                 <p className="text-sm text-slate-300">
                   {isAr
-                    ? 'كل ما تحتاجه لبدء وإدارة برنامج الولاء لجميع فروعك ومحلاتك.'
-                    : 'Rentabilisé dès la première semaine grâce à l\'augmentation du panier moyen et de la fréquence de visite.'}
+                    ? 'باقة البداية المثالية لمحلك. يمكنك دائماً زيادة السعة (عدد البطاقات أو الإشعارات) لاحقاً عند نمو عملك عبر إضافات بأسعار مدروسة.'
+                    : 'Le forfait idéal pour démarrer. Vous dépassez les limites ? Ajoutez des extensions (cartes, push) sur mesure depuis votre espace admin, uniquement quand vous en avez besoin.'}
                 </p>
 
                 {/* Features List */}
                 <div className="pt-6 pb-8 border-y border-slate-800 space-y-3.5">
                   {[
-                    t('pricing_feature_1'),
-                    t('pricing_feature_2'),
-                    t('pricing_feature_3'),
-                    t('pricing_feature_4'),
-                    t('pricing_feature_5'),
-                    t('pricing_feature_6'),
+                    isAr ? '150 بطاقة ولاء للزبائن' : 'Jusqu\'à 150 cartes clients',
+                    isAr ? 'إشعارات العروض: 150 إشعار/أسبوع' : 'Jusqu\'à 150 notifications push/semaine',
+                    isAr ? '2 مستخدمين (المدير + الكاشير)' : 'Accès pour 2 appareils (Gérant + Caisse)',
+                    isAr ? '3 حملات عروض نشطة في نفس الوقت' : '3 offres promotionnelles actives en simultané',
+                    isAr ? 'مكافأة تقييم خرائط جوجل (مدمجة)' : 'Système de récompense Avis Google Maps',
+                    isAr ? 'دعم فني مجاني' : 'Support technique & mises à jour incluses',
                   ].map((feat, index) => (
                     <div key={index} className="flex items-center gap-3">
                       <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">

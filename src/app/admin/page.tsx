@@ -303,6 +303,22 @@ CREATE POLICY "subscription_payments_all" ON subscription_payments FOR ALL USING
     setTimeout(() => setActionSuccess(null), 3500);
   };
 
+    const handleChangeQuotas = (merchant: Merchant) => {
+    const newCards = window.prompt(`Nouvelle limite de CARTES pour ${merchant.business_name} (Actuel: ${merchant.max_cards || 150}) :`, String(merchant.max_cards || 150));
+    if (!newCards) return;
+    const newPush = window.prompt(`Nouvelle limite de PUSH par semaine pour ${merchant.business_name} (Actuel: ${merchant.max_push_per_week || 150}) :`, String(merchant.max_push_per_week || 150));
+    if (!newPush) return;
+    
+    db.saveMerchant({
+      ...merchant,
+      max_cards: parseInt(newCards, 10),
+      max_push_per_week: parseInt(newPush, 10),
+    });
+    setTimeout(() => loadData(), 400);
+    setActionSuccess(`Quotas mis à jour pour ${merchant.business_name}. Les modifications sont enregistrées sur Supabase.`);
+    setTimeout(() => setActionSuccess(null), 3500);
+  };
+
   const handleChangeMerchantPassword = (merchant: Merchant) => {
     const newPass = window.prompt(
       `Nouveau mot de passe pour "${merchant.business_name}" (Tél: ${merchant.phone}) :`,
@@ -934,11 +950,14 @@ CREATE POLICY "subscription_payments_all" ON subscription_payments FOR ALL USING
 
                       <h3 className="text-base font-extrabold text-slate-900">{m.business_name}</h3>
 
-                      <div className="text-xs text-slate-600 space-y-0.5 font-mono bg-slate-50 p-3 rounded-xl border border-slate-100">
-                        <div>Tél (Login) : <strong>{m.phone}</strong></div>
-                        <div>Mot de passe : <strong>{m.password || '123456'}</strong></div>
-                        <div>Slug QR : <strong>/join/{m.slug}</strong></div>
-                        <div>Expire le : <strong>{new Date(m.subscription_ends_at).toLocaleDateString('fr-DZ')}</strong></div>
+                      <div className="text-[11px] text-slate-600 space-y-1 font-mono bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <div>Tél (Login) : <strong>{m.phone}</strong> | MDP : <strong>{m.password || '123456'}</strong></div>
+                        <div>Expire le : <strong className={isExpired ? 'text-red-500' : 'text-emerald-500'}>{new Date(m.subscription_ends_at).toLocaleDateString('fr-DZ')}</strong></div>
+                        <div className="pt-1 mt-1 border-t border-slate-200">
+                          <span className="text-slate-500 font-sans font-bold">QUOTAS ACTUELS (ADD-ONS)</span><br/>
+                          Cartes autorisées : <strong className="text-slate-900">{m.max_cards || 150}</strong><br/>
+                          Push autorisés/semaine : <strong className="text-slate-900">{m.max_push_per_week || 150}</strong>
+                        </div>
                       </div>
                     </div>
 
@@ -960,34 +979,32 @@ CREATE POLICY "subscription_payments_all" ON subscription_payments FOR ALL USING
                         </button>
                       </div>
 
-                      <div className="flex items-center justify-between text-xs pt-1">
-                        <div className="flex items-center gap-3">
+                      <div className="flex flex-wrap items-center justify-between gap-2 text-xs pt-1">
+                        <div className="flex items-center gap-2">
                           <button
                             type="button"
                             onClick={() => handleChangeMerchantPassword(m)}
-                            className="inline-flex items-center gap-1 text-slate-600 hover:text-slate-900 font-bold text-[11px]"
-                            title="Modifier le mot de passe du gérant"
+                            className="inline-flex items-center gap-1 text-slate-600 hover:text-slate-900 font-bold text-[10px] bg-slate-100 px-2 py-1 rounded"
+                            title="Modifier MDP"
                           >
-                            <KeyRound className="w-3.5 h-3.5" />
-                            <span>MDP</span>
+                            <KeyRound className="w-3 h-3" /> MDP
                           </button>
                           <button
                             type="button"
-                            onClick={() => handleDeleteMerchant(m)}
-                            className="inline-flex items-center gap-1 text-red-500 hover:text-red-700 font-bold text-[11px] hover:bg-red-50 px-1.5 py-0.5 rounded-lg transition-colors"
-                            title="Supprimer définitivement ce commerce de Supabase"
+                            onClick={() => handleChangeQuotas(m)}
+                            className="inline-flex items-center gap-1 text-amber-600 hover:text-amber-800 font-bold text-[10px] bg-amber-50 border border-amber-200 px-2 py-1 rounded"
+                            title="Modifier les limites (Cartes / Push)"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
-                            <span>Supprimer</span>
+                            ⭐ Quotas
                           </button>
                         </div>
-                        <Link
-                          href={`/join/${m.slug}`}
-                          target="_blank"
-                          className="font-bold text-emerald-600 hover:text-emerald-700 text-[11px]"
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteMerchant(m)}
+                          className="inline-flex items-center gap-1 text-red-500 hover:text-red-700 font-bold text-[10px] hover:bg-red-50 px-2 py-1 rounded"
                         >
-                          Page QR client →
-                        </Link>
+                          <Trash2 className="w-3 h-3" /> Supprimer
+                        </button>
                       </div>
                     </div>
                   </div>

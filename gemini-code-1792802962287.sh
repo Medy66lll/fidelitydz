@@ -1,3 +1,3 @@
 git add .
-git commit -m "style(ui): refonte graphique complete avec effets glassmorphism et animations premium"
+git commit -m "feat: added quotas management in super-admin, updated pricing UI, integrated testing suite"
 git push origin main
