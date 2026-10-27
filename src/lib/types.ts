@@ -105,6 +105,14 @@ export interface Merchant {
   social_maps?: string;
   google_review_reward_enabled?: boolean;
   google_review_reward_bonus?: number; // Ex: 1 tampon ou 10 points
+  plan_tier?: 'STARTER' | 'PLUS' | 'PRO';
+  max_cards?: number;
+  max_locations?: number;
+  max_users?: number;
+  max_active_offers?: number;
+  max_push_per_week?: number;
+  push_sent_this_week?: number;
+  push_week_reset_at?: string;
   subscription_status: SubscriptionStatus;
   subscription_ends_at: string;
   created_at: string;
