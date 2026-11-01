@@ -41,7 +41,7 @@ export default function Header() {
 
           <div className="hidden sm:inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200/70 px-2.5 py-1 rounded-full">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span className="text-xs font-bold text-emerald-800">100% DZ 🇩🇿</span>
+            <span className="text-xs font-bold text-emerald-800">100% DZ</span>
           </div>
         </div>
 

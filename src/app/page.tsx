@@ -80,8 +80,9 @@ export default function LandingPage() {
 
                 {/* Supporting description */}
                 <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl">
-                  Remplacez vos cartes de fidélité papier perdues ou oubliées par une carte digitale interactive stockée dans le smartphone du client.
-                  <strong className="text-slate-900 font-semibold"> Zéro friction :</strong> inscription immédiate par numéro de téléphone algérien.
+                  Passez au niveau supérieur. Créez un Club VIP digital pour votre commerce en quelques clics. 
+                  Oubliez les applications compliquées : vos clients s'inscrivent en 5 secondes en scannant votre QR code.
+                  <strong className="text-slate-900 font-bold block mt-2">✨ Gérez vos clients, envoyez des notifications push et boostez vos avis Google Maps !</strong>
                 </p>
 
                 {/* CTAs */}

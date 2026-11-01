@@ -55,7 +55,7 @@ export default function DashboardOverviewPage() {
   };
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
+    <div className="space-y-8 max-w-7xl mx-auto pb-12">
       {/* Top Banner / Welcome - Premium UI */}
       <div className="bg-slate-950 text-white p-8 sm:p-10 rounded-[2.5rem] shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-8 relative overflow-hidden border border-slate-800/60">
         {/* Glow Effects */}

@@ -31,10 +31,8 @@ export default function OffersPage() {
   const [broadcastedOfferId, setBroadcastedOfferId] = useState<string | null>(null);
 
   const [titleFr, setTitleFr] = useState('');
-  const [titleAr, setTitleAr] = useState('');
-  const [descFr, setDescFr] = useState('');
-  const [descAr, setDescAr] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
+    const [descFr, setDescFr] = useState('');
+    const [imageUrl, setImageUrl] = useState('');
   const [targetSegment, setTargetSegment] = useState<TargetSegment>('ALL');
   const [validDays, setValidDays] = useState(14);
   const [toastMessage, setToastMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
@@ -84,10 +82,8 @@ export default function OffersPage() {
   const resetForm = () => {
     setEditingOfferId(null);
     setTitleFr('');
-    setTitleAr('');
-    setDescFr('');
-    setDescAr('');
-    setImageUrl('');
+        setDescFr('');
+        setImageUrl('');
     setTargetSegment('ALL');
     setValidDays(14);
   };
@@ -95,10 +91,8 @@ export default function OffersPage() {
   const handleOpenEdit = (offer: PersonalizedOffer) => {
     setEditingOfferId(offer.id);
     setTitleFr(offer.title_fr);
-    setTitleAr(offer.title_ar || '');
-    setDescFr(offer.description_fr || '');
-    setDescAr(offer.description_ar || '');
-    setImageUrl(offer.image_url || '');
+        setDescFr(offer.description_fr || '');
+        setImageUrl(offer.image_url || '');
     setTargetSegment(offer.target_segment || 'ALL');
     setShowCreateModal(true);
   };
@@ -129,9 +123,9 @@ export default function OffersPage() {
         const updated: PersonalizedOffer = {
           ...existing,
           title_fr: titleFr,
-          title_ar: titleAr,
+          title_ar: '',
           description_fr: descFr,
-          description_ar: descAr,
+          description_ar: '',
           image_url: imageUrl,
           target_segment: targetSegment,
           updated_at: nowIso,
@@ -143,9 +137,9 @@ export default function OffersPage() {
         id: `off-${Date.now()}`,
         merchant_id: currentMerchant.id,
         title_fr: titleFr,
-        title_ar: titleAr,
+        title_ar: '',
         description_fr: descFr,
-        description_ar: descAr,
+        description_ar: '',
         image_url: imageUrl,
         target_segment: targetSegment,
         valid_until: new Date(Date.now() + validDays * 86400000).toISOString(),
@@ -228,16 +222,12 @@ export default function OffersPage() {
 
               <div className="space-y-1">
                 <h3 className="text-base font-extrabold text-slate-900">{offer.title_fr}</h3>
-                {offer.title_ar && (
-                  <p className="text-sm font-arabic font-bold text-slate-700" dir="rtl">{offer.title_ar}</p>
-                )}
+                
               </div>
 
               <div className="space-y-1 text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100">
                 <p>{offer.description_fr}</p>
-                {offer.description_ar && (
-                  <p className="font-arabic pt-1 border-t border-slate-200/60" dir="rtl">{offer.description_ar}</p>
-                )}
+                
               </div>
             </div>
 
@@ -344,9 +334,9 @@ export default function OffersPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="space-y-2.5">
                 <div>
-                  <label className="text-[11px] font-bold text-slate-700 block mb-1">Titre (FR) *</label>
+                  <label className="text-[11px] font-bold text-slate-700 block mb-1">Titre de l'offre *</label>
                   <input
                     type="text"
                     required
@@ -356,21 +346,11 @@ export default function OffersPage() {
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl py-1.5 px-2.5 text-xs outline-none focus:border-emerald-500"
                   />
                 </div>
-                <div>
-                  <label className="text-[11px] font-bold text-slate-700 block mb-1 text-right">العنوان (AR)</label>
-                  <input
-                    type="text"
-                    dir="rtl"
-                    placeholder="تخفيض 20%"
-                    value={titleAr}
-                    onChange={(e) => setTitleAr(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-1.5 px-2.5 text-xs outline-none focus:border-emerald-500"
-                  />
-                </div>
+
               </div>
 
               <div>
-                <label className="text-[11px] font-bold text-slate-700 block mb-1">Description (FR) *</label>
+                <label className="text-[11px] font-bold text-slate-700 block mb-1">Description *</label>
                 <textarea
                   rows={2}
                   required
@@ -380,16 +360,7 @@ export default function OffersPage() {
                 />
               </div>
 
-              <div>
-                <label className="text-[11px] font-bold text-slate-700 block mb-1 text-right">الوصف (AR)</label>
-                <textarea
-                  rows={2}
-                  dir="rtl"
-                  value={descAr}
-                  onChange={(e) => setDescAr(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-1.5 px-2.5 text-xs outline-none focus:border-emerald-500 resize-none"
-                />
-              </div>
+
 
               <div className="pt-2 flex justify-end gap-2 border-t border-slate-100">
                 <button

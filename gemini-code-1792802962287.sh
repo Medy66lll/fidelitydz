@@ -1,3 +1,3 @@
 git add .
-git commit -m "feat: added quotas management in super-admin, updated pricing UI, integrated testing suite"
+git commit -m "feat(final): limits to 100, updated manual virement form, fixed ui gaps and updated simulator"
 git push origin main

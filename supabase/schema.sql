@@ -49,11 +49,11 @@ CREATE TABLE IF NOT EXISTS merchants (
   google_review_reward_enabled BOOLEAN DEFAULT FALSE,
   google_review_reward_bonus INT DEFAULT 1,
   plan_tier TEXT DEFAULT 'STARTER', -- Géré par l'admin
-  max_cards INT DEFAULT 150,        -- Limite de base modifiée
+  max_cards INT DEFAULT 100,        -- Limite de base modifiée
   max_locations INT DEFAULT 1,
   max_users INT DEFAULT 2,
   max_active_offers INT DEFAULT 3,
-  max_push_per_week INT DEFAULT 150,-- Limite de base modifiée
+  max_push_per_week INT DEFAULT 100,-- Limite de base modifiée
   push_sent_this_week INT DEFAULT 0,
   push_week_reset_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '7 days'),
   subscription_status TEXT DEFAULT 'TRIAL',
@@ -71,11 +71,11 @@ ALTER TABLE merchants ADD COLUMN IF NOT EXISTS social_maps TEXT DEFAULT '';
 ALTER TABLE merchants ADD COLUMN IF NOT EXISTS google_review_reward_enabled BOOLEAN DEFAULT FALSE;
 ALTER TABLE merchants ADD COLUMN IF NOT EXISTS google_review_reward_bonus INT DEFAULT 1;
 ALTER TABLE merchants ADD COLUMN IF NOT EXISTS plan_tier TEXT DEFAULT 'STARTER';
-ALTER TABLE merchants ADD COLUMN IF NOT EXISTS max_cards INT DEFAULT 150;
+ALTER TABLE merchants ADD COLUMN IF NOT EXISTS max_cards INT DEFAULT 100;
 ALTER TABLE merchants ADD COLUMN IF NOT EXISTS max_locations INT DEFAULT 1;
 ALTER TABLE merchants ADD COLUMN IF NOT EXISTS max_users INT DEFAULT 2;
 ALTER TABLE merchants ADD COLUMN IF NOT EXISTS max_active_offers INT DEFAULT 3;
-ALTER TABLE merchants ADD COLUMN IF NOT EXISTS max_push_per_week INT DEFAULT 150;
+ALTER TABLE merchants ADD COLUMN IF NOT EXISTS max_push_per_week INT DEFAULT 100;
 ALTER TABLE merchants ADD COLUMN IF NOT EXISTS push_sent_this_week INT DEFAULT 0;
 ALTER TABLE merchants ADD COLUMN IF NOT EXISTS push_week_reset_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '7 days');
 
@@ -191,7 +191,7 @@ DECLARE
   allowed_max INT;
 BEGIN
   SELECT COUNT(*) INTO current_count FROM customer_cards WHERE merchant_id = NEW.merchant_id;
-  SELECT COALESCE(max_cards, 150) INTO allowed_max FROM merchants WHERE id = NEW.merchant_id;
+  SELECT COALESCE(max_cards, 100) INTO allowed_max FROM merchants WHERE id = NEW.merchant_id;
   IF current_count >= allowed_max THEN
     RAISE EXCEPTION 'QUOTA_CARDS_EXCEEDED: Ce commerce a atteint sa limite de % cartes.', allowed_max;
   END IF;

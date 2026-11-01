@@ -90,7 +90,7 @@ function BillingContent() {
 
   const getReceiptWhatsAppUrl = (payment: SubscriptionPayment) => {
     const ownerWa = db.getOwnerWhatsapp() || '213550000000';
-    const text = `💳 *NOUVEAU REÇU DE PAIEMENT (3 900 DZD)*\n\n🏪 *Commerce :* ${currentMerchant?.business_name}\n📞 *Tél Commerçant :* ${currentMerchant?.phone}\n🏦 *Méthode :* ${payment.payment_method}\n🔢 *Référence :* ${payment.transaction_reference}\n💰 *Montant :* 3 900 DZD\n\nMerci de valider mon abonnement sur l'espace Super-Admin FidelityDZ.`;
+    const text = `💳 *NOUVEAU REÇU DE PAIEMENT (3 900 DZD)*\n\n🏪 *Commerce :* ${currentMerchant?.business_name}\n📞 *Tél Commerçant :* ${currentMerchant?.phone}\n🏦 *Méthode :* ${payment.payment_method}\n🔢 *Expéditeur :* ${payment.transaction_reference}\n💰 *Montant :* 3 900 DZD\n\nMerci de valider mon abonnement sur l'espace Super-Admin FidelityDZ.`;
     return `https://wa.me/${ownerWa}?text=${encodeURIComponent(text)}`;
   };
 
@@ -221,60 +221,8 @@ function BillingContent() {
       </div>
 
       {/* TWO PAYMENT OPTIONS GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-        {/* OPTION 1: CHARGILY PAY (EDAHABIA / CIB) */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border-2 border-emerald-500/40 shadow-lg space-y-5">
-          <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 text-xs font-black text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-              <span>{isAr ? 'الدفع الآلي الفوري' : 'Automatique & Immédiat'}</span>
-            </div>
-            <h3 className="text-xl font-extrabold text-slate-900">
-              {t('edahabia_cib_title')}
-            </h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              {t('edahabia_desc')}
-            </p>
-          </div>
+      <div className="max-w-2xl mx-auto items-start">
 
-          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-500">Montant :</span>
-              <span className="text-base font-black text-slate-900">3 900 DZD</span>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-500">Cartes acceptées :</span>
-              <span className="font-bold text-slate-700">Edahabia & CIB</span>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-500">Délai d&apos;activation :</span>
-              <span className="font-bold text-emerald-600">Instantané (24h/24)</span>
-            </div>
-          </div>
-
-          <div className="pt-2">
-            <button
-              onClick={handleChargilyCheckout}
-              disabled={isProcessingChargily}
-              className="w-full flex items-center justify-center gap-2 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm rounded-xl shadow-lg shadow-emerald-500/20 transition-all hover:scale-[1.02] disabled:opacity-50"
-              type="button"
-            >
-              {isProcessingChargily ? (
-                <span>Connexion sécurisée à Chargily Pay...</span>
-              ) : (
-                <>
-                  <CreditCard className="w-5 h-5" />
-                  <span>{t('launch_checkout')}</span>
-                  <ArrowRight className="w-4 h-4 rtl:rotate-180" />
-                </>
-              )}
-            </button>
-          </div>
-
-          <div className="pt-2 flex justify-center">
-            <AlgerianPaymentBadges size="sm" />
-          </div>
-        </div>
 
         {/* OPTION 2: VIREMENT BARIDIMOB / CCP OFFICIEL */}
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-md space-y-5">
@@ -383,15 +331,15 @@ function BillingContent() {
 
               <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-700 block">
-                  Numéro de transaction / Référence BaridiMob ou CCP *
+                  Nom Complet de l'expéditeur *
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="Ex: BM-2026-9845120 ou 41726689"
+                  placeholder="Ex: Mohamed Ali"
                   value={transactionRef}
                   onChange={(e) => setTransactionRef(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs outline-none focus:border-emerald-500 focus:bg-white font-mono"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs outline-none focus:border-emerald-500 focus:bg-white font-semibold"
                 />
               </div>
 

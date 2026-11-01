@@ -304,9 +304,9 @@ CREATE POLICY "subscription_payments_all" ON subscription_payments FOR ALL USING
   };
 
     const handleChangeQuotas = (merchant: Merchant) => {
-    const newCards = window.prompt(`Nouvelle limite de CARTES pour ${merchant.business_name} (Actuel: ${merchant.max_cards || 150}) :`, String(merchant.max_cards || 150));
+    const newCards = window.prompt(`Nouvelle limite de CARTES pour ${merchant.business_name} (Actuel: ${merchant.max_cards || 100}) :`, String(merchant.max_cards || 100));
     if (!newCards) return;
-    const newPush = window.prompt(`Nouvelle limite de PUSH par semaine pour ${merchant.business_name} (Actuel: ${merchant.max_push_per_week || 150}) :`, String(merchant.max_push_per_week || 150));
+    const newPush = window.prompt(`Nouvelle limite de PUSH par semaine pour ${merchant.business_name} (Actuel: ${merchant.max_push_per_week || 100}) :`, String(merchant.max_push_per_week || 100));
     if (!newPush) return;
     
     db.saveMerchant({
@@ -955,8 +955,8 @@ CREATE POLICY "subscription_payments_all" ON subscription_payments FOR ALL USING
                         <div>Expire le : <strong className={isExpired ? 'text-red-500' : 'text-emerald-500'}>{new Date(m.subscription_ends_at).toLocaleDateString('fr-DZ')}</strong></div>
                         <div className="pt-1 mt-1 border-t border-slate-200">
                           <span className="text-slate-500 font-sans font-bold">QUOTAS ACTUELS (ADD-ONS)</span><br/>
-                          Cartes autorisées : <strong className="text-slate-900">{m.max_cards || 150}</strong><br/>
-                          Push autorisés/semaine : <strong className="text-slate-900">{m.max_push_per_week || 150}</strong>
+                          Cartes autorisées : <strong className="text-slate-900">{m.max_cards || 100}</strong><br/>
+                          Push autorisés/semaine : <strong className="text-slate-900">{m.max_push_per_week || 100}</strong>
                         </div>
                       </div>
                     </div>
