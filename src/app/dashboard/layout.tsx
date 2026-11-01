@@ -51,6 +51,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     router.replace('/login');
   };
 
+  const isTrial = currentMerchant.subscription_status === 'TRIAL' && !isSubscriptionExpired;
+  const isActive = currentMerchant.subscription_status === 'ACTIVE' && !isSubscriptionExpired;
+  const isBillingPage = pathname === '/dashboard/billing';
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col relative overflow-hidden">
       {/* Mobile Top Header */}
@@ -163,6 +167,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     logoutMerchantSession();
     router.replace('/login');
   };
+
+  const isTrial = currentMerchant.subscription_status === 'TRIAL' && !isSubscriptionExpired;
+  const isActive = currentMerchant.subscription_status === 'ACTIVE' && !isSubscriptionExpired;
+  const isBillingPage = pathname === '/dashboard/billing';
 
   return (
                 <Link
@@ -275,9 +283,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { href: '/scanner', labelFr: 'Scanner Caisse', labelAr: 'ماسح الصندوق', icon: QrCode },
   ];
 
-  const isTrial = currentMerchant.subscription_status === 'TRIAL' && !isSubscriptionExpired;
-  const isActive = currentMerchant.subscription_status === 'ACTIVE' && !isSubscriptionExpired;
-  const isBillingPage = pathname === '/dashboard/billing';
+  
 
   
 
@@ -285,6 +291,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     logoutMerchantSession();
     router.replace('/login');
   };
+
+  const isTrial = currentMerchant.subscription_status === 'TRIAL' && !isSubscriptionExpired;
+  const isActive = currentMerchant.subscription_status === 'ACTIVE' && !isSubscriptionExpired;
+  const isBillingPage = pathname === '/dashboard/billing';
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col relative overflow-hidden">
@@ -398,6 +408,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     logoutMerchantSession();
     router.replace('/login');
   };
+
+  const isTrial = currentMerchant.subscription_status === 'TRIAL' && !isSubscriptionExpired;
+  const isActive = currentMerchant.subscription_status === 'ACTIVE' && !isSubscriptionExpired;
+  const isBillingPage = pathname === '/dashboard/billing';
 
   return (
                 <Link
