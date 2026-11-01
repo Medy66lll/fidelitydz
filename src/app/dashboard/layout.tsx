@@ -55,6 +55,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const isActive = currentMerchant.subscription_status === 'ACTIVE' && !isSubscriptionExpired;
   const isBillingPage = pathname === '/dashboard/billing';
 
+  const menuItems = [
+    { href: '/dashboard', labelFr: "Vue d'ensemble", labelAr: 'لوحة التحكم', icon: LayoutDashboard },
+    { href: '/dashboard/program', labelFr: 'Studio Carte', labelAr: 'استوديو البطاقة', icon: Palette },
+    { href: '/dashboard/customers', labelFr: 'Clients & Visites', labelAr: 'الزبائن والزيارات', icon: Users },
+    { href: '/dashboard/offers', labelFr: 'Offres Ciblées', labelAr: 'العروض المخصصة', icon: Tag },
+    { href: '/dashboard/poster', labelFr: 'Affiche QR Comptoir', labelAr: 'ملصق الكاونتر PDF', icon: Printer },
+    { href: '/dashboard/billing', labelFr: 'Abonnement & Paiement', labelAr: 'الاشتراك والدفع', icon: CreditCard },
+    { href: '/scanner', labelFr: 'Scanner Caisse', labelAr: 'ماسح الصندوق', icon: QrCode },
+  ];
+
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col relative overflow-hidden">
       {/* Mobile Top Header */}
@@ -171,6 +182,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const isTrial = currentMerchant.subscription_status === 'TRIAL' && !isSubscriptionExpired;
   const isActive = currentMerchant.subscription_status === 'ACTIVE' && !isSubscriptionExpired;
   const isBillingPage = pathname === '/dashboard/billing';
+
+  const menuItems = [
+    { href: '/dashboard', labelFr: "Vue d'ensemble", labelAr: 'لوحة التحكم', icon: LayoutDashboard },
+    { href: '/dashboard/program', labelFr: 'Studio Carte', labelAr: 'استوديو البطاقة', icon: Palette },
+    { href: '/dashboard/customers', labelFr: 'Clients & Visites', labelAr: 'الزبائن والزيارات', icon: Users },
+    { href: '/dashboard/offers', labelFr: 'Offres Ciblées', labelAr: 'العروض المخصصة', icon: Tag },
+    { href: '/dashboard/poster', labelFr: 'Affiche QR Comptoir', labelAr: 'ملصق الكاونتر PDF', icon: Printer },
+    { href: '/dashboard/billing', labelFr: 'Abonnement & Paiement', labelAr: 'الاشتراك والدفع', icon: CreditCard },
+    { href: '/scanner', labelFr: 'Scanner Caisse', labelAr: 'ماسح الصندوق', icon: QrCode },
+  ];
+
 
   return (
                 <Link
@@ -273,15 +295,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return null;
   }
 
-  const menuItems = [
-    { href: '/dashboard', labelFr: "Vue d'ensemble", labelAr: 'لوحة التحكم', icon: LayoutDashboard },
-    { href: '/dashboard/program', labelFr: 'Studio Carte', labelAr: 'استوديو البطاقة', icon: Palette },
-    { href: '/dashboard/customers', labelFr: 'Clients & Visites', labelAr: 'الزبائن والزيارات', icon: Users },
-    { href: '/dashboard/offers', labelFr: 'Offres Ciblées', labelAr: 'العروض المخصصة', icon: Tag },
-    { href: '/dashboard/poster', labelFr: 'Affiche QR Comptoir', labelAr: 'ملصق الكاونتر PDF', icon: Printer },
-    { href: '/dashboard/billing', labelFr: 'Abonnement & Paiement', labelAr: 'الاشتراك والدفع', icon: CreditCard },
-    { href: '/scanner', labelFr: 'Scanner Caisse', labelAr: 'ماسح الصندوق', icon: QrCode },
-  ];
+  
 
   
 
@@ -295,6 +309,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const isTrial = currentMerchant.subscription_status === 'TRIAL' && !isSubscriptionExpired;
   const isActive = currentMerchant.subscription_status === 'ACTIVE' && !isSubscriptionExpired;
   const isBillingPage = pathname === '/dashboard/billing';
+
+  const menuItems = [
+    { href: '/dashboard', labelFr: "Vue d'ensemble", labelAr: 'لوحة التحكم', icon: LayoutDashboard },
+    { href: '/dashboard/program', labelFr: 'Studio Carte', labelAr: 'استوديو البطاقة', icon: Palette },
+    { href: '/dashboard/customers', labelFr: 'Clients & Visites', labelAr: 'الزبائن والزيارات', icon: Users },
+    { href: '/dashboard/offers', labelFr: 'Offres Ciblées', labelAr: 'العروض المخصصة', icon: Tag },
+    { href: '/dashboard/poster', labelFr: 'Affiche QR Comptoir', labelAr: 'ملصق الكاونتر PDF', icon: Printer },
+    { href: '/dashboard/billing', labelFr: 'Abonnement & Paiement', labelAr: 'الاشتراك والدفع', icon: CreditCard },
+    { href: '/scanner', labelFr: 'Scanner Caisse', labelAr: 'ماسح الصندوق', icon: QrCode },
+  ];
+
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col relative overflow-hidden">
@@ -412,6 +437,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const isTrial = currentMerchant.subscription_status === 'TRIAL' && !isSubscriptionExpired;
   const isActive = currentMerchant.subscription_status === 'ACTIVE' && !isSubscriptionExpired;
   const isBillingPage = pathname === '/dashboard/billing';
+
+  const menuItems = [
+    { href: '/dashboard', labelFr: "Vue d'ensemble", labelAr: 'لوحة التحكم', icon: LayoutDashboard },
+    { href: '/dashboard/program', labelFr: 'Studio Carte', labelAr: 'استوديو البطاقة', icon: Palette },
+    { href: '/dashboard/customers', labelFr: 'Clients & Visites', labelAr: 'الزبائن والزيارات', icon: Users },
+    { href: '/dashboard/offers', labelFr: 'Offres Ciblées', labelAr: 'العروض المخصصة', icon: Tag },
+    { href: '/dashboard/poster', labelFr: 'Affiche QR Comptoir', labelAr: 'ملصق الكاونتر PDF', icon: Printer },
+    { href: '/dashboard/billing', labelFr: 'Abonnement & Paiement', labelAr: 'الاشتراك والدفع', icon: CreditCard },
+    { href: '/scanner', labelFr: 'Scanner Caisse', labelAr: 'ماسح الصندوق', icon: QrCode },
+  ];
+
 
   return (
                 <Link
