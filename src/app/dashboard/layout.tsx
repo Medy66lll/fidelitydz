@@ -46,7 +46,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }, [isLoadingAuth, isAuthenticated, router]);
 
   if (isLoadingAuth) {
-    return (
+    const handleLogout = () => {
+    logoutMerchantSession();
+    router.replace('/login');
+  };
+
+  return (
     <div className="min-h-screen bg-slate-50 flex flex-col relative overflow-hidden">
       {/* Mobile Top Header */}
       <div className="lg:hidden bg-slate-900 text-white px-4 py-3 flex items-center justify-between sticky top-0 z-50 shadow-md">
@@ -154,7 +159,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isCurrent = pathname === item.href;
-              return (
+              const handleLogout = () => {
+    logoutMerchantSession();
+    router.replace('/login');
+  };
+
+  return (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -269,6 +279,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const isActive = currentMerchant.subscription_status === 'ACTIVE' && !isSubscriptionExpired;
   const isBillingPage = pathname === '/dashboard/billing';
 
+  
+
   const handleLogout = () => {
     logoutMerchantSession();
     router.replace('/login');
@@ -382,7 +394,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isCurrent = pathname === item.href;
-              return (
+              const handleLogout = () => {
+    logoutMerchantSession();
+    router.replace('/login');
+  };
+
+  return (
                 <Link
                   key={item.href}
                   href={item.href}
