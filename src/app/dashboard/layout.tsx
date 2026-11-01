@@ -80,7 +80,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row relative">
+        <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row relative">
       {/* Subtle background accents */}
       <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-emerald-400/5 rounded-full blur-3xl pointer-events-none -translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-blue-400/5 rounded-full blur-3xl pointer-events-none translate-x-1/3 translate-y-1/3"></div>
@@ -113,7 +113,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Sidebar Navigation */}
       <aside
-        className={`fixed lg:sticky top-0 h-screen w-64 bg-slate-900 text-slate-300 flex flex-col justify-between z-40 transition-transform duration-300 ease-in-out border-r border-slate-800 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-slate-300 flex flex-col justify-between transition-transform duration-300 ease-in-out border-r border-slate-800 overflow-y-auto shadow-2xl ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >

@@ -105,7 +105,8 @@ Merci de mettre à jour mes limites sur le serveur Supabase.`;
 
   const getReceiptWhatsAppUrl = (payment: SubscriptionPayment) => {
     const ownerWa = db.getOwnerWhatsapp() || '213550000000';
-    const text = `💳 *NOUVEAU REÇU DE PAIEMENT (3 900 DZD)*\n\n🏪 *Commerce :* ${currentMerchant?.business_name}\n📞 *Tél Commerçant :* ${currentMerchant?.phone}\n🏦 *Méthode :* ${payment.payment_method}\n🔢 *Expéditeur :* ${payment.transaction_reference}\n💰 *Montant :* 3 900 DZD\n\nMerci de valider mon abonnement sur l'espace Super-Admin FidelityDZ.`;
+    const total = 3900 + (Math.max(0, (currentMerchant?.max_cards || 100) - 100) / 500) * 1000 + (Math.max(0, (currentMerchant?.max_push_per_week || 100) - 100) / 300) * 800 + (Math.max(0, (currentMerchant?.max_users || 2) - 2)) * 500 + (Math.max(0, (currentMerchant?.max_active_offers || 3) - 3) / 5) * 500 + (Math.max(0, (currentMerchant?.max_locations || 1) - 1)) * 1500;
+    const text = `💳 *NOUVEAU REÇU DE PAIEMENT (${total} DZD)*\n\n🏪 *Commerce :* ${currentMerchant?.business_name}\n📞 *Tél Commerçant :* ${currentMerchant?.phone}\n🏦 *Méthode :* ${payment.payment_method}\n🔢 *Expéditeur :* ${payment.transaction_reference}\n💰 *Montant :* ${total} DZD\n\nMerci de valider mon abonnement sur l'espace Super-Admin FidelityDZ.`;
     return `https://wa.me/${ownerWa}?text=${encodeURIComponent(text)}`;
   };
 
@@ -159,7 +160,7 @@ Merci de mettre à jour mes limites sur le serveur Supabase.`;
       id: generateUuid(),
       merchant_id: currentMerchant.id,
       merchant_name: currentMerchant.business_name,
-      amount_dzd: 3900,
+      amount_dzd: 3900 + (Math.max(0, (currentMerchant?.max_cards || 100) - 100) / 500) * 1000 + (Math.max(0, (currentMerchant?.max_push_per_week || 100) - 100) / 300) * 800 + (Math.max(0, (currentMerchant?.max_users || 2) - 2)) * 500 + (Math.max(0, (currentMerchant?.max_active_offers || 3) - 3) / 5) * 500 + (Math.max(0, (currentMerchant?.max_locations || 1) - 1)) * 1500,
       payment_method: paymentMethod,
       transaction_reference: transactionRef.trim(),
       receipt_url: receiptDataUrl || receiptFileName || 'recu_baridimob_preuve.png',
@@ -220,8 +221,16 @@ Merci de mettre à jour mes limites sur le serveur Supabase.`;
             </span>
           </div>
 
-          <h3 className="text-xl sm:text-2xl font-black tracking-tight">
-            Forfait Mensuel Illimité • 3 900 DZD
+          <h3 className="text-xl sm:text-2xl font-black tracking-tight flex flex-col sm:flex-row sm:items-center gap-2">
+            <span>Abonnement Mensuel</span>
+            <span className="text-emerald-400">• {
+              3900 
+              + (Math.max(0, (currentMerchant?.max_cards || 100) - 100) / 500) * 1000 
+              + (Math.max(0, (currentMerchant?.max_push_per_week || 100) - 100) / 300) * 800
+              + (Math.max(0, (currentMerchant?.max_users || 2) - 2)) * 500
+              + (Math.max(0, (currentMerchant?.max_active_offers || 3) - 3) / 5) * 500
+              + (Math.max(0, (currentMerchant?.max_locations || 1) - 1)) * 1500
+            } DZD</span>
           </h3>
 
           <p className="text-xs sm:text-sm text-slate-300">
