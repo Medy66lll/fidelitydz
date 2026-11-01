@@ -180,7 +180,6 @@ function packMerchantForDb(m: any) {
     push_sent_this_week: quotas.ps,
   };
 }
-}
 
 function unpackMerchantFromDb(row: any) {
   if (!row) return null;
