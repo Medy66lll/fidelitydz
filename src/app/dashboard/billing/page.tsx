@@ -221,17 +221,46 @@ Merci de mettre à jour mes limites sur le serveur Supabase.`;
             </span>
           </div>
 
-          <h3 className="text-xl sm:text-2xl font-black tracking-tight flex flex-col sm:flex-row sm:items-center gap-2">
-            <span>Abonnement Mensuel</span>
-            <span className="text-emerald-400">• {
-              3900 
-              + (Math.max(0, (currentMerchant?.max_cards || 100) - 100) / 500) * 1000 
-              + (Math.max(0, (currentMerchant?.max_push_per_week || 100) - 100) / 300) * 800
-              + (Math.max(0, (currentMerchant?.max_users || 2) - 2)) * 500
-              + (Math.max(0, (currentMerchant?.max_active_offers || 3) - 3) / 5) * 500
-              + (Math.max(0, (currentMerchant?.max_locations || 1) - 1)) * 1500
-            } DZD</span>
-          </h3>
+          <div className="space-y-3">
+            <h3 className="text-xl sm:text-2xl font-black tracking-tight flex flex-col sm:flex-row sm:items-center gap-2">
+              <span>Abonnement Mensuel</span>
+              <span className="text-emerald-400">• {
+                3900 
+                + (Math.max(0, (currentMerchant?.max_cards || 100) - 100) / 500) * 1000 
+                + (Math.max(0, (currentMerchant?.max_push_per_week || 100) - 100) / 300) * 800
+                + (Math.max(0, (currentMerchant?.max_users || 2) - 2)) * 500
+                + (Math.max(0, (currentMerchant?.max_active_offers || 3) - 3) / 5) * 500
+                + (Math.max(0, (currentMerchant?.max_locations || 1) - 1)) * 1500
+              } DZD</span>
+            </h3>
+            
+            <div className="text-[11px] sm:text-xs text-slate-300 font-mono space-y-1 bg-slate-900/50 p-3 rounded-xl border border-slate-800">
+              <div className="flex justify-between"><span>Forfait de Base (Starter)</span><span>3 900 DZD</span></div>
+              {currentMerchant?.max_cards && currentMerchant.max_cards > 100 && (
+                <div className="flex justify-between text-emerald-300"><span>+ Add-on Cartes ({currentMerchant.max_cards - 100} suppl.)</span><span>+ {((currentMerchant.max_cards - 100) / 500) * 1000} DZD</span></div>
+              )}
+              {currentMerchant?.max_push_per_week && currentMerchant.max_push_per_week > 100 && (
+                <div className="flex justify-between text-emerald-300"><span>+ Add-on Push ({currentMerchant.max_push_per_week - 100} suppl.)</span><span>+ {((currentMerchant.max_push_per_week - 100) / 300) * 800} DZD</span></div>
+              )}
+              {currentMerchant?.max_users && currentMerchant.max_users > 2 && (
+                <div className="flex justify-between text-emerald-300"><span>+ Add-on Caissiers ({currentMerchant.max_users - 2} suppl.)</span><span>+ {(currentMerchant.max_users - 2) * 500} DZD</span></div>
+              )}
+              {currentMerchant?.max_active_offers && currentMerchant.max_active_offers > 3 && (
+                <div className="flex justify-between text-emerald-300"><span>+ Add-on Offres ({currentMerchant.max_active_offers - 3} suppl.)</span><span>+ {((currentMerchant.max_active_offers - 3) / 5) * 500} DZD</span></div>
+              )}
+              {currentMerchant?.max_locations && currentMerchant.max_locations > 1 && (
+                <div className="flex justify-between text-emerald-300"><span>+ Add-on Locaux ({currentMerchant.max_locations - 1} suppl.)</span><span>+ {(currentMerchant.max_locations - 1) * 1500} DZD</span></div>
+              )}
+              <div className="border-t border-slate-700 mt-1 pt-1 flex justify-between font-bold text-white"><span>Total à payer</span><span>{
+                3900 
+                + (Math.max(0, (currentMerchant?.max_cards || 100) - 100) / 500) * 1000 
+                + (Math.max(0, (currentMerchant?.max_push_per_week || 100) - 100) / 300) * 800
+                + (Math.max(0, (currentMerchant?.max_users || 2) - 2)) * 500
+                + (Math.max(0, (currentMerchant?.max_active_offers || 3) - 3) / 5) * 500
+                + (Math.max(0, (currentMerchant?.max_locations || 1) - 1)) * 1500
+              } DZD</span></div>
+            </div>
+          </div>
 
           <p className="text-xs sm:text-sm text-slate-300">
             {endsAt ? (

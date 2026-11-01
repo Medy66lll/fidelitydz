@@ -35,7 +35,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   } = useMerchant();
   const pathname = usePathname();
   const router = useRouter();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(typeof window !== 'undefined' ? window.innerWidth > 1024 : false);
 
   const isAr = language === 'ar';
 
@@ -114,7 +114,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Sidebar Navigation */}
       <aside
         className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-slate-300 flex flex-col justify-between transition-transform duration-300 ease-in-out border-r border-slate-800 overflow-y-auto shadow-2xl ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="p-5 space-y-5">

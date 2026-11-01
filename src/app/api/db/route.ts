@@ -148,7 +148,16 @@ function packMerchantForDb(m: any) {
     const parts = rawLogo.split(':::');
     rawLogo = parts[1] || '';
   }
-  const metaObj = { pass, email, address, socials };
+  const quotas = {
+    tier: m.plan_tier || 'STARTER',
+    mc: Number(m.max_cards || 100),
+    ml: Number(m.max_locations || 1),
+    mu: Number(m.max_users || 2),
+    mo: Number(m.max_active_offers || 3),
+    mp: Number(m.max_push_per_week || 100),
+    ps: Number(m.push_sent_this_week || 0),
+  };
+  const metaObj = { pass, email, address, socials, quotas };
   const packedLogo = `__AUTH__:${encodeURIComponent(JSON.stringify(metaObj))}:::${rawLogo}`;
 
   return {
@@ -162,7 +171,15 @@ function packMerchantForDb(m: any) {
     subscription_status: m.subscription_status || 'TRIAL',
     subscription_ends_at: m.subscription_ends_at || new Date(Date.now() + 14 * 86400000).toISOString(),
     created_at: m.created_at || new Date().toISOString(),
+    plan_tier: quotas.tier,
+    max_cards: quotas.mc,
+    max_locations: quotas.ml,
+    max_users: quotas.mu,
+    max_active_offers: quotas.mo,
+    max_push_per_week: quotas.mp,
+    push_sent_this_week: quotas.ps,
   };
+}
 }
 
 function unpackMerchantFromDb(row: any) {
