@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS merchants (
   max_push_per_week INT DEFAULT 100,-- Limite de base modifiée
   push_sent_this_week INT DEFAULT 0,
   push_week_reset_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '7 days'),
+  active_device_ids TEXT DEFAULT '',
   subscription_status TEXT DEFAULT 'TRIAL',
   subscription_ends_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '14 days'),
   created_at TIMESTAMPTZ DEFAULT NOW()
@@ -78,6 +79,7 @@ ALTER TABLE merchants ADD COLUMN IF NOT EXISTS max_active_offers INT DEFAULT 3;
 ALTER TABLE merchants ADD COLUMN IF NOT EXISTS max_push_per_week INT DEFAULT 100;
 ALTER TABLE merchants ADD COLUMN IF NOT EXISTS push_sent_this_week INT DEFAULT 0;
 ALTER TABLE merchants ADD COLUMN IF NOT EXISTS push_week_reset_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '7 days');
+ALTER TABLE merchants ADD COLUMN IF NOT EXISTS active_device_ids TEXT DEFAULT '';
 
 -- 3. PROGRAMMES
 CREATE TABLE IF NOT EXISTS loyalty_programs (

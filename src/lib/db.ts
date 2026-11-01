@@ -112,6 +112,17 @@ class FidelityDatabase {
     } catch {}
   }
 
+  
+  getDeviceId(): string {
+    if (typeof window === 'undefined') return '';
+    let did = localStorage.getItem('fidelitydz_device_id');
+    if (!did) {
+      did = 'dev_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('fidelitydz_device_id', did);
+    }
+    return did;
+  }
+
   getOwnerWhatsapp(): string {
     return this.getStorage('owner_whatsapp', defaultPlatformSettings.owner_whatsapp || '213550000000');
   }
@@ -243,6 +254,7 @@ class FidelityDatabase {
         action: 'login_merchant',
         identifier,
         password,
+        device_id: this.getDeviceId(),
       });
       if (apiRes && apiRes.success && apiRes.merchant) {
         this.saveMerchantLocalOnly(apiRes.merchant);
@@ -722,32 +734,48 @@ class FidelityDatabase {
     return all;
   }
 
-  createOffer(offer: PersonalizedOffer): void {
+  async createOfferAsync(offer: PersonalizedOffer): Promise<{success: boolean, error?: string}> {
     const fixed: PersonalizedOffer = {
       ...offer,
       id: toValidUuid(offer.id),
       merchant_id: toValidUuid(offer.merchant_id),
       updated_at: offer.updated_at || new Date().toISOString(),
     };
-    const all = this.getOffers();
-    all.unshift(fixed);
-    this.setStorage('offers', all);
-    postApiDb({ action: 'save_offer', offer: fixed });
+    const res = await postApiDb({ action: 'save_offer', offer: fixed, is_edit: false });
+    if (res && res.success) {
+      const all = this.getOffers();
+      all.unshift(fixed);
+      this.setStorage('offers', all);
+      return { success: true };
+    }
+    return { success: false, error: res?.error || 'Erreur lors de la sauvegarde.' };
+  }
+
+  async updateOfferAsync(offer: PersonalizedOffer): Promise<{success: boolean, error?: string}> {
+    const fixed: PersonalizedOffer = {
+      ...offer,
+      id: toValidUuid(offer.id),
+      merchant_id: toValidUuid(offer.merchant_id),
+      updated_at: offer.updated_at || new Date().toISOString(),
+    };
+    const res = await postApiDb({ action: 'save_offer', offer: fixed, is_edit: true });
+    if (res && res.success) {
+      const all = this.getOffers();
+      const idx = all.findIndex((o) => o.id === fixed.id);
+      if (idx >= 0) all[idx] = fixed;
+      else all.unshift(fixed);
+      this.setStorage('offers', all);
+      return { success: true };
+    }
+    return { success: false, error: res?.error || 'Erreur lors de la mise à jour.' };
+  }
+  
+  createOffer(offer: PersonalizedOffer): void {
+    this.createOfferAsync(offer);
   }
 
   updateOffer(offer: PersonalizedOffer): void {
-    const fixed: PersonalizedOffer = {
-      ...offer,
-      id: toValidUuid(offer.id),
-      merchant_id: toValidUuid(offer.merchant_id),
-      updated_at: offer.updated_at || new Date().toISOString(),
-    };
-    const all = this.getOffers();
-    const idx = all.findIndex((o) => o.id === fixed.id);
-    if (idx >= 0) all[idx] = fixed;
-    else all.unshift(fixed);
-    this.setStorage('offers', all);
-    postApiDb({ action: 'save_offer', offer: fixed });
+    this.updateOfferAsync(offer);
   }
 
   deleteOffer(offerId: string): void {

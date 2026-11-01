@@ -113,6 +113,7 @@ export interface Merchant {
   max_push_per_week?: number;
   push_sent_this_week?: number;
   push_week_reset_at?: string;
+  active_device_ids?: string;
   subscription_status: SubscriptionStatus;
   subscription_ends_at: string;
   created_at: string;

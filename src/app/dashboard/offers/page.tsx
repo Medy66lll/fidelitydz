@@ -112,7 +112,7 @@ export default function OffersPage() {
     setTimeout(() => setBroadcastedOfferId(null), 4000);
   };
 
-  const handleSaveOffer = (e: React.FormEvent) => {
+  const handleSaveOffer = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentMerchant) return;
     const nowIso = new Date().toISOString();

@@ -626,16 +626,40 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, error: 'Mot de passe incorrect.' }, { status: 401 });
       }
 
-      // VÉRIFICATION MAX_USERS (Limitation basique d'appareils)
-      // Pour une vraie vérification temps réel, on devrait utiliser Supabase Presence.
-      // Ici, on enregistre l'IP/User-Agent comme "session active" dans un champ JSON si on le souhaitait.
-      // Pour l'instant, si le client demande un blocage strict, on pourrait juste vérifier un compteur.
-      const currentActiveSessions = found.active_sessions_count || 1; 
+      // VÉRIFICATION STRICTE MAX_USERS (Appareils connectés)
+      const deviceId = body.device_id || 'unknown_device';
       const maxUsers = Number(found.max_users || 2);
-      // NOTE: L'implémentation complète nécessiterait une table de sessions. 
-      // Pour la démo demandée par le client, on va simuler ce blocage s'il dépasse maxUsers.
+      
+      let activeDevices = (found.active_device_ids || '').split(',').filter(Boolean);
+      
+      // Si l'appareil n'est pas déjà dans la liste
+      if (!activeDevices.includes(deviceId)) {
+        if (activeDevices.length >= maxUsers) {
+          return NextResponse.json({ 
+            success: false, 
+            error: `Limite d'appareils atteinte (${maxUsers} max). Veuillez vous déconnecter d'un autre appareil ou demander une extension (Add-on).` 
+          }, { status: 403 });
+        }
+        // Ajouter l'appareil et sauvegarder
+        activeDevices.push(deviceId);
+        await sbUpsert('merchants', { id: found.id, active_device_ids: activeDevices.join(',') }, 'id');
+      }
 
       return NextResponse.json({ success: true, merchant: found });
+    }
+    
+    if (action === 'logout_merchant') {
+      const merchantId = body.merchant_id;
+      const deviceId = body.device_id;
+      if (merchantId && deviceId) {
+        const mRows = await sbSelect('merchants', `id=eq.${encodeURIComponent(merchantId)}&select=active_device_ids`);
+        if (mRows && mRows.length > 0) {
+          let activeDevices = (mRows[0].active_device_ids || '').split(',').filter(Boolean);
+          activeDevices = activeDevices.filter((id: string) => id !== deviceId);
+          await sbUpsert('merchants', { id: merchantId, active_device_ids: activeDevices.join(',') }, 'id');
+        }
+      }
+      return NextResponse.json({ success: true });
     }
 
     if (action === 'login_admin') {
@@ -782,6 +806,30 @@ export async function POST(req: NextRequest) {
     if (action === 'save_offer') {
       const { offer } = body;
       const dbOffer = packOfferForDb(offer);
+      
+      // VÉRIFICATION STRICTE DE LA LIMITE D'OFFRES
+      // Le commerçant ne peut pas dépasser la limite d'offres au total (actives ou inactives).
+      if (!body.is_edit) { // On vérifie seulement lors de la création d'une nouvelle offre
+        const allMerchantOffers = await sbSelect('personalized_offers', `merchant_id=eq.${encodeURIComponent(dbOffer.merchant_id)}&select=id`);
+        const mRows = await sbSelect('merchants', `id=eq.${encodeURIComponent(dbOffer.merchant_id)}&select=max_active_offers&limit=1`);
+        const currentOfferCount = Array.isArray(allMerchantOffers) ? allMerchantOffers.length : 0;
+        const maxAllowedOffers = (mRows && mRows.length > 0) ? Number(mRows[0].max_active_offers || 3) : 3;
+        
+        // Si c'est une nouvelle offre (qui n'existe pas dans le tableau)
+        const isNew = !Array.isArray(allMerchantOffers) || !allMerchantOffers.some(o => o.id === dbOffer.id);
+        
+        if (isNew && currentOfferCount >= maxAllowedOffers) {
+          return NextResponse.json(
+            {
+              success: false,
+              quota_exceeded: true,
+              error: `Vous avez atteint votre limite maximale de ${maxAllowedOffers} offres. Veuillez supprimer une ancienne offre ou demander une extension (Add-on) pour en créer de nouvelles.`,
+            },
+            { status: 403 }
+          );
+        }
+      }
+
       const oRes = await sbUpsert('personalized_offers', dbOffer, 'id');
       const savedRow = Array.isArray(oRes.data) && oRes.data[0] ? oRes.data[0] : dbOffer;
       return NextResponse.json({
