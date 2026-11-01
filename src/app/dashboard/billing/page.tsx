@@ -88,6 +88,21 @@ function BillingContent() {
     reader.readAsDataURL(file);
   };
 
+
+  const getWhatsAppAddonUrl = (addonType: string, priceDesc: string) => {
+    const ownerWa = db.getOwnerWhatsapp() || '213550000000';
+    const text = `🚀 *DEMANDE D'EXTENSION (ADD-ON)*
+
+🏪 *Commerce :* ${currentMerchant?.business_name}
+📞 *Téléphone :* ${currentMerchant?.phone}
+
+Je souhaite augmenter ma limite pour : *${addonType}*
+Tarif estimé : ${priceDesc}
+
+Merci de mettre à jour mes limites sur le serveur Supabase.`;
+    return `https://wa.me/${ownerWa}?text=${encodeURIComponent(text)}`;
+  };
+
   const getReceiptWhatsAppUrl = (payment: SubscriptionPayment) => {
     const ownerWa = db.getOwnerWhatsapp() || '213550000000';
     const text = `💳 *NOUVEAU REÇU DE PAIEMENT (3 900 DZD)*\n\n🏪 *Commerce :* ${currentMerchant?.business_name}\n📞 *Tél Commerçant :* ${currentMerchant?.phone}\n🏦 *Méthode :* ${payment.payment_method}\n🔢 *Expéditeur :* ${payment.transaction_reference}\n💰 *Montant :* 3 900 DZD\n\nMerci de valider mon abonnement sur l'espace Super-Admin FidelityDZ.`;
@@ -380,7 +395,76 @@ function BillingContent() {
             </form>
           )}
         </div>
-      </div>
+      
+      {/* SECTION ADD-ONS & QUOTAS */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+        <div className="space-y-1">
+          <div className="inline-flex items-center gap-1.5 text-xs font-black text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Évoluez selon vos besoins</span>
+          </div>
+          <h3 className="text-xl font-extrabold text-slate-900">
+            {isAr ? 'حدود باقتك الحالية والإضافات (Add-ons)' : 'Vos Quotas & Extensions (Add-ons)'}
+          </h3>
+          <p className="text-xs text-slate-600 leading-relaxed">
+            {isAr 
+              ? 'إذا وصلت إلى الحد الأقصى، لن يتمكن زبائن جدد من التسجيل ولن تتمكن من إرسال إشعارات. يمكنك طلب زيادة السعة من هنا.' 
+              : 'Si vous atteignez vos limites, de nouveaux clients ne pourront plus s\'inscrire et les autres appareils seront bloqués. Demandez une extension à tout moment.'}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl flex flex-col justify-between gap-3">
+            <div>
+              <span className="text-[10px] uppercase font-bold text-slate-500">Cartes Clients</span>
+              <div className="text-xl font-black text-slate-900">{currentMerchant.max_cards || 100} <span className="text-xs font-medium text-slate-500">max</span></div>
+            </div>
+            <a href={getWhatsAppAddonUrl('Cartes', '+1 000 DZD/mois pour 500 cartes')} target="_blank" rel="noreferrer" className="w-full py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[10px] font-bold rounded-lg text-center transition-colors">
+              + Demander Extension (1 000 DZD)
+            </a>
+          </div>
+
+          <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl flex flex-col justify-between gap-3">
+            <div>
+              <span className="text-[10px] uppercase font-bold text-slate-500">Push / Semaine</span>
+              <div className="text-xl font-black text-slate-900">{currentMerchant.max_push_per_week || 100} <span className="text-xs font-medium text-slate-500">max</span></div>
+            </div>
+            <a href={getWhatsAppAddonUrl('Notifications Push', '+800 DZD/mois pour 300 push')} target="_blank" rel="noreferrer" className="w-full py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[10px] font-bold rounded-lg text-center transition-colors">
+              + Demander Extension (800 DZD)
+            </a>
+          </div>
+
+          <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl flex flex-col justify-between gap-3">
+            <div>
+              <span className="text-[10px] uppercase font-bold text-slate-500">Appareils Caissiers</span>
+              <div className="text-xl font-black text-slate-900">{currentMerchant.max_users || 2} <span className="text-xs font-medium text-slate-500">max</span></div>
+            </div>
+            <a href={getWhatsAppAddonUrl('Appareils Caissiers', '+500 DZD/mois pour 1 utilisateur supplémentaire')} target="_blank" rel="noreferrer" className="w-full py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[10px] font-bold rounded-lg text-center transition-colors">
+              + Demander Extension (500 DZD)
+            </a>
+          </div>
+
+          <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl flex flex-col justify-between gap-3">
+            <div>
+              <span className="text-[10px] uppercase font-bold text-slate-500">Offres Actives</span>
+              <div className="text-xl font-black text-slate-900">{currentMerchant.max_active_offers || 3} <span className="text-xs font-medium text-slate-500">max</span></div>
+            </div>
+            <a href={getWhatsAppAddonUrl('Offres Actives', '+500 DZD/mois pour 5 offres')} target="_blank" rel="noreferrer" className="w-full py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[10px] font-bold rounded-lg text-center transition-colors">
+              + Demander Extension (500 DZD)
+            </a>
+          </div>
+
+          <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl flex flex-col justify-between gap-3">
+            <div>
+              <span className="text-[10px] uppercase font-bold text-slate-500">Points de vente</span>
+              <div className="text-xl font-black text-slate-900">{currentMerchant.max_locations || 1} <span className="text-xs font-medium text-slate-500">max</span></div>
+            </div>
+            <a href={getWhatsAppAddonUrl('Points de Vente', '+1 500 DZD/mois par magasin')} target="_blank" rel="noreferrer" className="w-full py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[10px] font-bold rounded-lg text-center transition-colors">
+              + Demander Extension (1 500 DZD)
+            </a>
+          </div>
+        </div>
+      </div></div>
     </div>
   );
 }

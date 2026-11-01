@@ -304,18 +304,27 @@ CREATE POLICY "subscription_payments_all" ON subscription_payments FOR ALL USING
   };
 
     const handleChangeQuotas = (merchant: Merchant) => {
-    const newCards = window.prompt(`Nouvelle limite de CARTES pour ${merchant.business_name} (Actuel: ${merchant.max_cards || 100}) :`, String(merchant.max_cards || 100));
+    const newCards = window.prompt(`Nouvelle limite de CARTES (Actuel: ${merchant.max_cards || 100}) :`, String(merchant.max_cards || 100));
     if (!newCards) return;
-    const newPush = window.prompt(`Nouvelle limite de PUSH par semaine pour ${merchant.business_name} (Actuel: ${merchant.max_push_per_week || 100}) :`, String(merchant.max_push_per_week || 100));
+    const newPush = window.prompt(`Nouvelle limite de PUSH/sem (Actuel: ${merchant.max_push_per_week || 100}) :`, String(merchant.max_push_per_week || 100));
     if (!newPush) return;
+    const newUsers = window.prompt(`Nouvelle limite d'UTILISATEURS (Actuel: ${merchant.max_users || 2}) :`, String(merchant.max_users || 2));
+    if (!newUsers) return;
+    const newOffers = window.prompt(`Nouvelle limite d'OFFRES ACTIVES (Actuel: ${merchant.max_active_offers || 3}) :`, String(merchant.max_active_offers || 3));
+    if (!newOffers) return;
+    const newLocations = window.prompt(`Nouvelle limite de POINTS DE VENTE (Actuel: ${merchant.max_locations || 1}) :`, String(merchant.max_locations || 1));
+    if (!newLocations) return;
     
     db.saveMerchant({
       ...merchant,
       max_cards: parseInt(newCards, 10),
       max_push_per_week: parseInt(newPush, 10),
+      max_users: parseInt(newUsers, 10),
+      max_active_offers: parseInt(newOffers, 10),
+      max_locations: parseInt(newLocations, 10),
     });
     setTimeout(() => loadData(), 400);
-    setActionSuccess(`Quotas mis à jour pour ${merchant.business_name}. Les modifications sont enregistrées sur Supabase.`);
+    setActionSuccess(`Tous les Quotas mis à jour pour ${merchant.business_name} sur Supabase.`);
     setTimeout(() => setActionSuccess(null), 3500);
   };
 
@@ -954,9 +963,14 @@ CREATE POLICY "subscription_payments_all" ON subscription_payments FOR ALL USING
                         <div>Tél (Login) : <strong>{m.phone}</strong> | MDP : <strong>{m.password || '123456'}</strong></div>
                         <div>Expire le : <strong className={isExpired ? 'text-red-500' : 'text-emerald-500'}>{new Date(m.subscription_ends_at).toLocaleDateString('fr-DZ')}</strong></div>
                         <div className="pt-1 mt-1 border-t border-slate-200">
-                          <span className="text-slate-500 font-sans font-bold">QUOTAS ACTUELS (ADD-ONS)</span><br/>
-                          Cartes autorisées : <strong className="text-slate-900">{m.max_cards || 100}</strong><br/>
-                          Push autorisés/semaine : <strong className="text-slate-900">{m.max_push_per_week || 100}</strong>
+                          <span className="text-slate-500 font-sans font-bold block mb-0.5">QUOTAS ACTUELS (ADD-ONS)</span>
+                          <div className="grid grid-cols-2 gap-x-2">
+                            <span>Cartes : <strong className="text-slate-900">{m.max_cards || 100}</strong></span>
+                            <span>Push/sem : <strong className="text-slate-900">{m.max_push_per_week || 100}</strong></span>
+                            <span>Users : <strong className="text-slate-900">{m.max_users || 2}</strong></span>
+                            <span>Offres : <strong className="text-slate-900">{m.max_active_offers || 3}</strong></span>
+                            <span className="col-span-2">Locaux : <strong className="text-slate-900">{m.max_locations || 1}</strong></span>
+                          </div>
                         </div>
                       </div>
                     </div>
