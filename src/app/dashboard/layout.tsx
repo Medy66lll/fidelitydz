@@ -45,11 +45,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
   }, [isLoadingAuth, isAuthenticated, router]);
 
-  if (isLoadingAuth) {
-    const handleLogout = () => {
+  const handleLogout = () => {
     logoutMerchantSession();
     router.replace('/login');
   };
+
+  if (isLoadingAuth) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-4">
+        <div className="text-center space-y-3">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-400 mx-auto"></div>
+          <p className="text-xs text-slate-400">Vérification de votre session commerçant...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !currentMerchant) {
+    return null;
+  }
 
   const isTrial = currentMerchant.subscription_status === 'TRIAL' && !isSubscriptionExpired;
   const isActive = currentMerchant.subscription_status === 'ACTIVE' && !isSubscriptionExpired;
@@ -179,8 +193,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     router.replace('/login');
   };
 
-  const isTrial = currentMerchant.subscription_status === 'TRIAL' && !isSubscriptionExpired;
-  const isActive = currentMerchant.subscription_status === 'ACTIVE' && !isSubscriptionExpired;
+  const isTrial = currentMerchant?.subscription_status === 'TRIAL' && !isSubscriptionExpired;
+  const isActive = currentMerchant?.subscription_status === 'ACTIVE' && !isSubscriptionExpired;
   const isBillingPage = pathname === '/dashboard/billing';
 
   const menuItems = [
@@ -306,8 +320,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     router.replace('/login');
   };
 
-  const isTrial = currentMerchant.subscription_status === 'TRIAL' && !isSubscriptionExpired;
-  const isActive = currentMerchant.subscription_status === 'ACTIVE' && !isSubscriptionExpired;
+  const isTrial = currentMerchant?.subscription_status === 'TRIAL' && !isSubscriptionExpired;
+  const isActive = currentMerchant?.subscription_status === 'ACTIVE' && !isSubscriptionExpired;
   const isBillingPage = pathname === '/dashboard/billing';
 
   const menuItems = [
@@ -434,8 +448,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     router.replace('/login');
   };
 
-  const isTrial = currentMerchant.subscription_status === 'TRIAL' && !isSubscriptionExpired;
-  const isActive = currentMerchant.subscription_status === 'ACTIVE' && !isSubscriptionExpired;
+  const isTrial = currentMerchant?.subscription_status === 'TRIAL' && !isSubscriptionExpired;
+  const isActive = currentMerchant?.subscription_status === 'ACTIVE' && !isSubscriptionExpired;
   const isBillingPage = pathname === '/dashboard/billing';
 
   const menuItems = [
