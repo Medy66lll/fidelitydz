@@ -105,6 +105,9 @@ export default function DashboardOverviewPage() {
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
               {t('kpi_total_customers')}
             </span>
+            <div className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-100 absolute top-0 right-0 mt-4 mr-4 shadow-sm z-20 whitespace-nowrap">
+              Reste: {currentMerchant.max_cards ? Math.max(0, currentMerchant.max_cards - cards.length) : 0}
+            </div>
             <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center relative z-10 group-hover:scale-110 transition-transform duration-300">
               <div className="absolute inset-0 bg-current opacity-20 blur-md rounded-full"></div>
               <Users className="w-6 h-6 relative z-10" />

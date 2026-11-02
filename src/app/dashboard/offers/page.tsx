@@ -117,43 +117,55 @@ export default function OffersPage() {
     if (!currentMerchant) return;
     const nowIso = new Date().toISOString();
 
-    if (editingOfferId) {
-      const existing = offers.find((o) => o.id === editingOfferId);
-      if (existing) {
-        const updated: PersonalizedOffer = {
-          ...existing,
+    try {
+      if (editingOfferId) {
+        const existing = offers.find((o) => o.id === editingOfferId);
+        if (existing) {
+          const updated = {
+            ...existing,
+            title_fr: titleFr,
+            title_ar: '',
+            description_fr: descFr,
+            description_ar: '',
+            image_url: imageUrl,
+            target_segment: targetSegment,
+            updated_at: nowIso,
+          };
+          const res = await db.updateOfferAsync(updated);
+          if (!res.success) {
+            showToast(res.error || 'Erreur de mise à jour', 'error');
+            return;
+          }
+        }
+      } else {
+        const newOffer = {
+          id: `off-${Date.now()}`,
+          merchant_id: currentMerchant.id,
           title_fr: titleFr,
           title_ar: '',
           description_fr: descFr,
           description_ar: '',
           image_url: imageUrl,
           target_segment: targetSegment,
+          valid_until: new Date(Date.now() + validDays * 86400000).toISOString(),
+          is_active: true,
+          created_at: nowIso,
           updated_at: nowIso,
         };
-        db.updateOffer(updated);
+        const res = await db.createOfferAsync(newOffer as any);
+        if (!res.success) {
+          showToast(res.error || 'Erreur de création', 'error');
+          return;
+        }
       }
-    } else {
-      const newOffer: PersonalizedOffer = {
-        id: `off-${Date.now()}`,
-        merchant_id: currentMerchant.id,
-        title_fr: titleFr,
-        title_ar: '',
-        description_fr: descFr,
-        description_ar: '',
-        image_url: imageUrl,
-        target_segment: targetSegment,
-        valid_until: new Date(Date.now() + validDays * 86400000).toISOString(),
-        is_active: true,
-        created_at: nowIso,
-        updated_at: nowIso,
-      };
-      db.createOffer(newOffer);
-    }
 
-    setOffers(db.getOffers(currentMerchant.id));
-    setShowCreateModal(false);
-    resetForm();
-    showToast(isAr ? 'تم حفظ العرض بنجاح' : 'Offre enregistrée avec succès');
+      setOffers(db.getOffers(currentMerchant.id));
+      setShowCreateModal(false);
+      resetForm();
+      showToast(isAr ? 'تم حفظ العرض بنجاح' : 'Offre enregistrée avec succès');
+    } catch (err: any) {
+      showToast(err.message || 'Erreur', 'error');
+    }
   };
 
   return (
