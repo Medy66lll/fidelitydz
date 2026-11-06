@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
 import { useMerchant } from '@/context/MerchantContext';
 import LanguageToggle from '@/components/LanguageToggle';
+import SupportWidget from '@/components/SupportWidget';
 import { db } from '@/lib/db';
 import { QrCode, Lock, Phone, ArrowRight, Store, Sparkles, ShieldCheck } from 'lucide-react';
 
@@ -79,8 +80,20 @@ export default function MerchantLoginPage() {
           </div>
 
           {error && (
-            <div className="bg-red-950/70 border border-red-800 text-red-200 p-3.5 rounded-xl text-xs font-semibold">
-              {error}
+            <div className="bg-red-950/80 border-2 border-red-600/80 text-red-100 p-4 rounded-2xl text-xs space-y-3">
+              <div className="font-bold leading-relaxed">{error}</div>
+              {error.includes('appareils') && (
+                <a
+                  href={`https://wa.me/${db.getOwnerWhatsapp() || '213541534762'}?text=${encodeURIComponent(
+                    `🚀 *DEMANDE EXTENSION APPAREILS (USERS)*\n\nIdentifiant : ${identifier}\nJe souhaite débloquer la connexion pour un appareil supplémentaire (+500 DZD/mois).`
+                  )}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-md"
+                >
+                  <span>🔓 Débloquer un appareil supplémentaire (+500 DZD/mois)</span>
+                </a>
+              )}
             </div>
           )}
 
@@ -149,6 +162,7 @@ export default function MerchantLoginPage() {
           </div>
         </div>
       </main>
+      <SupportWidget defaultRole="MERCHANT" />
 
       <footer className="text-center py-4 text-xs text-slate-500 flex items-center justify-center gap-1.5">
         <ShieldCheck className="w-4 h-4 text-emerald-500" />

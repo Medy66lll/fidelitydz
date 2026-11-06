@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import LoyaltyPassSimulator from '@/components/LoyaltyPassSimulator';
 import AlgerianPaymentBadges from '@/components/AlgerianPaymentBadges';
+import SupportWidget from '@/components/SupportWidget';
 import { useLanguage } from '@/context/LanguageContext';
 import {
   Sparkles,
@@ -379,12 +380,12 @@ export default function LandingPage() {
                 {/* Features List */}
                 <div className="pt-6 pb-8 border-y border-slate-800 space-y-3.5">
                   {[
-                    isAr ? '150 بطاقة ولاء للزبائن' : 'Jusqu\'à 150 cartes clients',
-                    isAr ? 'إشعارات العروض: 150 إشعار/أسبوع' : 'Jusqu\'à 150 notifications push/semaine',
-                    isAr ? '2 مستخدمين (المدير + الكاشير)' : 'Accès pour 2 appareils (Gérant + Caisse)',
-                    isAr ? '3 حملات عروض نشطة في نفس الوقت' : '3 offres promotionnelles actives en simultané',
-                    isAr ? 'مكافأة تقييم خرائط جوجل (مدمجة)' : 'Système de récompense Avis Google Maps',
-                    isAr ? 'دعم فني مجاني' : 'Support technique & mises à jour incluses',
+                    isAr ? '100 بطاقة ولاء نشطة للزبائن (مع قائمة انتظار تلقائية)' : 'Jusqu\'à 100 cartes clients actives (déblocage auto)',
+                    isAr ? 'إشعارات العروض: 100 إشعار / أسبوع' : 'Jusqu\'à 100 notifications push / semaine',
+                    isAr ? '2 أجهزة متصلة في نفس الوقت (المدير + الكاشير)' : 'Accès simultané pour 2 appareils (Gérant + Caisse)',
+                    isAr ? '3 عروض ترويجية نشطة في نفس الوقت' : 'Jusqu\'à 3 offres promotionnelles actives',
+                    isAr ? '1 نقطة بيع رئيسية (إمكانية إضافة فروع متعددة)' : '1 point de vente inclus (multi-locaux sur demande)',
+                    isAr ? 'مكافآت متعددة، ألوان مخصصة، وتقييم خرائط جوجل' : 'Multi-cadeaux, couleurs libres, Avis Google Maps & Support 7j/7',
                   ].map((feat, index) => (
                     <div key={index} className="flex items-center gap-3">
                       <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
@@ -478,6 +479,7 @@ export default function LandingPage() {
         </section>
       </main>
 
+      <SupportWidget defaultRole="VISITOR" />
       <Footer />
     </div>
   );

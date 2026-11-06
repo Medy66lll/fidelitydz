@@ -103,10 +103,39 @@ export default function OffersPage() {
     if (currentMerchant) setOffers(db.getOffers(currentMerchant.id));
   };
 
-  const handleBroadcastNotification = (offer: PersonalizedOffer) => {
+  const handleBroadcastNotification = async (offer: PersonalizedOffer) => {
+    if (!currentMerchant) return;
+    const maxPush = Number(currentMerchant.max_push_per_week || 100);
+    const sentPush = Number(currentMerchant.push_sent_this_week || 0);
+    if (sentPush >= maxPush) {
+      showToast(
+        `Limite de ${maxPush} notifications Push atteinte cette semaine ! Demandez une extension Push dans Abonnement & Paiement.`,
+        'error'
+      );
+      return;
+    }
+
+    const res = await fetch('/api/db', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'increment_push', merchant_id: currentMerchant.id, count: 1 }),
+    }).then((r) => r.json()).catch(() => ({ success: false }));
+
+    if (res && res.quota_exceeded) {
+      showToast(res.error || 'Quota Push atteint.', 'error');
+      return;
+    }
+
+    const updated: PersonalizedOffer = {
+      ...offer,
+      updated_at: new Date().toISOString(),
+    };
+    await db.updateOfferAsync(updated);
+    setOffers(db.getOffers(currentMerchant.id));
     setBroadcastedOfferId(offer.id);
-    const nowIso = new Date().toISOString();
-    const updated: PersonalizedOffer = { ...offer, is_active: true, updated_at: nowIso };
+    showToast(`Notification envoyée ! (Reste ${Math.max(0, maxPush - (sentPush + 1))} push cette semaine)`);
+    setTimeout(() => setBroadcastedOfferId(null), 4000);
+  };
     db.updateOffer(updated);
     if (currentMerchant) setOffers(db.getOffers(currentMerchant.id));
     setTimeout(() => setBroadcastedOfferId(null), 4000);

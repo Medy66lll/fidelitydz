@@ -10,6 +10,7 @@ import { db } from '@/lib/db';
 import { CustomerCard, Merchant, LoyaltyProgram, PersonalizedOffer } from '@/lib/types';
 import { useLanguage } from '@/context/LanguageContext';
 import LanguageToggle from '@/components/LanguageToggle';
+import SupportWidget from '@/components/SupportWidget';
 import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
 import confetti from 'canvas-confetti';
 import {
@@ -451,6 +452,36 @@ export default function CustomerCardPage() {
   const isRewardReady = card.rewards_available > 0 || card.stamps_balance >= program.stamps_required;
   const stampsRemaining = Math.max(0, program.stamps_required - card.stamps_balance);
 
+  if (card.is_blocked_by_quota) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white p-4">
+        <div className="max-w-md w-full bg-slate-900 border-2 border-amber-500/60 rounded-3xl p-6 text-center space-y-4 shadow-2xl">
+          <div className="w-14 h-14 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto">
+            <Clock className="w-8 h-8 animate-pulse" />
+          </div>
+          <span className="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-black uppercase">
+            Carte Enregistrée en File d&apos;Attente
+          </span>
+          <h2 className="text-xl font-extrabold">
+            Bienvenue chez {merchant.business_name}, {card.customer_name} !
+          </h2>
+          <p className="text-xs text-slate-300 leading-relaxed">
+            Votre numéro <strong className="font-mono text-white">{card.customer_phone}</strong> et votre 1er tampon de bienvenue sont bien réservés ! Le commerce a temporairement atteint son quota de cartes actives : votre carte se débloquera <strong>automatiquement</strong> dès que le gérant aura étendu sa capacité.
+          </p>
+          <button
+            type="button"
+            onClick={() => loadCardLive(true)}
+            className="w-full py-3 rounded-xl bg-emerald-500 text-slate-950 font-black text-xs flex items-center justify-center gap-2"
+          >
+            <RefreshCw className="w-4 h-4" />
+            <span>Vérifier si ma carte est débloquée</span>
+          </button>
+        </div>
+        <SupportWidget defaultRole="CUSTOMER" merchantName={card.customer_name} merchantPhone={card.customer_phone} />
+      </div>
+    );
+  }
+
   // MODE PLEIN ÉCRAN STYLE APPLE WALLET
   if (appleWalletFullscreen) {
     return (
@@ -576,6 +607,35 @@ export default function CustomerCardPage() {
               </div>
             )}
           </div>
+
+          {/* PALIERS MULTI-CADEAUX SUR LA CARTE */}
+          {Array.isArray(program.reward_tiers) && program.reward_tiers.length > 0 && (
+            <div className="relative z-10 mb-4 space-y-1.5 bg-white/10 rounded-2xl p-3.5 border border-white/15">
+              <p className="text-[10px] font-black uppercase tracking-wider text-amber-300">
+                🎁 Vos Paliers de Cadeaux :
+              </p>
+              {program.reward_tiers.map((tier, idx) => {
+                const reached =
+                  program.program_type === 'STAMPS'
+                    ? card.stamps_balance >= tier.threshold
+                    : card.points_balance >= tier.threshold;
+                return (
+                  <div key={idx} className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-white">
+                      • À {tier.threshold} {program.program_type === 'STAMPS' ? 'tampons' : 'points'} : {tier.title_fr}
+                    </span>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+                        reached ? 'bg-emerald-400 text-slate-950' : 'bg-white/10 text-slate-300'
+                      }`}
+                    >
+                      {reached ? 'Débloqué !' : 'En cours'}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           {/* SECTION PROGRESSION (TAMPONS/POINTS) */}
           <div className="relative z-10 bg-slate-900/40 backdrop-blur-md rounded-2xl p-4 border border-white/10 mb-6">
@@ -707,6 +767,7 @@ export default function CustomerCardPage() {
       <footer className="text-center py-6 text-[10px] text-slate-600 font-medium">
         FidelityDZ • {merchant.business_name}
       </footer>
+      <SupportWidget defaultRole="CUSTOMER" merchantName={card.customer_name} merchantPhone={card.customer_phone} />
     </div>
   );
 }

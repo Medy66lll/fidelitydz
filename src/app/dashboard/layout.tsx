@@ -6,6 +6,8 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
 import { useMerchant } from '@/context/MerchantContext';
 import LanguageToggle from '@/components/LanguageToggle';
+import SupportWidget from '@/components/SupportWidget';
+import { db, generateUuid } from '@/lib/db';
 import {
   LayoutDashboard,
   Palette,
@@ -137,13 +139,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </Link>
           </div>
 
-          {/* Isolated Merchant Badge */}
-          <div className="p-3.5 rounded-xl bg-slate-950/90 border border-slate-800 space-y-1">
+          {/* Merchant & Multi-Locaux Switcher */}
+          <div className="p-3.5 rounded-xl bg-slate-950/90 border border-slate-800 space-y-2.5">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
                 <Store className="w-4 h-4" />
               </div>
-              <div className="truncate">
+              <div className="truncate flex-1">
                 <p className="text-xs font-extrabold text-white truncate">
                   {currentMerchant.business_name}
                 </p>
@@ -151,6 +153,51 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   {currentMerchant.phone} • {currentMerchant.wilaya}
                 </p>
               </div>
+            </div>
+
+            {/* Sélecteur de Point de Vente (Multi-Locaux sur un seul compte) */}
+            <div className="pt-2 border-t border-slate-800/80 space-y-1.5">
+              <div className="flex items-center justify-between text-[10px]">
+                <span className="text-slate-400 font-bold uppercase">Points de vente ({currentMerchant.max_locations || 1} max)</span>
+                <Link href="/dashboard/billing" className="text-emerald-400 hover:underline font-bold">
+                  + Ajouter un local
+                </Link>
+              </div>
+              <select
+                value={currentMerchant.id}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === '__ADD_BRANCH__') {
+                    router.push('/dashboard/billing');
+                    return;
+                  }
+                  const all = db.getMerchants();
+                  const target = all.find((m) => m.id === val);
+                  if (target) {
+                    localStorage.setItem('fidelitydz_merchant_session', target.id);
+                    localStorage.setItem('fidelitydz_active_merchant', target.id);
+                    window.location.href = '/dashboard';
+                  }
+                }}
+                className="w-full bg-slate-900 border border-slate-700 rounded-lg py-1.5 px-2 text-[11px] font-bold text-white outline-none focus:border-emerald-500"
+              >
+                <option value={currentMerchant.id}>📍 {currentMerchant.business_name} ({currentMerchant.wilaya})</option>
+                {db
+                  .getMerchants()
+                  .filter(
+                    (m) =>
+                      m.id !== currentMerchant.id &&
+                      (m.phone === currentMerchant.phone ||
+                        m.parent_merchant_id === currentMerchant.id ||
+                        (currentMerchant.parent_merchant_id && m.id === currentMerchant.parent_merchant_id))
+                  )
+                  .map((branch) => (
+                    <option key={branch.id} value={branch.id}>
+                      📍 {branch.business_name} ({branch.wilaya})
+                    </option>
+                  ))}
+                <option value="__ADD_BRANCH__">➕ Créer / Demander un nouveau local...</option>
+              </select>
             </div>
           </div>
 
@@ -276,6 +323,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="p-4 sm:p-6 lg:p-8">
           {children}
         </div>
+        <SupportWidget defaultRole="MERCHANT" merchantName={currentMerchant.business_name} merchantPhone={currentMerchant.phone} />
       </main>
     </div>
   );

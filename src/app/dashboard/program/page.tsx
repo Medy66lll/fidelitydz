@@ -42,6 +42,7 @@ export default function LoyaltyStudioPage() {
   const [socialMaps, setSocialMaps] = useState('');
   const [googleReviewRewardEnabled, setGoogleReviewRewardEnabled] = useState(false);
   const [googleReviewRewardBonus, setGoogleReviewRewardBonus] = useState(1);
+  const [rewardTiers, setRewardTiers] = useState<{ threshold: number; title_fr: string }[]>([]);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -56,6 +57,7 @@ export default function LoyaltyStudioPage() {
       setWelcomeBonus(program.welcome_bonus);
       setPrimaryColor(program.primary_color || '#10B981');
       setBackgroundColor(program.background_color || '#0F172A');
+      setRewardTiers(Array.isArray(program.reward_tiers) ? program.reward_tiers : []);
     }
     if (currentMerchant) {
       setLogoUrl(currentMerchant.logo_url || '');
@@ -161,6 +163,7 @@ export default function LoyaltyStudioPage() {
       social_maps: socialMaps.trim(),
       google_review_reward_enabled: googleReviewRewardEnabled,
       google_review_reward_bonus: Number(googleReviewRewardBonus) || 1,
+      reward_tiers: rewardTiers,
     };
     updateProgram(updatedProg);
 
@@ -174,6 +177,7 @@ export default function LoyaltyStudioPage() {
       social_maps: socialMaps.trim(),
       google_review_reward_enabled: googleReviewRewardEnabled,
       google_review_reward_bonus: Number(googleReviewRewardBonus) || 1,
+      reward_tiers: rewardTiers,
     };
     updateMerchant(updatedMerchant);
 
@@ -332,52 +336,144 @@ export default function LoyaltyStudioPage() {
             </div>
           </div>
 
-          {/* Stamps or Points Config */}
+          {/* Stamps or Points Config (Personnalisable à 100%) */}
           {programType === 'STAMPS' ? (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <label className="text-xs font-bold text-slate-700 block">
-                {t('stamps_required_label')}
+                Nombre total de tampons pour le Cadeau Final (Personnalisable de 3 à 30)
               </label>
-              <div className="grid grid-cols-4 gap-2">
-                {[6, 8, 10, 12].map((num) => (
+              <div className="flex flex-wrap items-center gap-2">
+                {[5, 6, 8, 10, 12, 15, 20].map((num) => (
                   <button
                     key={num}
                     type="button"
                     onClick={() => setStampsRequired(num)}
-                    className={`py-2.5 rounded-xl text-sm font-bold border transition-all ${
+                    className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition-all ${
                       stampsRequired === num
-                        ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm'
+                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
                         : 'border-slate-200 text-slate-700 hover:bg-slate-50'
                     }`}
                   >
                     {num} tampons
                   </button>
                 ))}
+                <div className="flex items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
+                  <span className="text-xs font-bold text-slate-600">Autre :</span>
+                  <input
+                    type="number"
+                    min={3}
+                    max={30}
+                    value={stampsRequired}
+                    onChange={(e) => setStampsRequired(Math.max(3, Math.min(30, parseInt(e.target.value || '10', 10))))}
+                    className="w-16 bg-white border border-slate-300 rounded-lg py-1 px-2 text-xs font-mono font-bold text-center"
+                  />
+                </div>
               </div>
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <label className="text-xs font-bold text-slate-700 block">
-                {t('points_ratio_label')}
+                Ratio de Points pour chaque 100 DZD dépensés (Personnalisable)
               </label>
-              <div className="grid grid-cols-3 gap-2">
-                {[1, 2, 5].map((pts) => (
+              <div className="flex flex-wrap items-center gap-2">
+                {[1, 2, 5, 10].map((pts) => (
                   <button
                     key={pts}
                     type="button"
                     onClick={() => setPointsRatio(pts)}
-                    className={`py-2.5 rounded-xl text-sm font-bold border transition-all ${
+                    className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition-all ${
                       pointsRatio === pts
-                        ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm'
+                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
                         : 'border-slate-200 text-slate-700 hover:bg-slate-50'
                     }`}
                   >
                     {pts} pt / 100 DZD
                   </button>
                 ))}
+                <input
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={pointsRatio}
+                  onChange={(e) => setPointsRatio(Math.max(1, parseInt(e.target.value || '1', 10)))}
+                  className="w-20 bg-slate-50 border border-slate-200 rounded-xl py-2 px-2.5 text-xs font-mono font-bold"
+                />
               </div>
             </div>
           )}
+
+          {/* MULTI-CADEAUX SUR LA MÊME CARTE */}
+          <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200 space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-xs font-extrabold text-slate-900">
+                  🎁 Paliers Multi-Cadeaux sur la même carte (Optionnel)
+                </h4>
+                <p className="text-[11px] text-slate-600">
+                  Offrez plusieurs cadeaux intermédiaires (ex: 1 boisson au 6ème tampon + 1 menu au {stampsRequired}ème tampon, ou à différents paliers de points).
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  setRewardTiers((prev) => [
+                    ...prev,
+                    {
+                      threshold: programType === 'STAMPS' ? Math.max(2, Math.floor(stampsRequired / 2)) : 50,
+                      title_fr: programType === 'STAMPS' ? 'Boisson ou Dessert Offert' : 'Réduction -200 DZD',
+                    },
+                  ])
+                }
+                className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs whitespace-nowrap"
+              >
+                + Ajouter un cadeau
+              </button>
+            </div>
+
+            {rewardTiers.length > 0 && (
+              <div className="space-y-2 pt-2 border-t border-emerald-200/70">
+                {rewardTiers.map((tier, idx) => (
+                  <div key={idx} className="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-emerald-200">
+                    <div className="w-28">
+                      <label className="text-[10px] font-bold text-slate-500 block">
+                        Palier ({programType === 'STAMPS' ? 'Tampon N°' : 'Points'})
+                      </label>
+                      <input
+                        type="number"
+                        min={1}
+                        value={tier.threshold}
+                        onChange={(e) => {
+                          const val = Math.max(1, parseInt(e.target.value || '1', 10));
+                          setRewardTiers((prev) => prev.map((t, i) => (i === idx ? { ...t, threshold: val } : t)));
+                        }}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-lg py-1 px-2 text-xs font-mono font-bold"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label className="text-[10px] font-bold text-slate-500 block">Nom du cadeau débloqué à ce palier</label>
+                      <input
+                        type="text"
+                        value={tier.title_fr}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setRewardTiers((prev) => prev.map((t, i) => (i === idx ? { ...t, title_fr: val } : t)));
+                        }}
+                        placeholder="Ex: Boisson offerte au 6ème tampon"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-lg py-1 px-2.5 text-xs font-semibold"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setRewardTiers((prev) => prev.filter((_, i) => i !== idx))}
+                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg mt-3"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Reward Titles (Bilingual) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -428,10 +524,10 @@ export default function LoyaltyStudioPage() {
             </p>
           </div>
 
-          {/* Colors customization */}
+          {/* Colors customization (Thèmes + Couleurs 100% personnalisables) */}
           <div className="space-y-3 pt-2">
             <label className="text-xs font-bold text-slate-700 block">
-              {t('card_colors')}
+              Couleurs de la carte (Thèmes rapides ou Couleur personnalisée au choix)
             </label>
             <div className="flex flex-wrap gap-2.5">
               {colorPresets.map((preset, idx) => (
@@ -455,6 +551,44 @@ export default function LoyaltyStudioPage() {
                   <span>{preset.name}</span>
                 </button>
               ))}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200">
+                <input
+                  type="color"
+                  value={primaryColor}
+                  onChange={(e) => setPrimaryColor(e.target.value)}
+                  className="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent"
+                />
+                <div className="flex-1">
+                  <label className="text-[11px] font-bold text-slate-700 block">Couleur des Tampons & Accents</label>
+                  <input
+                    type="text"
+                    value={primaryColor}
+                    onChange={(e) => setPrimaryColor(e.target.value)}
+                    className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs font-mono mt-0.5"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200">
+                <input
+                  type="color"
+                  value={backgroundColor}
+                  onChange={(e) => setBackgroundColor(e.target.value)}
+                  className="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent"
+                />
+                <div className="flex-1">
+                  <label className="text-[11px] font-bold text-slate-700 block">Couleur de Fond de la Carte</label>
+                  <input
+                    type="text"
+                    value={backgroundColor}
+                    onChange={(e) => setBackgroundColor(e.target.value)}
+                    className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs font-mono mt-0.5"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -600,6 +734,7 @@ export default function LoyaltyStudioPage() {
             pointsCount={140}
             rewardTitleFr={rewardTitleFr}
             rewardTitleAr={rewardTitleAr}
+              rewardTiers={rewardTiers}
             primaryColor={primaryColor}
             backgroundColor={backgroundColor}
             isArabic={isAr}

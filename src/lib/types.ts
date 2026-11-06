@@ -114,9 +114,26 @@ export interface Merchant {
   push_sent_this_week?: number;
   push_week_reset_at?: string;
   active_device_ids?: string;
+  parent_merchant_id?: string;
+  branches?: StoreBranch[];
   subscription_status: SubscriptionStatus;
   subscription_ends_at: string;
   created_at: string;
+}
+
+
+export interface RewardTier {
+  threshold: number;
+  title_fr: string;
+  title_ar?: string;
+}
+
+export interface StoreBranch {
+  id: string;
+  name: string;
+  wilaya: string;
+  address?: string;
+  slug: string;
 }
 
 export type ProgramType = 'STAMPS' | 'POINTS';
@@ -138,6 +155,7 @@ export interface LoyaltyProgram {
   social_maps?: string;
   google_review_reward_enabled?: boolean;
   google_review_reward_bonus?: number;
+  reward_tiers?: RewardTier[];
 }
 
 export interface CustomerCard {
@@ -153,6 +171,8 @@ export interface CustomerCard {
   total_visits: number;
   last_visit_at: string;
   google_review_claimed?: boolean;
+  is_blocked_by_quota?: boolean;
+  branch_id?: string;
   created_at: string;
 }
 

@@ -230,3 +230,7 @@ BEFORE INSERT OR UPDATE ON personalized_offers
 FOR EACH ROW EXECUTE FUNCTION enforce_merchant_offer_quota();
 
 NOTIFY pgrst, 'reload schema';
+
+-- V60: Désactiver le blocage SQL strict sur customer_cards pour permettre la mise en file d'attente automatique
+DROP TRIGGER IF EXISTS trg_enforce_card_quota ON customer_cards;
+DROP FUNCTION IF EXISTS enforce_merchant_card_quota();

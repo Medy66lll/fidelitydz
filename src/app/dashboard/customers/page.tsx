@@ -31,6 +31,11 @@ export default function CustomersPage() {
     }
   }, [currentMerchant]);
 
+    const maxCards = Number(currentMerchant?.max_cards || 100);
+  // Trier de la plus ancienne à la plus récente pour identifier les cartes au-delà du quota
+  const sortedByCreation = [...cards].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+  const blockedCardIds = new Set(sortedByCreation.slice(maxCards).map((c) => c.id));
+
   const filtered = cards.filter(
     (c) =>
       c.customer_name.toLowerCase().includes(search.toLowerCase()) ||
@@ -93,7 +98,12 @@ export default function CustomersPage() {
                     <td className="p-4 sm:px-6 font-bold text-slate-900">
                       <div className="flex items-center gap-2">
                         <span>{card.customer_name}</span>
-                        {card.total_visits >= 5 && (
+                        {blockedCardIds.has(card.id) && (
+                          <span className="text-[10px] font-black uppercase text-red-700 bg-red-100 border border-red-200 px-2 py-0.5 rounded-full">
+                            🔒 En attente (Quota {maxCards} atteint)
+                          </span>
+                        )}
+                        {card.total_visits >= 5 && !blockedCardIds.has(card.id) && (
                           <span className="text-[10px] font-black uppercase text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded">
                             VIP
                           </span>
