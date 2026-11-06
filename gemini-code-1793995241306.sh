@@ -1,3 +1,3 @@
 git add .
-git commit -m "feat(v60): full quotas bar, card queue auto-unlock, multi-gifts, custom color picker, multi-locations and filtered support widget"
+git commit -m "fix(build): correct unescaped apostrophe in offers page breaking JSX"
 git push origin main

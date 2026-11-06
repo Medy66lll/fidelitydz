@@ -377,7 +377,7 @@ export default function OffersPage() {
 
               <div className="space-y-2.5">
                 <div>
-                  <label className="text-[11px] font-bold text-slate-700 block mb-1">Titre de l'offre *</label>
+                  <label className="text-[11px] font-bold text-slate-700 block mb-1">Titre de l&apos;offre *</label>
                   <input
                     type="text"
                     required
