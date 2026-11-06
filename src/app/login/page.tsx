@@ -26,7 +26,13 @@ export default function MerchantLoginPage() {
     setError('');
     setLoading(true);
 
-    const res = await db.loginMerchantAsync(identifier, password);
+    let deviceId = typeof window !== 'undefined' ? localStorage.getItem('fidelitydz_device_id') : null;
+    if (!deviceId) {
+      deviceId = `dev_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+      if (typeof window !== 'undefined') localStorage.setItem('fidelitydz_device_id', deviceId);
+    }
+
+    const res = await db.loginMerchantAsync(identifier, password, deviceId);
     if (!res.success || !res.merchant) {
       setError(
         res.error ||

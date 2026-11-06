@@ -359,6 +359,10 @@ class FidelityDatabase {
   }
 
   // Merchants
+    async logoutMerchantAsync(merchantId: string, deviceId: string): Promise<void> {
+    await postApiDb({ action: 'logout_merchant', merchant_id: merchantId, device_id: deviceId });
+  }
+
   getMerchants(): Merchant[] {
     return this.getStorage('merchants', initialMerchants);
   }

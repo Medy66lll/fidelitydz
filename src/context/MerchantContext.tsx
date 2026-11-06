@@ -59,6 +59,29 @@ export function MerchantProvider({ children }: { children: React.ReactNode }) {
     if (sessionMerchantId) {
       const found = merchants.find((m) => m.id === sessionMerchantId || m.slug === sessionMerchantId);
       if (found) {
+        // Vérifier si l'appareil actuel est toujours autorisé (non déconnecté depuis un autre poste)
+        const currentDeviceId = typeof window !== 'undefined' ? localStorage.getItem('fidelitydz_device_id') : null;
+        if (currentDeviceId && found.active_device_ids) {
+          const activeDevices = found.active_device_ids.split(',').filter(Boolean);
+          if (!activeDevices.includes(currentDeviceId)) {
+             // Force logout
+             if (typeof window !== 'undefined') {
+                localStorage.removeItem('fidelitydz_merchant_session');
+                localStorage.removeItem('fidelitydz_merchant_session_expiry');
+                localStorage.removeItem('fidelitydz_active_merchant');
+             }
+             setCurrentMerchant(null);
+             setIsAuthenticated(false);
+             setIsLoadingAuth(false);
+             return;
+          }
+        }
+        
+        // Rafraîchir l'expiration de session (12 heures d'inactivité max)
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('fidelitydz_merchant_session_expiry', String(Date.now() + 12 * 60 * 60 * 1000));
+        }
+
         // Vérifier automatiquement si les 14 jours d'essai ou l'abonnement sont dépassés
         const expiryTime = new Date(found.subscription_ends_at).getTime();
         if (expiryTime < Date.now() && found.subscription_status !== 'EXPIRED') {
@@ -85,9 +108,9 @@ export function MerchantProvider({ children }: { children: React.ReactNode }) {
 
   const loginMerchantSession = (merchant: Merchant) => {
     if (typeof window !== 'undefined') {
-      const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+      const twelveHoursMs = 12 * 60 * 60 * 1000;
       localStorage.setItem('fidelitydz_merchant_session', merchant.id);
-      localStorage.setItem('fidelitydz_merchant_session_expiry', String(Date.now() + thirtyDaysMs));
+      localStorage.setItem('fidelitydz_merchant_session_expiry', String(Date.now() + twelveHoursMs));
       localStorage.setItem('fidelitydz_active_merchant', merchant.id);
     }
     setCurrentMerchant(merchant);
@@ -96,6 +119,12 @@ export function MerchantProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logoutMerchantSession = () => {
+    if (currentMerchant) {
+      const deviceId = typeof window !== 'undefined' ? localStorage.getItem('fidelitydz_device_id') : null;
+      if (deviceId) {
+        db.logoutMerchantAsync(currentMerchant.id, deviceId).catch(() => {});
+      }
+    }
     if (typeof window !== 'undefined') {
       localStorage.removeItem('fidelitydz_merchant_session');
       localStorage.removeItem('fidelitydz_merchant_session_expiry');
