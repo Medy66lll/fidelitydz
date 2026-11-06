@@ -177,7 +177,6 @@ export default function LoyaltyStudioPage() {
       social_maps: socialMaps.trim(),
       google_review_reward_enabled: googleReviewRewardEnabled,
       google_review_reward_bonus: Number(googleReviewRewardBonus) || 1,
-      reward_tiers: rewardTiers,
     };
     updateMerchant(updatedMerchant);
 
