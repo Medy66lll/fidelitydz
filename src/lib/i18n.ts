@@ -302,7 +302,6 @@ export const translations = {
     owner_ccp_label: 'رقم الحساب البريدي الجاري CCP مع المفتاح :',
     copy: 'نسخ',
     copied: 'تم النسخ !',
-    recent_activity: 'Activité récente',
     recent_activity: 'النشاط الأخير',
     quick_qr_title: 'رمز الاستجابة السريع',
     
