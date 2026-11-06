@@ -133,7 +133,10 @@ export const translations = {
     copied: 'Copié !',
     recent_activity: 'Activité récente',
     quick_qr_title: 'QR Code Express',
+    
     quick_qr_desc: 'Scannez pour rejoindre',
+    copy_link: 'Copier le lien',
+    download_poster_cta: 'Télécharger Affiche',
     upload_receipt: 'Téléverser le reçu / capture d\'écran',
     transaction_ref_placeholder: 'Numéro de transaction ou référence BaridiMob',
     submit_receipt_btn: 'Soumettre pour validation',
@@ -302,7 +305,10 @@ export const translations = {
     recent_activity: 'Activité récente',
     recent_activity: 'النشاط الأخير',
     quick_qr_title: 'رمز الاستجابة السريع',
+    
     quick_qr_desc: 'امسح للانضمام',
+    copy_link: 'نسخ الرابط',
+    download_poster_cta: 'تحميل الملصق',
     upload_receipt: 'رفع صورة الوصل أو لقطة الشاشة',
     transaction_ref_placeholder: 'رقم العملية أو المرجع في بريدي موب',
     submit_receipt_btn: 'إرسال للمراجعة والتفعيل',
