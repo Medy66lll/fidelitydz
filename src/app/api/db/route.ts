@@ -131,6 +131,27 @@ function ensureUuid(val?: string): string {
 }
 
 // Encodage/Décodage transparent des données étendues (mot de passe, email, adresse, réseaux sociaux, avis Google) dans logo_url
+
+const DEVICE_TTL_MS = 12 * 60 * 60 * 1000; // 12 heures max par session appareil
+
+function parseActiveDevices(raw: string | undefined): { id: string; ts: number }[] {
+  const now = Date.now();
+  return String(raw || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .map((item) => {
+      const [id, tsStr] = item.split(':');
+      const ts = Number(tsStr) || now;
+      return { id: (id || '').trim(), ts };
+    })
+    .filter((d) => d.id && now - d.ts < DEVICE_TTL_MS);
+}
+
+function serializeActiveDevices(list: { id: string; ts: number }[]): string {
+  return list.map((d) => `${d.id}:${d.ts}`).join(',');
+}
+
 function packMerchantForDb(m: any) {
   const pass = String(m.password || '123456').trim();
   const email = String(m.email || '').trim();
@@ -498,7 +519,7 @@ export async function GET(req: NextRequest) {
       error_details: mPing.ok ? null : 'Connexion Supabase requise',
       keys_configured: getCandidateKeys().length > 0,
       supabase_url: getEffectiveSupabaseUrl(),
-      owner_whatsapp: '213550000000',
+      owner_whatsapp: '213541534762',
       merchants: [],
       programs: [],
       cards: [],
@@ -524,13 +545,26 @@ export async function GET(req: NextRequest) {
   const allPayments = Array.isArray(payRows) ? payRows.map(unpackPaymentFromDb) : [];
   const targetUuid = reqMerchantId ? ensureUuid(reqMerchantId) : '';
 
+  const primaryMerchant = allMerchants.find(
+    (m: any) => m && (m.id === reqMerchantId || m.id === targetUuid || m.slug === reqMerchantId)
+  );
+  const rootId = primaryMerchant ? (primaryMerchant.parent_merchant_id || primaryMerchant.id) : targetUuid;
+  const ownerPhone = primaryMerchant ? String(primaryMerchant.phone || '').replace(/\s+/g, '') : '';
+
   const merchants = reqAdminSession
     ? allMerchants
     : allMerchants
-        .filter((m: any) => m && (m.id === reqMerchantId || m.id === targetUuid || m.slug === reqMerchantId))
+        .filter((m: any) => {
+          if (!m) return false;
+          if (m.id === reqMerchantId || m.id === targetUuid || m.slug === reqMerchantId) return true;
+          if (rootId && (m.id === rootId || m.parent_merchant_id === rootId)) return true;
+          if (ownerPhone && String(m.phone || '').replace(/\s+/g, '') === ownerPhone) return true;
+          return false;
+        })
         .map((m: any) => {
+          const cleanDevs = parseActiveDevices(m.active_device_ids);
           const { password: _pw, ...safeM } = m;
-          return safeM;
+          return { ...safeM, active_device_ids: serializeActiveDevices(cleanDevs) };
         });
 
   const allowedMerchantIds = new Set(merchants.map((m: any) => m.id));
@@ -544,7 +578,7 @@ export async function GET(req: NextRequest) {
     ? allPayments
     : allPayments.filter((p: any) => allowedMerchantIds.has(p.merchant_id));
   const settings = Array.isArray(settingsRows) && settingsRows.length > 0 ? settingsRows[0] : null;
-  let ownerWhatsapp = '213550000000';
+  let ownerWhatsapp = '213541534762';
   if (settings) {
     if (settings.owner_whatsapp) {
       ownerWhatsapp = settings.owner_whatsapp;
@@ -617,7 +651,7 @@ export async function POST(req: NextRequest) {
 
       if (!Array.isArray(mRows)) {
         return NextResponse.json(
-          { success: false, error: 'Impossible de joindre Supabase. Vérifiez vos variables Vercel.' },
+          { success: false, error: 'Erreur de connexion au serveur de données. Veuillez réessayer.' },
           { status: 500 }
         );
       }
@@ -633,7 +667,7 @@ export async function POST(req: NextRequest) {
 
       if (!found) {
         return NextResponse.json(
-          { success: false, error: 'Aucun compte commerçant trouvé sur la base avec ce numéro ou identifiant.' },
+          { success: false, error: 'Aucun compte commerçant trouvé avec cet identifiant.' },
           { status: 404 }
         );
       }
@@ -642,40 +676,160 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, error: 'Mot de passe incorrect.' }, { status: 401 });
       }
 
-      // VÉRIFICATION STRICTE MAX_USERS (Appareils connectés)
-      const deviceId = body.device_id || 'unknown_device';
+      // VÉRIFICATION STRICTE DES APPAREILS SIMULTANÉS (AVEC EXPIRATION AUTO 12H)
+      const deviceId = String(body.device_id || 'unknown_device').trim();
       const maxUsers = Number(found.max_users || 2);
-      
-      let activeDevices = (found.active_device_ids || '').split(',').filter(Boolean);
-      
-      // Si l'appareil n'est pas déjà dans la liste
-      if (!activeDevices.includes(deviceId)) {
-        if (activeDevices.length >= maxUsers) {
-          return NextResponse.json({ 
-            success: false, 
-            error: `Limite d'appareils atteinte (${maxUsers} max). Veuillez vous déconnecter d'un autre appareil ou demander une extension (Add-on).` 
-          }, { status: 403 });
+      const activeList = parseActiveDevices(found.active_device_ids);
+      const existingIdx = activeList.findIndex((d) => d.id === deviceId);
+
+      if (existingIdx >= 0) {
+        activeList[existingIdx].ts = Date.now();
+      } else {
+        if (activeList.length >= maxUsers) {
+          return NextResponse.json(
+            {
+              success: false,
+              quota_users_exceeded: true,
+              max_users: maxUsers,
+              error: `Limite atteinte : ${activeList.length}/${maxUsers} appareils sont déjà connectés simultanément sur ce compte. Déconnectez un appareil ouvert ou ajoutez une extension Utilisateur (+500 DZD/mois).`,
+            },
+            { status: 403 }
+          );
         }
-        // Ajouter l'appareil et sauvegarder
-        activeDevices.push(deviceId);
-        await sbUpsert('merchants', { id: found.id, active_device_ids: activeDevices.join(',') }, 'id');
+        activeList.push({ id: deviceId, ts: Date.now() });
       }
 
-      return NextResponse.json({ success: true, merchant: found });
+      found.active_device_ids = serializeActiveDevices(activeList);
+      await sbUpsert('merchants', packMerchantForDb(found), 'id');
+
+      const { password: _pw, ...safeMerchant } = found;
+      return NextResponse.json({ success: true, merchant: safeMerchant });
     }
-    
+
     if (action === 'logout_merchant') {
       const merchantId = body.merchant_id;
-      const deviceId = body.device_id;
-      if (merchantId && deviceId) {
-        const mRows = await sbSelect('merchants', `id=eq.${encodeURIComponent(merchantId)}&select=active_device_ids`);
+      const deviceId = String(body.device_id || '').trim();
+      if (merchantId) {
+        const mUuid = ensureUuid(merchantId);
+        const mRows = await sbSelect('merchants', `id=eq.${encodeURIComponent(mUuid)}&limit=1`);
         if (mRows && mRows.length > 0) {
-          let activeDevices = (mRows[0].active_device_ids || '').split(',').filter(Boolean);
-          activeDevices = activeDevices.filter((id: string) => id !== deviceId);
-          await sbUpsert('merchants', { id: merchantId, active_device_ids: activeDevices.join(',') }, 'id');
+          const unpacked = unpackMerchantFromDb(mRows[0]);
+          const activeList = body.reset_all_devices
+            ? []
+            : parseActiveDevices(unpacked.active_device_ids).filter((d) => d.id !== deviceId);
+          unpacked.active_device_ids = serializeActiveDevices(activeList);
+          await sbUpsert('merchants', packMerchantForDb(unpacked), 'id');
         }
       }
       return NextResponse.json({ success: true });
+    }
+
+    if (action === 'increment_push') {
+      const merchantId = ensureUuid(body.merchant_id);
+      const countToSend = Math.max(1, Number(body.count || 1));
+      const mRows = await sbSelect('merchants', `id=eq.${encodeURIComponent(merchantId)}&limit=1`);
+      if (!mRows || mRows.length === 0) {
+        return NextResponse.json({ success: false, error: 'Commerce introuvable.' }, { status: 404 });
+      }
+      const unpacked = unpackMerchantFromDb(mRows[0]);
+      const isExpired =
+        unpacked.subscription_status === 'EXPIRED' ||
+        new Date(unpacked.subscription_ends_at).getTime() < Date.now();
+
+      if (isExpired) {
+        return NextResponse.json(
+          {
+            success: false,
+            quota_exceeded: true,
+            error: 'Votre abonnement est expiré. Renouvelez votre abonnement pour envoyer des notifications Push.',
+          },
+          { status: 403 }
+        );
+      }
+
+      const maxPush = Number(unpacked.max_push_per_week || 100);
+      const currentSent = Number(unpacked.push_sent_this_week || 0);
+
+      if (currentSent >= maxPush) {
+        return NextResponse.json(
+          {
+            success: false,
+            quota_exceeded: true,
+            error: `Limite de ${maxPush} notifications Push atteinte cette semaine (${currentSent}/${maxPush}). Demandez une extension Push (+400 DZD pour +100 push) dans Abonnement & Paiement.`,
+          },
+          { status: 403 }
+        );
+      }
+
+      unpacked.push_sent_this_week = Math.min(maxPush, currentSent + countToSend);
+      await sbUpsert('merchants', packMerchantForDb(unpacked), 'id');
+
+      return NextResponse.json({
+        success: true,
+        push_sent_this_week: unpacked.push_sent_this_week,
+        max_push_per_week: maxPush,
+      });
+    }
+
+    if (action === 'create_branch') {
+      const parentId = ensureUuid(body.parent_merchant_id);
+      const branchName = sanitizeString(body.business_name || '', 80);
+      const branchWilaya = body.wilaya || '16 - Alger';
+      const branchAddress = sanitizeString(body.address || '', 120);
+
+      const allRows = await sbSelect('merchants', '');
+      const allUnpacked = Array.isArray(allRows) ? allRows.map(unpackMerchantFromDb) : [];
+      const parent = allUnpacked.find((m: any) => m && m.id === parentId);
+
+      if (!parent) {
+        return NextResponse.json({ success: false, error: 'Compte principal introuvable.' }, { status: 404 });
+      }
+
+      const rootId = parent.parent_merchant_id || parent.id;
+      const existingBranches = allUnpacked.filter(
+        (m: any) => m && (m.id === rootId || m.parent_merchant_id === rootId)
+      );
+      const maxLocations = Number(parent.max_locations || 1);
+
+      if (existingBranches.length >= maxLocations) {
+        return NextResponse.json(
+          {
+            success: false,
+            quota_locations_exceeded: true,
+            error: `Limite de points de vente atteinte (${existingBranches.length}/${maxLocations} local actif). Demandez l'extension Multi-Locaux (+1 500 DZD/mois par local) pour ouvrir un nouveau point de vente.`,
+          },
+          { status: 403 }
+        );
+      }
+
+      const baseSlug = branchName
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+      const finalSlug = `${baseSlug || parent.slug}-${Math.floor(100 + Math.random() * 900)}`;
+
+      const newBranchObj = {
+        ...parent,
+        id: ensureUuid(),
+        parent_merchant_id: rootId,
+        business_name: branchName,
+        slug: finalSlug,
+        wilaya: branchWilaya,
+        address: branchAddress,
+        created_at: new Date().toISOString(),
+      };
+
+      const dbBranch = packMerchantForDb(newBranchObj);
+      await sbUpsert('merchants', dbBranch, 'id');
+      const dbProg = packProgramForDb({}, dbBranch.id);
+      await sbUpsert('loyalty_programs', dbProg, 'id');
+
+      return NextResponse.json({
+        success: true,
+        merchant: unpackMerchantFromDb(dbBranch),
+      });
     }
 
     if (action === 'login_admin') {

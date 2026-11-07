@@ -50,7 +50,7 @@ export const defaultPlatformSettings: PlatformSettings = {
   owner_rip_number: '00799999004172668994',
   owner_ccp_number: '41726689',
   owner_ccp_key: '87',
-  owner_whatsapp: '213550000000',
+  owner_whatsapp: '213541534762',
   chargily_mode: 'test',
 };
 
@@ -124,7 +124,7 @@ class FidelityDatabase {
   }
 
   getOwnerWhatsapp(): string {
-    return this.getStorage('owner_whatsapp', defaultPlatformSettings.owner_whatsapp || '213550000000');
+    return this.getStorage('owner_whatsapp', defaultPlatformSettings.owner_whatsapp || '213541534762');
   }
 
   async saveOwnerWhatsapp(phone: string): Promise<void> {
@@ -247,7 +247,7 @@ class FidelityDatabase {
     async loginMerchantAsync(
     identifier: string,
     password: string,
-    deviceId: string
+    deviceId?: string
   ): Promise<{
     success: boolean;
     merchant?: Merchant;
@@ -255,44 +255,33 @@ class FidelityDatabase {
     quota_users_exceeded?: boolean;
     max_users?: number;
   }> {
-    await this.syncFromSupabase();
-    try {
-      const apiRes = await postApiDb({
-        action: 'login_merchant',
-        identifier,
-        password,
-        device_id: this.getDeviceId(),
-      });
-      if (apiRes && apiRes.success && apiRes.merchant) {
-        this.saveMerchantLocalOnly(apiRes.merchant);
-        return { success: true, merchant: apiRes.merchant };
-      }
-      if (apiRes && apiRes.error) {
-        return { success: false, error: apiRes.error };
-      }
-    } catch {}
-
-    const cleanId = identifier.trim().toLowerCase();
-    const cleanPhone = cleanId.replace(/\s+/g, '');
-    const merchants = this.getMerchants();
-    const found = merchants.find((m) => {
-      const mPhone = (m.phone || '').replace(/\s+/g, '').toLowerCase();
-      const mEmail = (m.email || '').trim().toLowerCase();
-      const mSlug = (m.slug || '').trim().toLowerCase();
-      const mName = (m.business_name || '').trim().toLowerCase();
-      return mPhone === cleanPhone || mEmail === cleanId || mSlug === cleanId || mName === cleanId;
+    const effectiveDeviceId = deviceId || this.getDeviceId();
+    const apiRes = await postApiDb({
+      action: 'login_merchant',
+      identifier,
+      password,
+      device_id: effectiveDeviceId,
     });
 
-    if (!found) {
-      return { success: false, error: 'Aucun compte commerçant trouvé avec ce numéro ou identifiant.' };
+    if (apiRes) {
+      if (apiRes.success && apiRes.merchant) {
+        this.saveMerchantLocalOnly(apiRes.merchant);
+        await this.syncFromSupabase();
+        return { success: true, merchant: apiRes.merchant };
+      }
+      // Si l'API refuse (mot de passe incorrect OU limite d'appareils atteinte), on bloque immédiatement !
+      return {
+        success: false,
+        error: apiRes.error || 'Connexion refusée.',
+        quota_users_exceeded: Boolean(apiRes.quota_users_exceeded),
+        max_users: apiRes.max_users,
+      };
     }
 
-    const expectedPass = found.password || '123456';
-    if (expectedPass !== password.trim()) {
-      return { success: false, error: 'Mot de passe incorrect.' };
-    }
-
-    return { success: true, merchant: found };
+    return {
+      success: false,
+      error: 'Impossible de vérifier votre session. Vérifiez votre connexion Internet.',
+    };
   }
 
   // Récupération directe d'un commerce par son slug depuis Supabase (pour le scan QR client)

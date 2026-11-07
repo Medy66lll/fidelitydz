@@ -62,7 +62,7 @@ export function MerchantProvider({ children }: { children: React.ReactNode }) {
         // Vérifier si l'appareil actuel est toujours autorisé (non déconnecté depuis un autre poste)
         const currentDeviceId = typeof window !== 'undefined' ? localStorage.getItem('fidelitydz_device_id') : null;
         if (currentDeviceId && found.active_device_ids) {
-          const activeDevices = found.active_device_ids.split(',').filter(Boolean);
+          const activeDevices = found.active_device_ids.split(',').map((s) => s.split(':')[0].trim()).filter(Boolean);
           if (!activeDevices.includes(currentDeviceId)) {
              // Force logout
              if (typeof window !== 'undefined') {

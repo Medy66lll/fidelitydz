@@ -91,7 +91,7 @@ export default function MerchantLoginPage() {
               {error.includes('appareils') && (
                 <a
                   href={`https://wa.me/${db.getOwnerWhatsapp() || '213541534762'}?text=${encodeURIComponent(
-                    `🚀 *DEMANDE EXTENSION APPAREILS (USERS)*\n\nIdentifiant : ${identifier}\nJe souhaite débloquer la connexion pour un appareil supplémentaire (+500 DZD/mois).`
+                    `📱 *DEMANDE EXTENSION APPAREILS*\n\nIdentifiant : ${identifier}\nJe souhaite débloquer la connexion pour un appareil supplémentaire.`
                   )}`}
                   target="_blank"
                   rel="noreferrer"

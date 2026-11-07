@@ -37,6 +37,11 @@ function BillingContent() {
   const [formError, setFormError] = useState<string | null>(null);
   const [isProcessingChargily, setIsProcessingChargily] = useState(false);
   const [chargilyMessage, setChargilyMessage] = useState<string | null>(null);
+  const [addonCardsPack, setAddonCardsPack] = useState<number>(100);
+  const [addonPushPack, setAddonPushPack] = useState<number>(100);
+  const [addonOffersPack, setAddonOffersPack] = useState<number>(1);
+  const [addonUsersPack, setAddonUsersPack] = useState<number>(1);
+  const [addonLocationsPack, setAddonLocationsPack] = useState<number>(1);
 
   useEffect(() => {
     const payment = searchParams.get('payment');
@@ -90,7 +95,7 @@ function BillingContent() {
 
 
   const getWhatsAppAddonUrl = (addonType: string, priceDesc: string) => {
-    const ownerWa = db.getOwnerWhatsapp() || '213550000000';
+    const ownerWa = db.getOwnerWhatsapp() || '213541534762';
     const text = `🚀 *DEMANDE D'EXTENSION (ADD-ON)*
 
 🏪 *Commerce :* ${currentMerchant?.business_name}
@@ -104,7 +109,7 @@ Merci de mettre à jour mes limites sur le serveur Supabase.`;
   };
 
   const getReceiptWhatsAppUrl = (payment: SubscriptionPayment) => {
-    const ownerWa = db.getOwnerWhatsapp() || '213550000000';
+    const ownerWa = db.getOwnerWhatsapp() || '213541534762';
     const total = 3900 + (Math.max(0, (currentMerchant?.max_cards || 100) - 100) / 500) * 1000 + (Math.max(0, (currentMerchant?.max_push_per_week || 100) - 100) / 300) * 800 + (Math.max(0, (currentMerchant?.max_users || 2) - 2)) * 500 + (Math.max(0, (currentMerchant?.max_active_offers || 3) - 3) / 5) * 500 + (Math.max(0, (currentMerchant?.max_locations || 1) - 1)) * 1500;
     const text = `💳 *NOUVEAU REÇU DE PAIEMENT (${total} DZD)*\n\n🏪 *Commerce :* ${currentMerchant?.business_name}\n📞 *Tél Commerçant :* ${currentMerchant?.phone}\n🏦 *Méthode :* ${payment.payment_method}\n🔢 *Expéditeur :* ${payment.transaction_reference}\n💰 *Montant :* ${total} DZD\n\nMerci de valider mon abonnement sur l'espace Super-Admin FidelityDZ.`;
     return `https://wa.me/${ownerWa}?text=${encodeURIComponent(text)}`;
@@ -434,129 +439,173 @@ Merci de mettre à jour mes limites sur le serveur Supabase.`;
           )}
         </div>
       
-      {/* SECTION ADD-ONS & QUOTAS SANS LIMITE MAXIMALE + MULTI-LOCAUX */}
+      {/* SECTION QUOTAS, TARIFS FIXES & MULTI-LOCAUX */}
       <div id="quotas" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
         <div className="space-y-1">
           <div className="inline-flex items-center gap-1.5 text-xs font-black text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
             <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Extensions sur mesure • Aucune limite maximale</span>
+            <span>Tarifs Officiels des Extensions (Add-ons)</span>
           </div>
           <h3 className="text-xl font-extrabold text-slate-900">
-            Vos Quotas, Extensions Illimitées & Multi-Locaux
+            Vos Quotas, Tarifs d'Extensions & Multi-Locaux
           </h3>
           <p className="text-xs text-slate-600 leading-relaxed">
-            Choisissez librement la quantité souhaitée pour chaque quota (sans aucun plafond). Dès validation de votre extension, toutes les cartes clients en attente sont débloquées automatiquement !
+            Sélectionnez la quantité exacte souhaitée selon l'évolution de votre commerce. Le tarif s'ajuste automatiquement selon votre besoin.
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {/* 1. Cartes Clients (Sans max) */}
+          {/* 1. Cartes Clients : +100 cartes = +500 DZD */}
           <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl flex flex-col justify-between gap-3">
-            <div>
-              <span className="text-[10px] uppercase font-bold text-slate-500">Quota Actuel : Cartes Clients</span>
+            <div className="space-y-2">
+              <span className="text-[10px] uppercase font-bold text-slate-500">Cartes Clients Actives</span>
               <div className="text-xl font-black text-slate-900">
-                {currentMerchant?.max_cards || 100} <span className="text-xs font-medium text-emerald-700">cartes (Illimité sur demande)</span>
+                {currentMerchant?.max_cards || 100} <span className="text-xs font-semibold text-slate-500">cartes incluses</span>
               </div>
-              <p className="text-[11px] text-slate-500 mt-1">
-                Tarif : +1 000 DZD/mois par tranche de +500 cartes (ou quantité sur mesure sans plafond).
-              </p>
-            </div>
-            <a
-              href={getWhatsAppAddonUrl('Extension Cartes Clients (Sans limite max)', '+1 000 DZD/mois par +500 cartes')}
-              target="_blank"
-              rel="noreferrer"
-              className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl text-center transition-colors"
-            >
-              + Demander +500 / +1000 / Illimité Cartes
-            </a>
-          </div>
-
-          {/* 2. Notifications Push (Sans max) */}
-          <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl flex flex-col justify-between gap-3">
-            <div>
-              <span className="text-[10px] uppercase font-bold text-slate-500">Quota Actuel : Push / Semaine</span>
-              <div className="text-xl font-black text-slate-900">
-                {currentMerchant?.max_push_per_week || 100} <span className="text-xs font-medium text-emerald-700">push/sem (Sans plafond)</span>
-              </div>
-              <p className="text-[11px] text-slate-500 mt-1">
-                Tarif : +800 DZD/mois par tranche de +300 notifications push hebdomadaires.
-              </p>
-            </div>
-            <a
-              href={getWhatsAppAddonUrl('Extension Notifications Push (Sans limite max)', '+800 DZD/mois par +300 push/semaine')}
-              target="_blank"
-              rel="noreferrer"
-              className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl text-center transition-colors"
-            >
-              + Demander +300 / +1000 Push
-            </a>
-          </div>
-
-          {/* 3. Appareils / Utilisateurs simultanés (Sans max) */}
-          <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl flex flex-col justify-between gap-3">
-            <div>
-              <span className="text-[10px] uppercase font-bold text-slate-500">Quota Actuel : Appareils Connectés</span>
-              <div className="text-xl font-black text-slate-900">
-                {currentMerchant?.max_users || 2} <span className="text-xs font-medium text-emerald-700">appareils simultanés</span>
-              </div>
-              <p className="text-[11px] text-slate-500 mt-1">
-                Tarif : +500 DZD/mois par appareil caissier ou gérant supplémentaire (sans limite).
-              </p>
-            </div>
-            <a
-              href={getWhatsAppAddonUrl('Extension Appareils Simultanés (Users)', '+500 DZD/mois par appareil supplémentaire')}
-              target="_blank"
-              rel="noreferrer"
-              className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl text-center transition-colors"
-            >
-              + Ajouter +1 / +2 / +5 Appareils
-            </a>
-          </div>
-
-          {/* 4. Offres Actives (Sans max) */}
-          <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl flex flex-col justify-between gap-3">
-            <div>
-              <span className="text-[10px] uppercase font-bold text-slate-500">Quota Actuel : Offres Ciblées</span>
-              <div className="text-xl font-black text-slate-900">
-                {currentMerchant?.max_active_offers || 3} <span className="text-xs font-medium text-emerald-700">offres simultanées</span>
-              </div>
-              <p className="text-[11px] text-slate-500 mt-1">
-                Tarif : +500 DZD/mois par pack de +5 offres actives simultanées.
-              </p>
-            </div>
-            <a
-              href={getWhatsAppAddonUrl('Extension Offres Promotionnelles', '+500 DZD/mois pour +5 offres')}
-              target="_blank"
-              rel="noreferrer"
-              className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl text-center transition-colors"
-            >
-              + Ajouter +5 / +10 Offres
-            </a>
-          </div>
-
-          {/* 5. Multi-Locaux (Un seul compte, plusieurs Dashboards dédiés par point de vente) */}
-          <div className="bg-emerald-50/70 border-2 border-emerald-300 p-4 rounded-2xl flex flex-col justify-between gap-3 sm:col-span-2">
-            <div>
-              <span className="text-[10px] uppercase font-black text-emerald-800">
-                🏢 Multi-Locaux (1 seul compte = 1 Dashboard dédié par Point de Vente)
-              </span>
-              <div className="text-xl font-black text-slate-900 mt-0.5">
-                {currentMerchant?.max_locations || 1} <span className="text-xs font-bold text-emerald-700">point(s) de vente actif(s)</span>
-              </div>
-              <p className="text-xs text-slate-700 mt-1 leading-relaxed">
-                Vous avez plusieurs magasins, cafés ou restaurants ? Gérez tous vos établissements depuis votre compte unique : chaque local dispose de son propre Dashboard, son propre QR code et ses statistiques, avec bascule en 1 clic dans le menu latéral (+1 500 DZD/mois par local supplémentaire).
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <a
-                href={getWhatsAppAddonUrl('Ajout de Nouveaux Points de Vente (Multi-Locaux avec Dashboard dédié)', '+1 500 DZD/mois par local supplémentaire')}
-                target="_blank"
-                rel="noreferrer"
-                className="flex-1 py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold rounded-xl text-center transition-colors"
+              <p className="text-[11px] font-bold text-emerald-700">Tarif : +500 DZD / mois par +100 cartes</p>
+              <select
+                value={addonCardsPack}
+                onChange={(e) => setAddonCardsPack(Number(e.target.value))}
+                className="w-full bg-white border border-slate-300 rounded-xl py-2 px-2.5 text-xs font-bold text-slate-800"
               >
-                📲 Demander l&apos;ouverture d&apos;un 2ème / 3ème Local sur mon compte
-              </a>
+                <option value={100}>+100 cartes (+500 DZD / mois)</option>
+                <option value={200}>+200 cartes (+1 000 DZD / mois)</option>
+                <option value={300}>+300 cartes (+1 500 DZD / mois)</option>
+                <option value={500}>+500 cartes (+2 500 DZD / mois)</option>
+                <option value={1000}>+1 000 cartes (+5 000 DZD / mois)</option>
+              </select>
             </div>
+            <a
+              href={getWhatsAppAddonUrl(`+${addonCardsPack} Cartes Clients`, `+${(addonCardsPack / 100) * 500} DZD / mois`)}
+              target="_blank"
+              rel="noreferrer"
+              className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold rounded-xl text-center transition-colors"
+            >
+              Commander +{addonCardsPack} cartes ({(addonCardsPack / 100) * 500} DZD)
+            </a>
+          </div>
+
+          {/* 2. Notifications Push : +100 push = +400 DZD */}
+          <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl flex flex-col justify-between gap-3">
+            <div className="space-y-2">
+              <span className="text-[10px] uppercase font-bold text-slate-500">Notifications Push / Semaine</span>
+              <div className="text-xl font-black text-slate-900">
+                {currentMerchant?.max_push_per_week || 100} <span className="text-xs font-semibold text-slate-500">push / semaine</span>
+              </div>
+              <p className="text-[11px] font-bold text-blue-700">Tarif : +400 DZD / mois par +100 push</p>
+              <select
+                value={addonPushPack}
+                onChange={(e) => setAddonPushPack(Number(e.target.value))}
+                className="w-full bg-white border border-slate-300 rounded-xl py-2 px-2.5 text-xs font-bold text-slate-800"
+              >
+                <option value={100}>+100 push/sem (+400 DZD / mois)</option>
+                <option value={200}>+200 push/sem (+800 DZD / mois)</option>
+                <option value={300}>+300 push/sem (+1 200 DZD / mois)</option>
+                <option value={500}>+500 push/sem (+2 000 DZD / mois)</option>
+                <option value={1000}>+1 000 push/sem (+4 000 DZD / mois)</option>
+              </select>
+            </div>
+            <a
+              href={getWhatsAppAddonUrl(`+${addonPushPack} Notifications Push / semaine`, `+${(addonPushPack / 100) * 400} DZD / mois`)}
+              target="_blank"
+              rel="noreferrer"
+              className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold rounded-xl text-center transition-colors"
+            >
+              Commander +{addonPushPack} push ({(addonPushPack / 100) * 400} DZD)
+            </a>
+          </div>
+
+          {/* 3. Offres Promotionnelles : +1 offre = +300 DZD */}
+          <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl flex flex-col justify-between gap-3">
+            <div className="space-y-2">
+              <span className="text-[10px] uppercase font-bold text-slate-500">Offres Ciblées Actives</span>
+              <div className="text-xl font-black text-slate-900">
+                {currentMerchant?.max_active_offers || 3} <span className="text-xs font-semibold text-slate-500">offres incluses</span>
+              </div>
+              <p className="text-[11px] font-bold text-purple-700">Tarif : +300 DZD / mois par +1 offre</p>
+              <select
+                value={addonOffersPack}
+                onChange={(e) => setAddonOffersPack(Number(e.target.value))}
+                className="w-full bg-white border border-slate-300 rounded-xl py-2 px-2.5 text-xs font-bold text-slate-800"
+              >
+                <option value={1}>+1 offre active (+300 DZD / mois)</option>
+                <option value={2}>+2 offres actives (+600 DZD / mois)</option>
+                <option value={3}>+3 offres actives (+900 DZD / mois)</option>
+                <option value={5}>+5 offres actives (+1 500 DZD / mois)</option>
+                <option value={10}>+10 offres actives (+3 000 DZD / mois)</option>
+              </select>
+            </div>
+            <a
+              href={getWhatsAppAddonUrl(`+${addonOffersPack} Offre(s) Promotionnelle(s)`, `+${addonOffersPack * 300} DZD / mois`)}
+              target="_blank"
+              rel="noreferrer"
+              className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold rounded-xl text-center transition-colors"
+            >
+              Commander +{addonOffersPack} offre(s) ({addonOffersPack * 300} DZD)
+            </a>
+          </div>
+
+          {/* 4. Appareils / Caissiers simultanés : +1 appareil = +500 DZD */}
+          <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl flex flex-col justify-between gap-3">
+            <div className="space-y-2">
+              <span className="text-[10px] uppercase font-bold text-slate-500">Appareils Connectés (Users)</span>
+              <div className="text-xl font-black text-slate-900">
+                {currentMerchant?.max_users || 2} <span className="text-xs font-semibold text-slate-500">appareils simultanés</span>
+              </div>
+              <p className="text-[11px] font-bold text-amber-700">Tarif : +500 DZD / mois par +1 appareil</p>
+              <select
+                value={addonUsersPack}
+                onChange={(e) => setAddonUsersPack(Number(e.target.value))}
+                className="w-full bg-white border border-slate-300 rounded-xl py-2 px-2.5 text-xs font-bold text-slate-800"
+              >
+                <option value={1}>+1 appareil caissier (+500 DZD / mois)</option>
+                <option value={2}>+2 appareils caissiers (+1 000 DZD / mois)</option>
+                <option value={3}>+3 appareils caissiers (+1 500 DZD / mois)</option>
+                <option value={5}>+5 appareils caissiers (+2 500 DZD / mois)</option>
+              </select>
+            </div>
+            <a
+              href={getWhatsAppAddonUrl(`+${addonUsersPack} Appareil(s) Simultané(s)`, `+${addonUsersPack * 500} DZD / mois`)}
+              target="_blank"
+              rel="noreferrer"
+              className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold rounded-xl text-center transition-colors"
+            >
+              Commander +{addonUsersPack} appareil(s) ({addonUsersPack * 500} DZD)
+            </a>
+          </div>
+
+          {/* 5. Multi-Locaux : +1 local = +1 500 DZD */}
+          <div className="bg-emerald-50/70 border-2 border-emerald-300 p-4 rounded-2xl flex flex-col justify-between gap-3 sm:col-span-2">
+            <div className="space-y-2">
+              <span className="text-[10px] uppercase font-black text-emerald-800">
+                🏢 Points de Vente Supplémentaires (Multi-Locaux sur le même compte)
+              </span>
+              <div className="text-xl font-black text-slate-900">
+                {currentMerchant?.max_locations || 1} <span className="text-xs font-bold text-emerald-700">point(s) de vente autorisé(s)</span>
+              </div>
+              <p className="text-xs text-slate-700 leading-relaxed">
+                Tarif fixe : <strong>+1 500 DZD / mois par local supplémentaire</strong>. Chaque point de vente dispose de son propre profil, sa propre carte personnalisable, son QR code et ses statistiques, accessible depuis le sélecteur de votre menu latéral.
+              </p>
+              <select
+                value={addonLocationsPack}
+                onChange={(e) => setAddonLocationsPack(Number(e.target.value))}
+                className="w-full sm:w-80 bg-white border border-emerald-400 rounded-xl py-2 px-3 text-xs font-bold text-slate-900"
+              >
+                <option value={1}>+1 Point de vente supplémentaire (+1 500 DZD / mois)</option>
+                <option value={2}>+2 Points de vente supplémentaires (+3 000 DZD / mois)</option>
+                <option value={3}>+3 Points de vente supplémentaires (+4 500 DZD / mois)</option>
+                <option value={4}>+4 Points de vente supplémentaires (+6 000 DZD / mois)</option>
+                <option value={5}>+5 Points de vente supplémentaires (+7 500 DZD / mois)</option>
+              </select>
+            </div>
+            <a
+              href={getWhatsAppAddonUrl(`+${addonLocationsPack} Point(s) de Vente (Multi-Locaux)`, `+${addonLocationsPack * 1500} DZD / mois`)}
+              target="_blank"
+              rel="noreferrer"
+              className="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold rounded-xl text-center transition-colors"
+            >
+              📲 Commander +{addonLocationsPack} Point(s) de Vente ({addonLocationsPack * 1500} DZD / mois)
+            </a>
           </div>
         </div>
       </div></div>

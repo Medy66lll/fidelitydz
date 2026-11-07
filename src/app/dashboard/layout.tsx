@@ -168,7 +168,42 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 onChange={(e) => {
                   const val = e.target.value;
                   if (val === '__ADD_BRANCH__') {
-                    router.push('/dashboard/billing');
+                    const rootId = currentMerchant.parent_merchant_id || currentMerchant.id;
+                    const linkedBranches = db.getMerchants().filter(
+                      (m) => m.id === rootId || m.parent_merchant_id === rootId || m.phone === currentMerchant.phone
+                    );
+                    const maxLoc = Number(currentMerchant.max_locations || 1);
+                    if (linkedBranches.length >= maxLoc) {
+                      alert(`Vous utilisez déjà ${linkedBranches.length}/${maxLoc} point(s) de vente inclus dans votre forfait. Rendez-vous dans Abonnement & Paiement pour ajouter un local supplémentaire (+1 500 DZD/mois).`);
+                      router.push('/dashboard/billing#quotas');
+                      return;
+                    }
+                    const branchName = window.prompt('Nom de votre nouveau point de vente (ex: ' + currentMerchant.business_name + ' - Oran) :');
+                    if (!branchName || !branchName.trim()) return;
+                    const branchWilaya = window.prompt('Wilaya du point de vente (ex: 31 - Oran) :', currentMerchant.wilaya) || currentMerchant.wilaya;
+                    const branchAddress = window.prompt('Adresse ou localisation Google Maps :', '') || '';
+                    fetch('/api/db', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        action: 'create_branch',
+                        parent_merchant_id: currentMerchant.id,
+                        business_name: branchName.trim(),
+                        wilaya: branchWilaya.trim(),
+                        address: branchAddress.trim(),
+                      }),
+                    })
+                      .then((r) => r.json())
+                      .then(async (res) => {
+                        if (res && res.success && res.merchant) {
+                          await db.syncFromSupabase();
+                          localStorage.setItem('fidelitydz_merchant_session', res.merchant.id);
+                          localStorage.setItem('fidelitydz_active_merchant', res.merchant.id);
+                          window.location.href = '/dashboard';
+                        } else {
+                          alert(res?.error || 'Impossible de créer le local.');
+                        }
+                      });
                     return;
                   }
                   const all = db.getMerchants();
