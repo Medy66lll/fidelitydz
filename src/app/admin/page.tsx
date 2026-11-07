@@ -936,14 +936,52 @@ CREATE POLICY "subscription_payments_all" ON subscription_payments FOR ALL USING
                   Math.ceil((new Date(m.subscription_ends_at).getTime() - Date.now()) / 86400000)
                 );
 
+                const mCards = db.getCustomerCards(m.id);
+                const mOffers = db.getOffers(m.id);
+                const maxCards = Number(m.max_cards || 100);
+                const maxPush = Number(m.max_push_per_week || 100);
+                const sentPush = Number(m.push_sent_this_week || 0);
+                const maxOffers = Number(m.max_active_offers || 3);
+                const maxUsers = Number(m.max_users || 2);
+                const maxLocations = Number(m.max_locations || 1);
+                const activeDevs = String(m.active_device_ids || '').split(',').filter(Boolean).length;
+
+                const remCards = Math.max(0, maxCards - mCards.length);
+                const queuedCards = Math.max(0, mCards.length - maxCards);
+                const remPush = Math.max(0, maxPush - sentPush);
+                const remOffers = Math.max(0, maxOffers - mOffers.length);
+
+                const alertCards = mCards.length >= Math.floor(maxCards * 0.8);
+                const alertPush = sentPush >= Math.floor(maxPush * 0.8);
+                const alertSub = daysLeft <= 3 || isExpired;
+                const hasAnyAlert = alertCards || alertPush || alertSub;
+
+                const alertWaMsg = `Bonjour ${m.business_name}, ici l'équipe FidelityDZ.\n\n📊 *Point sur votre compte fidélité :*\n${
+                  alertSub
+                    ? `• Votre abonnement arrive à échéance (${daysLeft} jour(s) restant(s)). Pensez à le renouveler (3 900 DZD/mois) pour éviter toute interruption.\n`
+                    : ''
+                }${
+                  alertCards
+                    ? `• Il vous reste ${remCards} carte(s) client sur votre quota de ${maxCards}${queuedCards > 0 ? ` (${queuedCards} client(s) en attente de déblocage)` : ''}. Pack +100 cartes disponible à +500 DZD/mois.\n`
+                    : ''
+                }${
+                  alertPush
+                    ? `• Il vous reste ${remPush} notification(s) Push sur ${maxPush} cette semaine. Pack +100 push disponible à +400 DZD/mois.\n`
+                    : ''
+                }\nRépondez simplement à ce message si vous souhaitez activer une extension immédiate !`;
+
+                const alertWaUrl = `https://wa.me/${formatWhatsAppPhone(m.phone)}?text=${encodeURIComponent(alertWaMsg)}`;
+
                 return (
                   <div
                     key={m.id}
-                    className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3 flex flex-col justify-between"
+                    className={`bg-white rounded-3xl p-6 border-2 shadow-sm space-y-3 flex flex-col justify-between ${
+                      hasAnyAlert ? 'border-amber-400 ring-2 ring-amber-400/20' : 'border-slate-200'
+                    }`}
                   >
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-slate-500">{m.category}</span>
+                    <div className="space-y-2.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-bold text-slate-500 truncate">{m.category}</span>
                         <span
                           className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full ${
                             isExpired
@@ -953,29 +991,67 @@ CREATE POLICY "subscription_payments_all" ON subscription_payments FOR ALL USING
                               : 'bg-amber-50 text-amber-800 border border-amber-200'
                           }`}
                         >
-                          {isExpired ? 'EXPIRÉ / BLOQUÉ' : `${m.subscription_status} (${daysLeft}j)`}
+                          {isExpired ? 'EXPIRÉ / BLOQUÉ' : `${m.subscription_status} (${daysLeft}j restants)`}
                         </span>
                       </div>
 
-                      <h3 className="text-base font-extrabold text-slate-900">{m.business_name}</h3>
+                      <h3 className="text-base font-extrabold text-slate-900">
+                        {m.business_name}
+                        {m.parent_merchant_id && <span className="ml-2 px-2 py-0.5 rounded text-[9px] bg-slate-100 text-slate-500 uppercase border border-slate-200">Point de Vente 📍</span>}
+                      </h3>
 
-                      <div className="text-[11px] text-slate-600 space-y-1 font-mono bg-slate-50 p-3 rounded-xl border border-slate-100">
-                        <div>Tél (Login) : <strong>{m.phone}</strong> | MDP : <strong>{m.password || '123456'}</strong></div>
-                        <div>Expire le : <strong className={isExpired ? 'text-red-500' : 'text-emerald-500'}>{new Date(m.subscription_ends_at).toLocaleDateString('fr-DZ')}</strong></div>
-                        <div className="pt-1 mt-1 border-t border-slate-200">
-                          <span className="text-slate-500 font-sans font-bold block mb-0.5">QUOTAS ACTUELS (ADD-ONS)</span>
-                          <div className="grid grid-cols-2 gap-x-2">
-                            <span>Cartes : <strong className="text-slate-900">{m.max_cards || 100}</strong></span>
-                            <span>Push/sem : <strong className="text-slate-900">{m.max_push_per_week || 100}</strong></span>
-                            <span>Users : <strong className="text-slate-900">{m.max_users || 2}</strong></span>
-                            <span>Offres : <strong className="text-slate-900">{m.max_active_offers || 3}</strong></span>
-                            <span className="col-span-2">Locaux : <strong className="text-slate-900">{m.max_locations || 1}</strong></span>
+                      {hasAnyAlert && (
+                        <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-300 text-[11px] font-bold text-amber-900 space-y-1">
+                          <div className="flex items-center gap-1 text-amber-700 font-black uppercase text-[10px]">
+                            <AlertTriangle className="w-3.5 h-3.5" />
+                            <span>Alerte Quota / Abonnement Proche</span>
+                          </div>
+                          {alertCards && <div>• Cartes : {remCards} restante(s) {queuedCards > 0 ? `(+${queuedCards} bloquées)` : ''}</div>}
+                          {alertPush && <div>• Push : {remPush} restant(s) cette semaine</div>}
+                          {alertSub && <div>• Abonnement : {daysLeft} jour(s) restant(s)</div>}
+                        </div>
+                      )}
+
+                      <div className="text-[11px] text-slate-600 space-y-1.5 font-mono bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <div>Tél : <strong>{m.phone}</strong> | MDP : <strong>{m.password || '123456'}</strong></div>
+                        <div>Échéance : <strong className={isExpired ? 'text-red-600' : 'text-emerald-600'}>{new Date(m.subscription_ends_at).toLocaleDateString('fr-DZ')} ({daysLeft}j)</strong></div>
+                        <div className="pt-1.5 mt-1.5 border-t border-slate-200 space-y-1 font-sans">
+                          <span className="text-slate-500 font-black text-[10px] uppercase block">ÉTAT DES QUOTAS (UTILISÉ / RESTE)</span>
+                          <div className="flex justify-between">
+                            <span>Cartes : <strong>{mCards.length}/{maxCards}</strong></span>
+                            <span className={remCards <= 15 ? 'text-red-600 font-bold' : 'text-emerald-700 font-bold'}>
+                              Reste {remCards} {queuedCards > 0 ? `(${queuedCards} en attente)` : ''}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Push/sem : <strong>{sentPush}/{maxPush}</strong></span>
+                            <span className={remPush <= 15 ? 'text-red-600 font-bold' : 'text-blue-700 font-bold'}>
+                              Reste {remPush}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Offres : <strong>{mOffers.length}/{maxOffers}</strong></span>
+                            <span className="text-purple-700 font-bold">Reste {remOffers}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Appareils : <strong>{activeDevs}/{maxUsers} actifs</strong></span>
+                            <span>Locaux : <strong>{maxLocations} max</strong></span>
                           </div>
                         </div>
                       </div>
                     </div>
 
                     <div className="pt-3 border-t border-slate-100 space-y-2">
+                      <a
+                        href={alertWaUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="w-full py-2 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-[11px] flex items-center justify-center gap-1.5 shadow-xs"
+                      >
+                        <MessageCircle className="w-3.5 h-3.5" />
+                        <span>📲 Alerter & Proposer Quotas / Renouv. (WhatsApp)</span>
+                      </a>
+
                       <div className="grid grid-cols-2 gap-1.5 text-xs">
                         <button
                           type="button"
@@ -994,20 +1070,18 @@ CREATE POLICY "subscription_payments_all" ON subscription_payments FOR ALL USING
                       </div>
 
                       <div className="flex flex-wrap items-center justify-between gap-2 text-xs pt-1">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5">
                           <button
                             type="button"
                             onClick={() => handleChangeMerchantPassword(m)}
                             className="inline-flex items-center gap-1 text-slate-600 hover:text-slate-900 font-bold text-[10px] bg-slate-100 px-2 py-1 rounded"
-                            title="Modifier MDP"
                           >
                             <KeyRound className="w-3 h-3" /> MDP
                           </button>
                           <button
                             type="button"
                             onClick={() => handleChangeQuotas(m)}
-                            className="inline-flex items-center gap-1 text-amber-600 hover:text-amber-800 font-bold text-[10px] bg-amber-50 border border-amber-200 px-2 py-1 rounded"
-                            title="Modifier les limites (Cartes / Push)"
+                            className="inline-flex items-center gap-1 text-amber-800 hover:text-amber-950 font-bold text-[10px] bg-amber-100 border border-amber-300 px-2 py-1 rounded"
                           >
                             ⭐ Quotas
                           </button>
@@ -1017,7 +1091,7 @@ CREATE POLICY "subscription_payments_all" ON subscription_payments FOR ALL USING
                           onClick={() => handleDeleteMerchant(m)}
                           className="inline-flex items-center gap-1 text-red-500 hover:text-red-700 font-bold text-[10px] hover:bg-red-50 px-2 py-1 rounded"
                         >
-                          <Trash2 className="w-3 h-3" /> Supprimer
+                          <Trash2 className="w-3 h-3" /> Suppr
                         </button>
                       </div>
                     </div>
