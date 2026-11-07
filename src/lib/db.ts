@@ -244,10 +244,17 @@ class FidelityDatabase {
   }
 
   // Authentification Commerçant 100% connectée à Supabase
-  async loginMerchantAsync(
+    async loginMerchantAsync(
     identifier: string,
-    password: string
-  ): Promise<{ success: boolean; merchant?: Merchant; error?: string }> {
+    password: string,
+    deviceId: string
+  ): Promise<{
+    success: boolean;
+    merchant?: Merchant;
+    error?: string;
+    quota_users_exceeded?: boolean;
+    max_users?: number;
+  }> {
     await this.syncFromSupabase();
     try {
       const apiRes = await postApiDb({
