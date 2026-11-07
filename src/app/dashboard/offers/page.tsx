@@ -154,12 +154,6 @@ export default function OffersPage() {
     showToast(`Notification envoyée avec succès ! (Il vous reste ${Math.max(0, maxPush - newSentCount)} push cette semaine)`);
     setTimeout(() => setBroadcastedOfferId(null), 4000);
   };
-    await db.updateOfferAsync(updated);
-    setOffers(db.getOffers(currentMerchant.id));
-    setBroadcastedOfferId(offer.id);
-    showToast(`Notification envoyée ! (Reste ${Math.max(0, maxPush - (sentPush + 1))} push cette semaine)`);
-    setTimeout(() => setBroadcastedOfferId(null), 4000);
-  };
 
   const handleSaveOffer = async (e: React.FormEvent) => {
     e.preventDefault();
