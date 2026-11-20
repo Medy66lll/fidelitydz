@@ -4,10 +4,68 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================================
+   FidelityDZ — Système de Couleurs Perceptuel OKLCH / OKLAB (Color Expert)
+   Architecture 3 couches : Référence -> Sémantique -> Composants
+   Garantit des dégradés sans zone grise et un contraste WCAG AA / APCA 75+
+   ============================================================================ */
 :root {
+  /* Fallbacks sRGB */
   --primary-emerald: #10B981;
   --dark-midnight: #0F172A;
   --accent-amber: #F59E0B;
+
+  /* Couche 1 : Tokens de Référence */
+  --ref-slate-950: #020617;
+  --ref-slate-900: #0F172A;
+  --ref-slate-50: #F8FAFC;
+  --ref-emerald-300: #6EE7B7;
+  --ref-emerald-400: #34D399;
+  --ref-emerald-500: #10B981;
+  --ref-amber-400: #FBBF24;
+
+  /* Couche 2 : Tokens Sémantiques */
+  --fdz-surface-light: var(--ref-slate-50);
+  --fdz-on-surface-light: var(--ref-slate-900);
+  --fdz-surface-dark: var(--ref-slate-950);
+  --fdz-on-surface-dark: #F8FAFC;
+  --fdz-muted-dark: #CBD5E1;
+  --fdz-accent: var(--ref-emerald-500);
+  --fdz-accent-bright: var(--ref-emerald-400);
+  --fdz-accent-hover: #059669;
+  --fdz-warning: var(--ref-amber-400);
+}
+
+@supports (color: oklch(70% 0.15 162)) {
+  :root {
+    /* Chroma borné dans le gamut sRGB pour éviter tout écrêtage de teinte */
+    --ref-slate-950: oklch(13% 0.028 262);
+    --ref-slate-900: oklch(21% 0.036 258);
+    --ref-slate-50: oklch(98.4% 0.004 247);
+    --ref-emerald-300: oklch(86% 0.125 164);
+    --ref-emerald-400: oklch(78% 0.152 162);
+    --ref-emerald-500: oklch(70% 0.158 162);
+    --ref-amber-400: oklch(83% 0.165 82);
+
+    --fdz-on-surface-dark: oklch(98% 0.005 247);
+    --fdz-muted-dark: oklch(84% 0.018 252);
+    --fdz-accent-hover: color-mix(in oklab, var(--fdz-accent) 84%, white);
+  }
+}
+
+/* Dégradés OKLAB perceptuels (zéro assombrissement boueux au milieu) */
+.fdz-oklab-accent-bg {
+  background: linear-gradient(135deg, var(--fdz-accent) 0%, var(--fdz-accent-bright) 100%);
+  background: linear-gradient(135deg in oklab, var(--fdz-accent) 0%, var(--fdz-accent-bright) 100%);
+}
+
+.fdz-scrim-radial {
+  background: radial-gradient(
+    ellipse 88% 78% at 30% 50%,
+    rgba(2, 6, 23, 0.88) 0%,
+    rgba(2, 6, 23, 0.58) 48%,
+    rgba(2, 6, 23, 0) 100%
+  );
 }
 
 html {
@@ -16,8 +74,8 @@ html {
 
 body {
   font-family: 'Plus Jakarta Sans', 'Cairo', sans-serif;
-  background-color: #F8FAFC;
-  color: #0F172A;
+  background-color: var(--fdz-surface-light);
+  color: var(--fdz-on-surface-light);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

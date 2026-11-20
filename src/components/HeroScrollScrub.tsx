@@ -327,7 +327,7 @@ export default function HeroScrollScrub() {
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
             <Link
               href="/register"
-              className="inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-base shadow-xl shadow-emerald-500/25 transition-all hover:scale-[1.02] w-full sm:w-auto"
+              className="inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-2xl fdz-oklab-accent-bg hover:brightness-105 text-slate-950 font-extrabold text-base shadow-xl shadow-emerald-500/25 transition-all hover:scale-[1.02] w-full sm:w-auto"
             >
               <Sparkles className="w-5 h-5" />
               <span>{t('start_free')}</span>
@@ -358,11 +358,7 @@ export default function HeroScrollScrub() {
               {/* Scrim radial dégradé-vers-transparent derrière le bloc (jamais de boîte opaque à bord net) */}
               <div
                 aria-hidden="true"
-                className="absolute -inset-12 sm:-inset-16 -z-10 pointer-events-none"
-                style={{
-                  background:
-                    'radial-gradient(ellipse 88% 78% at 30% 50%, rgba(2,6,23,0.86) 0%, rgba(2,6,23,0.56) 48%, rgba(2,6,23,0) 100%)',
-                }}
+                className="fdz-scrim-radial absolute -inset-12 sm:-inset-16 -z-10 pointer-events-none"
               />
               <span className="inline-block text-xs font-extrabold uppercase tracking-[0.2em] text-emerald-400 mb-3">
                 {sec.index}
@@ -370,7 +366,7 @@ export default function HeroScrollScrub() {
               <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight text-white mb-4 drop-shadow">
                 {sec.title}
               </h2>
-              <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+              <p className="text-sm sm:text-base leading-relaxed" style={{ color: "var(--fdz-muted-dark)" }}>
                 {sec.body}
               </p>
               <div className="mt-5 flex flex-wrap gap-2">
