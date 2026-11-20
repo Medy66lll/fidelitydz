@@ -253,3 +253,31 @@ html, body {
   overflow-x: hidden;
   position: relative;
 }
+
+/* ============================================================================
+   Impression Affiche Comptoir (A4 / Chevalet de Caisse)
+   ============================================================================ */
+@media print {
+  body {
+    background: transparent !important;
+    color: black !important;
+  }
+  
+  header, footer, nav, aside, .no-print, button {
+    display: none !important;
+  }
+  
+  #counter-poster-printable {
+    visibility: visible !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+  }
+  
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+}
