@@ -20,6 +20,14 @@ const cleanKey = (k?: string) => (k || '').replace(/^["'\s]+|["'\s]+$/g, '');
 // ============================================================================
 // RÈGLES 1, 5, 9, 15, 17 : CRYPTOGRAPHIE SERVEUR (SCRYPT + SESSIONS SIGNÉES HMAC)
 // ============================================================================
+let _ephemeralHmacSecret: string | null = null;
+function getRuntimeEphemeralSecret(): string {
+  if (!_ephemeralHmacSecret) {
+    _ephemeralHmacSecret = crypto.randomBytes(32).toString('hex');
+  }
+  return _ephemeralHmacSecret;
+}
+
 function getOwnerHmacSecret(): string {
   const base =
     process.env.SESSION_HMAC_SECRET ||
@@ -27,7 +35,7 @@ function getOwnerHmacSecret(): string {
     process.env.ADMIN_SECRET_PASSWORD ||
     process.env.OWNER_PIN ||
     process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    '98bd287fe4208b5d4b7a9a1b114a4080';
+    getRuntimeEphemeralSecret();
   return `fidelitydz_owner_vault_secret_v83_${base}`;
 }
 
@@ -38,7 +46,7 @@ function getMerchantHmacSecret(): string {
     process.env.ADMIN_SECRET_PASSWORD ||
     process.env.OWNER_PIN ||
     process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    '98bd287fe4208b5d4b7a9a1b114a4080';
+    getRuntimeEphemeralSecret();
   return `fidelitydz_session_hmac_v83_${base}`;
 }
 
@@ -1181,17 +1189,21 @@ export async function POST(req: NextRequest) {
       const { password, owner_pin } = body;
       const envAdminPass = (process.env.ADMIN_PASSWORD || process.env.ADMIN_SECRET_PASSWORD || '').trim();
       const envOwnerPin = (process.env.OWNER_PIN || '').trim();
-      const salt = 'fidelitydz_scrypt_salt_v1';
 
+      if (!envAdminPass || !envOwnerPin) {
+        logSecurityEvent('ADMIN_AUTH_FAILED', ip, { reason: 'missing_admin_env_credentials' }, 'CRITICAL');
+        return NextResponse.json(
+          { success: false, error: 'Identifiants Super-Admin non configurés sur ce serveur.' },
+          { status: 500 }
+        );
+      }
+
+      const salt = 'fidelitydz_scrypt_salt_v1';
       const inputPassBuf = crypto.scryptSync(String(password || '').trim(), salt, 32);
-      const expectedPassBuf = envAdminPass
-        ? crypto.scryptSync(envAdminPass, salt, 32)
-        : Buffer.from('98bd287fe4208b5d4b7a9a1b114a40800a489f6d13616ecc24d6f13ede00101a', 'hex');
+      const expectedPassBuf = crypto.scryptSync(envAdminPass, salt, 32);
 
       const inputPinBuf = crypto.scryptSync(String(owner_pin || '').trim(), salt, 32);
-      const expectedPinBuf = envOwnerPin
-        ? crypto.scryptSync(envOwnerPin, salt, 32)
-        : Buffer.from('5b36221b5cd6496063c979fd3f232b4cdc2cd9fb6426a68709f0d25501a0fdaa', 'hex');
+      const expectedPinBuf = crypto.scryptSync(envOwnerPin, salt, 32);
 
       const isPassValid = crypto.timingSafeEqual(inputPassBuf, expectedPassBuf);
       const isPinValid = crypto.timingSafeEqual(inputPinBuf, expectedPinBuf);

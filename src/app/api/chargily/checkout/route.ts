@@ -2,6 +2,14 @@ import crypto from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { consumeTokenBucket, sanitizeString, isSafeUuid, logSecurityEvent } from '@/lib/validation';
 
+let _ephemeralHmacSecret: string | null = null;
+function getRuntimeEphemeralSecret(): string {
+  if (!_ephemeralHmacSecret) {
+    _ephemeralHmacSecret = crypto.randomBytes(32).toString('hex');
+  }
+  return _ephemeralHmacSecret;
+}
+
 function getSessionSecret(): string {
   const base =
     process.env.SESSION_HMAC_SECRET ||
@@ -9,7 +17,7 @@ function getSessionSecret(): string {
     process.env.ADMIN_SECRET_PASSWORD ||
     process.env.OWNER_PIN ||
     process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    '98bd287fe4208b5d4b7a9a1b114a4080';
+    getRuntimeEphemeralSecret();
   return `fidelitydz_session_hmac_v83_${base}`;
 }
 
