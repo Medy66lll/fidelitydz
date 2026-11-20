@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const CSP_HEADER =
-  "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; media-src 'self' blob: data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests;";
+function getCspHeader(): string {
+  const isProd = process.env.NODE_ENV === 'production';
+  const scriptSrc = isProd ? "'self' 'unsafe-inline'" : "'self' 'unsafe-inline' 'unsafe-eval'";
+  return `default-src 'self'; script-src ${scriptSrc}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; media-src 'self' blob: data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests;`;
+}
 
 function isTrustedOrigin(req: NextRequest, originHeader: string | null): boolean {
   if (!originHeader) return true;
@@ -79,7 +82,7 @@ export function middleware(req: NextRequest) {
     }
   }
 
-  if (pathname.startsWith('/api/chargily/checkout') || pathname.startsWith('/api/db')) {
+  if (pathname.startsWith('/api/db')) {
     const type = searchParams.get('type') || 'init';
     const isPublicLookup = type === 'merchant_by_slug' || type === 'card_by_token';
     const sessionCookie = req.cookies.get('fidelitydz_session')?.value;
@@ -110,7 +113,7 @@ export function middleware(req: NextRequest) {
   res.headers.set('Permissions-Policy', 'camera=(self), microphone=(), geolocation=(), payment=()');
   res.headers.set('X-DNS-Prefetch-Control', 'off');
   res.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
-  res.headers.set('Content-Security-Policy', CSP_HEADER);
+  res.headers.set('Content-Security-Policy', getCspHeader());
 
   const origin = req.headers.get('origin');
   if (pathname.startsWith('/api/') && origin && isTrustedOrigin(req, origin)) {
