@@ -306,7 +306,7 @@ export default function DashboardOverviewPage() {
         <div className="flex flex-wrap items-center gap-4 relative z-10 w-full sm:w-auto">
           <Link
             href="/scanner"
-            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm rounded-2xl shadow-lg transition-all"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-4 fdz-oklab-accent-bg hover:brightness-105 active:scale-[0.98] text-slate-950 font-black text-sm rounded-2xl shadow-lg shadow-emerald-500/25 transition-all"
           >
             <QrCode className="w-6 h-6" />
             <span>{t('open_scanner')}</span>

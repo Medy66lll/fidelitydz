@@ -550,6 +550,34 @@ class FidelityDatabase {
     return finalMerchant;
   }
 
+  async createBranchAsync(
+    parentMerchantId: string,
+    businessName: string,
+    wilaya: string,
+    address: string
+  ): Promise<{ success: boolean; merchant?: Merchant; error?: string }> {
+    const res = await postApiDb({
+      action: 'create_branch',
+      parent_merchant_id: toValidUuid(parentMerchantId),
+      business_name: businessName.trim(),
+      wilaya: wilaya.trim(),
+      address: address.trim(),
+    });
+    return res || { success: false, error: 'Erreur réseau ou réponse invalide.' };
+  }
+
+  async incrementPushAsync(
+    merchantId: string,
+    count = 1
+  ): Promise<{ success: boolean; error?: string; quota_exceeded?: boolean; push_sent_this_week?: number }> {
+    const res = await postApiDb({
+      action: 'increment_push',
+      merchant_id: toValidUuid(merchantId),
+      count: Math.max(1, count),
+    });
+    return res || { success: false, error: 'Erreur réseau lors de la diffusion.' };
+  }
+
   async deleteMerchant(merchantId: string): Promise<boolean> {
     const mUuid = toValidUuid(merchantId);
     const merchants = this.getMerchants().filter((m) => m.id !== merchantId && m.id !== mUuid);

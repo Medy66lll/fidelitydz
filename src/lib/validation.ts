@@ -364,6 +364,88 @@ export function validateBase64ImageServer(
   return { success: true, data: `data:image/${declaredSubType === 'jpg' ? 'jpeg' : declaredSubType};base64,${base64Body}` };
 }
 
+/**
+ * RÈGLE 28 : PROTECTION SSRF (Server-Side Request Forgery)
+ * Bloque l'accès aux réseaux internes, métadonnées cloud, et protocoles non sécurisés.
+ */
+export function isSafeExternalImageUrl(rawUrl: unknown): { safe: boolean; error?: string; url?: string } {
+  if (typeof rawUrl !== 'string') return { safe: false, error: 'URL invalide' };
+  const trimmed = rawUrl.trim();
+  if (!trimmed) return { safe: false, error: 'URL vide' };
+
+  let parsed: URL;
+  try {
+    parsed = new URL(trimmed);
+  } catch {
+    return { safe: false, error: 'Format URL non valide' };
+  }
+
+  // Seul le protocole HTTPS est autorisé pour les requêtes distantes
+  if (parsed.protocol !== 'https:') {
+    return { safe: false, error: 'Seul le protocole HTTPS est autorisé' };
+  }
+
+  // Ne pas autoriser les identifiants utilisateur (ex: https://user:pass@host)
+  if (parsed.username || parsed.password) {
+    return { safe: false, error: 'Identifiants utilisateur non autorisés dans l’URL' };
+  }
+
+  // Ports non standard interdits (seul 443 autorisé pour HTTPS)
+  if (parsed.port && parsed.port !== '443') {
+    return { safe: false, error: 'Port non standard interdit' };
+  }
+
+  const hostname = parsed.hostname.toLowerCase();
+
+  // Bloquer les adresses de bouclage et locales
+  if (
+    hostname === 'localhost' ||
+    hostname.endsWith('.localhost') ||
+    hostname.endsWith('.local') ||
+    hostname.endsWith('.internal') ||
+    hostname.endsWith('.lan') ||
+    hostname === '0.0.0.0'
+  ) {
+    return { safe: false, error: 'Accès aux domaines internes / locaux interdit' };
+  }
+
+  // Bloquer les métadonnées Cloud (AWS, GCP, Azure, DigitalOcean)
+  if (
+    hostname === '169.254.169.254' ||
+    hostname === 'metadata.google.internal' ||
+    hostname === 'metadata' ||
+    hostname.includes('metadata.google')
+  ) {
+    return { safe: false, error: 'Accès aux métadonnées cloud strictement interdit' };
+  }
+
+  // Bloquer les adresses IPv4 privées / réservées (127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 169.254.0.0/16, 100.64.0.0/10)
+  const ipv4Match = hostname.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (ipv4Match) {
+    const a = Number(ipv4Match[1]);
+    const b = Number(ipv4Match[2]);
+    if (
+      a === 127 ||
+      a === 10 ||
+      (a === 172 && b >= 16 && b <= 31) ||
+      (a === 192 && b === 168) ||
+      (a === 169 && b === 254) ||
+      (a === 100 && b >= 64 && b <= 127) ||
+      a === 0 ||
+      a >= 224
+    ) {
+      return { safe: false, error: 'Accès aux adresses IP privées / réservées interdit' };
+    }
+  }
+
+  // Bloquer les adresses IPv6 (entre crochets ou avec deux-points)
+  if (hostname.startsWith('[') || hostname.includes(':')) {
+    return { safe: false, error: 'Adresses IPv6 directes non autorisées' };
+  }
+
+  return { safe: true, url: parsed.toString() };
+}
+
 // ----------------------------------------------------------------------------
 // RÈGLE 8 : JOURNALISATION & SURVEILLANCE DES ACTIVITÉS SUSPECTES (SANS SECRETS)
 // ----------------------------------------------------------------------------
@@ -379,6 +461,7 @@ export type SecurityEventType =
   | 'UNAUTHORIZED_ACCESS'
   | 'UPLOAD_REJECTED'
   | 'WEBHOOK_INVALID_SIGNATURE'
+  | 'SSRF_ATTEMPT_BLOCKED'
   | 'PASSWORD_RESET_REQUESTED'
   | 'PASSWORD_RESET_COMPLETED';
 

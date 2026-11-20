@@ -241,7 +241,10 @@ CREATE POLICY "subscription_payments_all" ON subscription_payments FOR ALL USING
     try {
       const res = await fetch('/api/db', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
         body: JSON.stringify({
           action: 'login_admin',
           owner_pin: ownerPinInput,

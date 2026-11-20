@@ -51,7 +51,6 @@ export default function CustomerJoinPage() {
     };
   }, [merchantSlug]);
 
-  // Confidentialité : ne jamais pré-remplir le prénom d'un client avant la validation du formulaire
   const handlePhoneChange = (val: string) => {
     setPhone(val);
   };
@@ -105,41 +104,44 @@ export default function CustomerJoinPage() {
 
   if (checkingStore) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-950 text-white gap-3">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-400"></div>
-        <p className="text-xs text-slate-400">Ouverture du programme de fidélité...</p>
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-4">
+        <div className="text-center space-y-3">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-400 mx-auto"></div>
+          <p className="text-xs text-slate-400 font-medium">Chargement du commerce...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen relative flex flex-col justify-between p-4 sm:p-6 text-white overflow-hidden bg-slate-950">
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-emerald-500/20 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-500/20 rounded-full blur-[100px] pointer-events-none" />
+    <div className="min-h-screen relative flex flex-col justify-between text-white overflow-hidden bg-slate-950 p-4">
+      {/* Ambient OKLAB Glow Background */}
+      <div className="absolute top-[-20%] left-[-15%] w-[65%] h-[65%] bg-emerald-500/15 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-[-15%] right-[-10%] w-[55%] h-[55%] bg-amber-500/10 rounded-full blur-[140px] pointer-events-none" />
 
-      <header className="max-w-md mx-auto w-full flex items-center justify-between py-2">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-slate-950 font-black">
-            <QrCode className="w-5 h-5" />
+      <header className="max-w-md mx-auto w-full flex items-center justify-between py-2 relative z-10">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-xl fdz-oklab-accent-bg flex items-center justify-center text-slate-950 font-black shadow-md shadow-emerald-500/20">
+            <QrCode className="w-5 h-5 text-slate-950" />
           </div>
-          <span className="font-extrabold text-base tracking-tight text-white">
+          <span className="font-black text-lg tracking-tight text-white">
             Fidelity<span className="text-emerald-400">DZ</span>
           </span>
         </div>
         <LanguageToggle />
       </header>
 
-      <main className="max-w-md mx-auto w-full my-auto py-6">
-        <div className="relative z-10 bg-slate-900/60 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-6 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.5)]">
+      <main className="max-w-md mx-auto w-full my-auto py-6 relative z-10">
+        <div className="fdz-glass-dark rounded-[2.5rem] p-6 sm:p-9 border border-slate-700/80 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)]">
           <div className="text-center space-y-2 pb-6 border-b border-slate-800">
             {merchant?.logo_url && (
               <img
                 src={merchant.logo_url}
                 alt={merchant.business_name}
-                className="w-16 h-16 rounded-2xl mx-auto object-cover border-2 border-emerald-500 shadow-lg"
+                className="w-16 h-16 rounded-2xl mx-auto object-cover border-2 border-emerald-400/80 shadow-lg"
               />
             )}
-            <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+            <h1 className="text-2xl font-black text-white tracking-tight">
               {merchant?.business_name || merchantSlug}
             </h1>
             {merchant && (
@@ -148,8 +150,8 @@ export default function CustomerJoinPage() {
               </p>
             )}
 
-            <div className="inline-flex items-center gap-2 bg-emerald-950/80 border border-emerald-800/80 px-3.5 py-1.5 rounded-full text-emerald-400 text-xs font-bold mt-2">
-              <Sparkles className="w-4 h-4" />
+            <div className="inline-flex items-center gap-2 bg-emerald-950/80 border border-emerald-700/60 px-3.5 py-1.5 rounded-full text-emerald-300 text-xs font-extrabold mt-2 shadow-inner">
+              <Sparkles className="w-4 h-4 text-emerald-400" />
               <span>
                 {isAr
                   ? `هدية ترحيبية: ختم مجاني فور تسجيلك !`
@@ -160,18 +162,18 @@ export default function CustomerJoinPage() {
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             {error && (
-              <div className="bg-red-950/60 border border-red-800 text-red-200 text-xs p-3 rounded-xl">
+              <div className="bg-rose-950/80 border border-rose-500/80 text-rose-100 text-xs p-3.5 rounded-xl font-bold">
                 {error}
               </div>
             )}
 
             {/* Phone Input */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-300 block">
+              <label className="text-xs font-bold text-slate-200 block">
                 {t('customer_phone_label')} <span className="text-emerald-400">*</span>
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 rtl:left-auto rtl:right-0 pl-3 rtl:pr-3 flex items-center pointer-events-none text-slate-500">
+                <div className="absolute inset-y-0 left-0 rtl:left-auto rtl:right-0 pl-3.5 rtl:pr-3.5 flex items-center pointer-events-none text-slate-400">
                   <Phone className="w-4 h-4" />
                 </div>
                 <input
@@ -181,19 +183,19 @@ export default function CustomerJoinPage() {
                   placeholder="0555 12 34 56"
                   value={phone}
                   onChange={(e) => handlePhoneChange(e.target.value)}
-                  className="w-full bg-slate-950/50 hover:bg-slate-950 border border-slate-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 rounded-2xl py-4 pl-12 rtl:pl-4 rtl:pr-12 text-white text-lg placeholder-slate-500 font-mono tracking-wider tabular-nums outline-none transition-all"
+                  className="w-full bg-slate-950/80 border border-slate-700/80 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 rounded-xl py-3.5 pl-11 rtl:pl-4 rtl:pr-11 text-white text-base placeholder-slate-500 font-mono tracking-wider tabular-nums outline-none transition-all"
                 />
               </div>
-              <p className="text-[11px] text-slate-500">{t('phone_hint')}</p>
+              <p className="text-[11px] text-slate-400 font-medium">{t('phone_hint')}</p>
             </div>
 
-            {/* Name Input - OBLIGATOIRE */}
+            {/* Name Input */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-300 block">
+              <label className="text-xs font-bold text-slate-200 block">
                 {t('customer_name_label')} <span className="text-emerald-400">*</span>
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 rtl:left-auto rtl:right-0 pl-3 rtl:pr-3 flex items-center pointer-events-none text-slate-500">
+                <div className="absolute inset-y-0 left-0 rtl:left-auto rtl:right-0 pl-3.5 rtl:pr-3.5 flex items-center pointer-events-none text-slate-400">
                   <User className="w-4 h-4" />
                 </div>
                 <input
@@ -203,7 +205,7 @@ export default function CustomerJoinPage() {
                   placeholder={isAr ? 'مثال: أمين أو سارة' : 'Ex: Amine ou Sara'}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-slate-950/50 hover:bg-slate-950 border border-slate-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 rounded-2xl py-4 pl-12 rtl:pl-4 rtl:pr-12 text-white text-lg placeholder-slate-500 outline-none transition-all"
+                  className="w-full bg-slate-950/80 border border-slate-700/80 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 rounded-xl py-3.5 pl-11 rtl:pl-4 rtl:pr-11 text-white text-base placeholder-slate-500 outline-none transition-all"
                 />
               </div>
             </div>
@@ -212,7 +214,7 @@ export default function CustomerJoinPage() {
               <button
                 type="submit"
                 disabled={loading || !merchant}
-                className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 active:scale-[0.98] text-slate-950 font-black text-lg shadow-[0_8px_25px_rgba(16,185,129,0.4)] hover:shadow-[0_8px_35px_rgba(16,185,129,0.6)] transition-all disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 py-4 rounded-xl fdz-oklab-accent-bg hover:brightness-105 text-slate-950 font-black text-base shadow-xl shadow-emerald-500/25 transition-all disabled:opacity-50 hover:scale-[1.01]"
               >
                 {loading ? (
                   <span>{isAr ? 'جاري التحميل...' : 'Ouverture de votre carte...'}</span>
@@ -227,11 +229,11 @@ export default function CustomerJoinPage() {
           </form>
 
           <div className="mt-6 pt-5 border-t border-slate-800 text-center space-y-2">
-            <div className="flex items-center justify-center gap-1.5 text-xs text-slate-400">
+            <div className="flex items-center justify-center gap-1.5 text-xs text-slate-300 font-medium">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
               <span>{t('no_app_required')}</span>
             </div>
-            <p className="text-[11px] text-slate-500">
+            <p className="text-[11px] text-slate-400 font-medium">
               {isAr
                 ? 'بياناتك محمية وخاصة 100% — بطاقة واحدة فقط لكل رقم هاتف.'
                 : 'Données 100% privées et sécurisées — Une seule carte unique par numéro de téléphone.'}
@@ -240,7 +242,7 @@ export default function CustomerJoinPage() {
         </div>
       </main>
 
-      <footer className="text-center py-2 text-[11px] text-slate-500">
+      <footer className="text-center py-2 text-[11px] text-slate-500 font-medium relative z-10">
         Propulsé par FidelityDZ SaaS • Algérie 🇩🇿
       </footer>
     </div>

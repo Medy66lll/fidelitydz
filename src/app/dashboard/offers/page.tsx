@@ -125,13 +125,7 @@ export default function OffersPage() {
       return;
     }
 
-    const res = await fetch('/api/db', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'increment_push', merchant_id: currentMerchant.id, count: 1 }),
-    })
-      .then((r) => r.json())
-      .catch(() => ({ success: false, error: 'Erreur réseau lors de la diffusion.' }));
+    const res = await db.incrementPushAsync(currentMerchant.id, 1);
 
     if (!res || !res.success) {
       showToast(res?.error || 'Limite de notifications Push atteinte.', 'error');

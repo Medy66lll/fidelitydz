@@ -293,28 +293,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       window.prompt('Wilaya du point de vente (ex: 31 - Oran) :', currentMerchant.wilaya) ||
                       currentMerchant.wilaya;
                     const branchAddress = window.prompt('Adresse ou localisation Google Maps :', '') || '';
-                    fetch('/api/db', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({
-                        action: 'create_branch',
-                        parent_merchant_id: currentMerchant.id,
-                        business_name: branchName.trim(),
-                        wilaya: branchWilaya.trim(),
-                        address: branchAddress.trim(),
-                      }),
-                    })
-                      .then((r) => r.json())
-                      .then(async (res) => {
-                        if (res && res.success && res.merchant) {
-                          await db.syncFromSupabase();
-                          localStorage.setItem('fidelitydz_current_store_id', res.merchant.id);
-                          localStorage.setItem('fidelitydz_active_merchant', res.merchant.id);
-                          window.location.href = '/dashboard';
-                        } else {
-                          alert(res?.error || 'Impossible de créer le local.');
-                        }
-                      });
+                    db.createBranchAsync(
+                      currentMerchant.id,
+                      branchName.trim(),
+                      branchWilaya.trim(),
+                      branchAddress.trim()
+                    ).then(async (res) => {
+                      if (res && res.success && res.merchant) {
+                        await db.syncFromSupabase();
+                        localStorage.setItem('fidelitydz_current_store_id', res.merchant.id);
+                        localStorage.setItem('fidelitydz_active_merchant', res.merchant.id);
+                        window.location.href = '/dashboard';
+                      } else {
+                        alert(res?.error || 'Impossible de créer le local.');
+                      }
+                    });
                     return;
                   }
                   const all = db.getMerchants();

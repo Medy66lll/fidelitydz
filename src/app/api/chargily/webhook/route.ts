@@ -2,6 +2,24 @@ import crypto from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { consumeTokenBucket, isSafeUuid, logSecurityEvent } from '@/lib/validation';
 
+// Cache anti-rejeu en mémoire pour éviter le double-traitement d'un même webhook (TTL 24 heures)
+const processedWebhooks = new Map<string, number>();
+
+function isReplayOrRecord(id: string): boolean {
+  const now = Date.now();
+  // Nettoyage des entrées âgées de plus de 24h
+  for (const [key, timestamp] of processedWebhooks.entries()) {
+    if (now - timestamp > 24 * 3600 * 1000) {
+      processedWebhooks.delete(key);
+    }
+  }
+  if (processedWebhooks.has(id)) {
+    return true;
+  }
+  processedWebhooks.set(id, now);
+  return false;
+}
+
 export async function POST(req: NextRequest) {
   const ip = (req.headers.get('x-forwarded-for') || '127.0.0.1').split(',')[0].trim();
 
@@ -19,16 +37,16 @@ export async function POST(req: NextRequest) {
     const signature = (req.headers.get('signature') || req.headers.get('x-chargily-signature') || '').trim();
     const secretKey = (process.env.CHARGILY_SECRET_KEY || '').trim();
 
-    // Règle 19 : Vérification OBLIGATOIRE de la signature HMAC-SHA256 (impossible de contourner en omettant l'en-tête)
-    if (!secretKey || secretKey === 'CHANGE_ME' || !signature) {
+    // Règle 19 : Vérification OBLIGATOIRE de la signature HMAC-SHA256 (format hex 64 caractères)
+    if (!secretKey || secretKey === 'CHANGE_ME' || !signature || !/^[a-fA-F0-9]{64}$/.test(signature)) {
       logSecurityEvent(
         'WEBHOOK_INVALID_SIGNATURE',
         ip,
-        { reason: !secretKey ? 'missing_server_secret' : 'missing_signature_header' },
+        { reason: !secretKey ? 'missing_server_secret' : 'invalid_or_missing_signature_format' },
         'CRITICAL'
       );
       return NextResponse.json(
-        { success: false, error: 'Signature webhook manquante ou clé non configurée.' },
+        { success: false, error: 'Signature webhook manquante ou format invalide.' },
         { status: 401 }
       );
     }
@@ -71,6 +89,16 @@ export async function POST(req: NextRequest) {
       }
 
       const checkoutId = String(checkoutData.id || `chk_${Date.now()}`).replace(/[^a-zA-Z0-9_-]/g, '');
+
+      // Protection anti-rejeu (Replay attack prevention)
+      if (isReplayOrRecord(checkoutId)) {
+        return NextResponse.json({
+          success: true,
+          message: 'Paiement déjà pris en compte (anti-rejeu).',
+          checkout_id: checkoutId,
+          already_processed: true,
+        });
+      }
 
       return NextResponse.json({
         success: true,

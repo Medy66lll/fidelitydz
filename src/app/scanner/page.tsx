@@ -502,7 +502,7 @@ export default function CashierScannerPage() {
             onClick={() => setActiveTab('camera')}
             className={`flex items-center justify-center gap-2 py-3 rounded-xl text-xs sm:text-sm font-bold transition-all ${
               activeTab === 'camera'
-                ? 'bg-emerald-500 text-slate-950 shadow-md'
+                ? 'fdz-oklab-accent-bg text-slate-950 shadow-md shadow-emerald-500/20'
                 : 'text-slate-400 hover:text-white'
             }`}
             type="button"
@@ -514,7 +514,7 @@ export default function CashierScannerPage() {
             onClick={() => setActiveTab('search')}
             className={`flex items-center justify-center gap-2 py-3 rounded-xl text-xs sm:text-sm font-bold transition-all ${
               activeTab === 'search'
-                ? 'bg-emerald-500 text-slate-950 shadow-md'
+                ? 'fdz-oklab-accent-bg text-slate-950 shadow-md shadow-emerald-500/20'
                 : 'text-slate-400 hover:text-white'
             }`}
             type="button"
@@ -735,19 +735,19 @@ export default function CashierScannerPage() {
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => handleAddStamp(1)}
-                  className="flex items-center justify-center gap-2 py-4 bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-black text-sm rounded-xl shadow-lg shadow-emerald-500/20 transition-all"
+                  className="flex items-center justify-center gap-2 py-4 fdz-oklab-accent-bg hover:brightness-105 active:scale-95 text-slate-950 font-black text-sm rounded-xl shadow-lg shadow-emerald-500/25 transition-all"
                   type="button"
                 >
-                  <Plus className="w-5 h-5" />
+                  <Plus className="w-5 h-5 stroke-[2.5]" />
                   <span>{isSubscriptionExpired ? '+1 Tampon (En attente)' : t('add_stamp_btn')}</span>
                 </button>
 
                 <button
                   onClick={() => handleAddStamp(2)}
-                  className="flex items-center justify-center gap-2 py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm rounded-xl transition-all"
+                  className="flex items-center justify-center gap-2 py-4 bg-slate-800/90 hover:bg-slate-800 border border-slate-700/60 active:scale-95 text-white font-bold text-sm rounded-xl transition-all"
                   type="button"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-5 h-5" />
                   <span>{isSubscriptionExpired ? '+2 Tampons (En attente)' : '+2 Tampons'}</span>
                 </button>
               </div>

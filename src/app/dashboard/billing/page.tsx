@@ -279,8 +279,60 @@ Merci de mettre à jour mes limites sur le serveur Supabase.`;
       </div>
 
       {/* TWO PAYMENT OPTIONS GRID */}
-      <div className="max-w-2xl mx-auto items-start">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+        {/* OPTION 1: PAIEMENT EN LIGNE INSTANTANÉ (CHARGILY PAY - EDAHABIA / CIB) */}
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-emerald-500/30 shadow-lg shadow-emerald-500/5 space-y-6 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
+          
+          <div className="space-y-1 relative z-10">
+            <div className="inline-flex items-center gap-1.5 text-xs font-black text-emerald-800 bg-emerald-50 border border-emerald-200/80 px-3 py-1 rounded-full">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              <span>{isAr ? 'دفع فوري تلقائي' : 'Instantané & Automatique'}</span>
+            </div>
+            <h3 className="text-xl font-extrabold text-slate-900">
+              {isAr ? 'الدفع بالبطاقة الذهبية / CIB' : 'Paiement par Carte Edahabia / CIB'}
+            </h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              {isAr
+                ? 'الدفع الإلكتروني الآمن عبر Chargily Pay. تفعيل اشتراكك فوري وتلقائي 100% دون الحاجة لإرسال وصل.'
+                : 'Paiement 100% sécurisé via passerelle officielle Chargily Pay. Votre compte est activé instantanément.'}
+            </p>
+          </div>
 
+          <div className="py-2">
+            <AlgerianPaymentBadges />
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs">
+            <div className="flex justify-between items-center text-slate-600">
+              <span>Montant à régler :</span>
+              <span className="font-extrabold text-slate-900 text-sm">
+                {3900 + (Math.max(0, (currentMerchant?.max_cards || 100) - 100) / 500) * 1000 + (Math.max(0, (currentMerchant?.max_push_per_week || 100) - 100) / 300) * 800 + (Math.max(0, (currentMerchant?.max_users || 2) - 2)) * 500 + (Math.max(0, (currentMerchant?.max_active_offers || 3) - 3) / 5) * 500 + (Math.max(0, (currentMerchant?.max_locations || 1) - 1)) * 1500} DZD
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-emerald-700 font-medium text-[11px]">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+              <span>Activation immédiate 24/7 sur le serveur</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleChargilyCheckout}
+            disabled={isProcessingChargily}
+            className="w-full py-4 fdz-oklab-accent-bg hover:brightness-105 active:scale-[0.98] text-slate-950 font-black text-sm rounded-xl shadow-lg shadow-emerald-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            {isProcessingChargily ? (
+              <span>Initialisation Chargily Pay...</span>
+            ) : (
+              <>
+                <CreditCard className="w-5 h-5" />
+                <span>Payer en ligne via Chargily Pay</span>
+                <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+              </>
+            )}
+          </button>
+        </div>
 
         {/* OPTION 2: VIREMENT BARIDIMOB / CCP OFFICIEL */}
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-md space-y-5">

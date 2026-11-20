@@ -1,40 +1,73 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getMerchantPwaMetaByToken } from '@/lib/pwa-server';
+import { isSafeExternalImageUrl, logSecurityEvent } from '@/lib/validation';
 
 export async function GET(req: NextRequest) {
+  const ip = (req.headers.get('x-forwarded-for') || '127.0.0.1').split(',')[0].trim();
   const { searchParams } = new URL(req.url);
   const token = searchParams.get('token') || '';
   const { businessName, logoUrl } = await getMerchantPwaMetaByToken(token);
 
   if (logoUrl && logoUrl.startsWith('data:image/')) {
-    const match = logoUrl.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
+    const match = logoUrl.match(/^data:(image\/(jpeg|png|webp));base64,([A-Za-z0-9+/=\s]+)$/);
     if (match) {
       const mimeType = match[1];
-      const buffer = Buffer.from(match[2], 'base64');
-      return new NextResponse(buffer, {
-        status: 200,
-        headers: {
-          'Content-Type': mimeType,
-          'Cache-Control': 'no-store, must-revalidate',
-        },
-      });
-    }
-  }
-
-  if (logoUrl && logoUrl.startsWith('http')) {
-    try {
-      const imgRes = await fetch(logoUrl, { cache: 'no-store' });
-      if (imgRes.ok) {
-        const arr = await imgRes.arrayBuffer();
-        return new NextResponse(Buffer.from(arr), {
+      const buffer = Buffer.from(match[3].replace(/\s+/g, ''), 'base64');
+      // Limit to 4MB max
+      if (buffer.length <= 4 * 1024 * 1024) {
+        return new NextResponse(buffer, {
           status: 200,
           headers: {
-            'Content-Type': imgRes.headers.get('content-type') || 'image/png',
+            'Content-Type': mimeType,
             'Cache-Control': 'no-store, must-revalidate',
           },
         });
       }
-    } catch {}
+    }
+  }
+
+  if (logoUrl && (logoUrl.startsWith('https://') || logoUrl.startsWith('http://'))) {
+    const urlCheck = isSafeExternalImageUrl(logoUrl);
+    if (!urlCheck.safe || !urlCheck.url) {
+      logSecurityEvent(
+        'SSRF_ATTEMPT_BLOCKED',
+        ip,
+        { reason: urlCheck.error, url_prefix: logoUrl.slice(0, 120) },
+        'CRITICAL'
+      );
+    } else {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3500);
+        const imgRes = await fetch(urlCheck.url, {
+          cache: 'no-store',
+          signal: controller.signal,
+          headers: { 'Accept': 'image/png,image/jpeg,image/webp' },
+        });
+        clearTimeout(timeoutId);
+
+        if (imgRes.ok) {
+          const contentType = (imgRes.headers.get('content-type') || '').toLowerCase();
+          const isAllowedType =
+            contentType.includes('image/png') ||
+            contentType.includes('image/jpeg') ||
+            contentType.includes('image/webp');
+
+          if (isAllowedType) {
+            const arr = await imgRes.arrayBuffer();
+            if (arr.byteLength <= 4 * 1024 * 1024) {
+              return new NextResponse(Buffer.from(arr), {
+                status: 200,
+                headers: {
+                  'Content-Type': contentType.split(';')[0].trim(),
+                  'Cache-Control': 'no-store, must-revalidate',
+                },
+              });
+            }
+          }
+        }
+      } catch {}
+    }
   }
 
   const initials = (businessName || 'FD').slice(0, 2).toUpperCase();

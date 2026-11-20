@@ -650,10 +650,11 @@ export default function CustomerCardPage() {
 
         {/* LA CARTE DIGITALE (HERO) */}
         <div
-          className="relative rounded-[2rem] p-6 shadow-2xl overflow-hidden"
-          style={{ backgroundColor: program.background_color || '#0F172A' }}
+          className="relative rounded-[2rem] p-6 shadow-2xl overflow-hidden fdz-card-elevated border border-white/10"
+          style={{ backgroundColor: program.background_color || '#0B0F17' }}
         >
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-amber-500/5 rounded-full blur-3xl -ml-16 -mb-16 pointer-events-none"></div>
 
           <div className="flex justify-between items-start mb-6 relative z-10">
             <div>
@@ -714,32 +715,36 @@ export default function CustomerCardPage() {
             </div>
 
             {program.program_type === 'STAMPS' ? (
-              <div className="grid grid-cols-5 gap-2">
+              <div className="grid grid-cols-5 gap-2.5">
                 {Array.from({ length: program.stamps_required }).map((_, i) => {
                   const isFilled = i < card.stamps_balance;
                   const isLast = i === program.stamps_required - 1;
                   return (
                     <div
                       key={i}
-                      className={`h-12 rounded-xl flex items-center justify-center ${
-                        isFilled ? 'shadow-md' : 'border border-dashed border-white/20'
+                      className={`h-12 rounded-xl flex items-center justify-center transition-all ${
+                        isFilled
+                          ? isLast
+                            ? 'shadow-[0_0_14px_rgba(245,158,11,0.45)] ring-1 ring-amber-400/50'
+                            : 'shadow-[0_0_10px_rgba(16,185,129,0.35)] ring-1 ring-emerald-400/40'
+                          : 'border border-dashed border-white/20 bg-slate-900/30'
                       }`}
                       style={{
                         background: isFilled
                           ? isLast
-                            ? 'linear-gradient(135deg, #F59E0B, #D97706)'
-                            : `linear-gradient(135deg, ${program.primary_color || '#10B981'}, #047857)`
+                            ? 'linear-gradient(135deg in oklab, #F59E0B, #B45309)'
+                            : `linear-gradient(135deg in oklab, ${program.primary_color || '#10B981'}, #065F46)`
                           : 'transparent',
                       }}
                     >
                       {isFilled ? (
                         isLast ? (
-                          <Trophy className="w-5 h-5 text-white" />
+                          <Trophy className="w-5 h-5 text-white drop-shadow-sm" />
                         ) : (
-                          <Check className="w-5 h-5 text-white stroke-[3]" />
+                          <Check className="w-5 h-5 text-white stroke-[3] drop-shadow-sm" />
                         )
                       ) : isLast ? (
-                        <Gift className="w-5 h-5 text-amber-400/30" />
+                        <Gift className="w-5 h-5 text-amber-400/40" />
                       ) : null}
                     </div>
                   );
