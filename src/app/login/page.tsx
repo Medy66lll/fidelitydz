@@ -54,15 +54,17 @@ export default function MerchantLoginPage() {
 
   return (
     <div className="min-h-screen relative flex flex-col justify-between text-white overflow-hidden bg-slate-950">
-      <div className="absolute top-[-15%] left-[-10%] w-[60%] h-[60%] bg-emerald-500/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-15%] right-[-10%] w-[60%] h-[60%] bg-blue-500/20 rounded-full blur-[120px] pointer-events-none" />
-      <header className="border-b border-slate-800/80 px-6 py-4 bg-slate-900/60 backdrop-blur-md">
+      {/* Ambient OKLAB Light Fields */}
+      <div className="absolute top-[-15%] left-[-10%] w-[60%] h-[60%] bg-emerald-500/15 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-[-15%] right-[-10%] w-[60%] h-[60%] bg-amber-500/10 rounded-full blur-[140px] pointer-events-none" />
+
+      <header className="border-b border-slate-800/80 px-6 py-4 bg-slate-950/70 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center font-black">
-              <QrCode className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl fdz-oklab-accent-bg text-slate-950 flex items-center justify-center font-black shadow-md shadow-emerald-500/20">
+              <QrCode className="w-5 h-5 text-slate-950" />
             </div>
-            <span className="font-extrabold text-xl tracking-tight text-white">
+            <span className="font-black text-xl tracking-tight text-white">
               Fidelity<span className="text-emerald-400">DZ</span>
             </span>
           </Link>
@@ -71,15 +73,15 @@ export default function MerchantLoginPage() {
       </header>
 
       <main className="max-w-md mx-auto w-full p-4 sm:p-6 my-auto">
-        <div className="bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-2xl space-y-6">
+        <div className="fdz-glass-dark rounded-[2.5rem] p-6 sm:p-9 border border-slate-700/80 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] space-y-6">
           <div className="text-center space-y-2">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto">
-              <Store className="w-6 h-6" />
+            <div className="w-14 h-14 rounded-2xl bg-emerald-500/15 border border-emerald-400/30 text-emerald-400 flex items-center justify-center mx-auto shadow-inner">
+              <Store className="w-7 h-7" />
             </div>
-            <h1 className="text-2xl font-extrabold text-white tracking-tight">
+            <h1 className="text-2xl font-black text-white tracking-tight">
               {isAr ? 'تسجيل دخول التاجر أو الصندوق' : 'Connexion Gérant & Caisse'}
             </h1>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-300 font-medium leading-relaxed">
               {isAr
                 ? 'أدخل كلمة مرور المدير (لوحة التحكم) أو الرمز السري للصندوق PIN (الماسح فقط)'
                 : 'Saisissez votre mot de passe Gérant (Dashboard complet) ou votre Code PIN Caissier (Scanner uniquement).'}
@@ -87,7 +89,7 @@ export default function MerchantLoginPage() {
           </div>
 
           {error && (
-            <div className="bg-red-950/80 border-2 border-red-600/80 text-red-100 p-4 rounded-2xl text-xs space-y-3">
+            <div className="bg-rose-950/80 border-2 border-rose-500/80 text-rose-100 p-4 rounded-2xl text-xs space-y-3 shadow-md">
               <div className="font-bold leading-relaxed">{error}</div>
               {error.includes('appareils') && (
                 <a
@@ -96,7 +98,7 @@ export default function MerchantLoginPage() {
                   )}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="w-full py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-md"
+                  className="w-full py-2.5 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-md transition-all"
                 >
                   <span>🔓 Débloquer un appareil supplémentaire (+500 DZD/mois)</span>
                 </a>
@@ -106,11 +108,11 @@ export default function MerchantLoginPage() {
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-300 block">
+              <label className="text-xs font-bold text-slate-200 block">
                 {isAr ? 'رقم الهاتف (05/06/07) أو المعرّف' : 'Téléphone du commerce (05/06/07) ou Email'} *
               </label>
               <div className="relative">
-                <Phone className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   aria-label="Ex: 0550123456"
                   type="text"
@@ -118,17 +120,17 @@ export default function MerchantLoginPage() {
                   placeholder="Ex: 0550123456"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 rounded-xl py-3 pl-10 pr-4 text-sm text-white outline-none font-mono"
+                  className="w-full bg-slate-950/80 border border-slate-700/80 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 rounded-xl py-3 pl-10 pr-4 text-sm text-white outline-none font-mono transition-all"
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-300 block">
+              <label className="text-xs font-bold text-slate-200 block">
                 {isAr ? 'كلمة مرور المدير أو رمز الصندوق (PIN)' : 'Mot de passe Gérant ou Code PIN Caissier'} *
               </label>
               <div className="relative">
-                <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   aria-label="Mot de passe ou Code PIN"
                   type="password"
@@ -136,7 +138,7 @@ export default function MerchantLoginPage() {
                   placeholder="•••••••• ou Code PIN 4 chiffres"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 rounded-xl py-3 pl-10 pr-4 text-sm text-white outline-none"
+                  className="w-full bg-slate-950/80 border border-slate-700/80 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 rounded-xl py-3 pl-10 pr-4 text-sm text-white outline-none transition-all"
                 />
               </div>
             </div>
@@ -144,7 +146,7 @@ export default function MerchantLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full py-4 rounded-xl fdz-oklab-accent-bg hover:brightness-105 text-slate-950 font-black text-sm shadow-xl shadow-emerald-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50 hover:scale-[1.01]"
             >
               {loading ? (
                 <span>{isAr ? 'جاري التحقق...' : 'Connexion en cours...'}</span>
@@ -158,12 +160,12 @@ export default function MerchantLoginPage() {
           </form>
 
           <div className="pt-4 border-t border-slate-800 text-center space-y-3">
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-400 font-medium">
               {isAr ? 'ليس لديك حساب تاجر بعد؟' : "Vous n'avez pas encore de compte commerçant ?"}
             </p>
             <Link
               href="/register"
-              className="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 font-bold text-xs flex items-center justify-center gap-1.5 border border-slate-700 transition-colors"
+              className="w-full py-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-emerald-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-slate-700/80 transition-all hover:border-emerald-500/50"
             >
               <Sparkles className="w-4 h-4" />
               <span>
@@ -175,8 +177,8 @@ export default function MerchantLoginPage() {
       </main>
       <SupportWidget defaultRole="MERCHANT" />
 
-      <footer className="text-center py-4 text-xs text-slate-500 flex items-center justify-center gap-1.5">
-        <ShieldCheck className="w-4 h-4 text-emerald-500" />
+      <footer className="text-center py-4 text-xs text-slate-500 flex items-center justify-center gap-1.5 font-medium">
+        <ShieldCheck className="w-4 h-4 text-emerald-400" />
         <span>Espace Commerçant Sécurisé • FidelityDZ Algérie</span>
       </footer>
     </div>

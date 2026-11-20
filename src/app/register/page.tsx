@@ -203,10 +203,10 @@ export default function RegisterMerchantPage() {
       <header className="bg-white border-b border-slate-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-white font-extrabold text-sm">
-              <QrCode className="w-5 h-5" />
+            <div className="w-9 h-9 rounded-xl fdz-oklab-accent-bg flex items-center justify-center text-slate-950 font-black shadow-md shadow-emerald-500/20">
+              <QrCode className="w-5 h-5 text-slate-950" />
             </div>
-            <span className="font-extrabold text-lg tracking-tight text-slate-900">
+            <span className="font-black text-xl tracking-tight text-slate-950">
               Fidelity<span className="text-emerald-500">DZ</span>
             </span>
           </Link>
@@ -492,7 +492,7 @@ export default function RegisterMerchantPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-sm shadow-lg shadow-emerald-500/25 transition-all flex items-center justify-center gap-2"
+                  className="w-full py-4 rounded-xl fdz-oklab-accent-bg hover:brightness-105 text-slate-950 font-black text-sm shadow-xl shadow-emerald-500/25 transition-all flex items-center justify-center gap-2 hover:scale-[1.01]"
                 >
                   {loading ? (
                     <span>Création de votre espace en cours...</span>

@@ -1,73 +1,207 @@
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ============================================================================
-   FidelityDZ — Système de Couleurs Perceptuel OKLCH / OKLAB (Color Expert)
-   Architecture 3 couches : Référence -> Sémantique -> Composants
-   Garantit des dégradés sans zone grise et un contraste WCAG AA / APCA 75+
+   FidelityDZ — Système de Couleurs & Design Perceptuel OKLCH / OKLAB (Color Expert)
+   Architecture 3 couches :
+   1. Référence (Échelle OKLCH perceptuelle, sans distorsion chromatique)
+   2. Sémantique (Rôles clairs : Surfaces, Typographie, Action, Récompenses)
+   3. Composants & Utilitaires (Dégradés in oklab, Glassmorphism, Micro-lueurs)
    ============================================================================ */
+
 :root {
-  /* Fallbacks sRGB */
-  --primary-emerald: #10B981;
-  --dark-midnight: #0F172A;
-  --accent-amber: #F59E0B;
+  /* ==========================================================================
+     Couche 1 : Tokens de Référence (Fallbacks sRGB standard)
+     ========================================================================== */
+  --ref-emerald-50:  #ecfdf5;
+  --ref-emerald-100: #d1fae5;
+  --ref-emerald-200: #a7f3d0;
+  --ref-emerald-300: #6ee7b7;
+  --ref-emerald-400: #34d399;
+  --ref-emerald-500: #10b981; /* Émeraude algérien */
+  --ref-emerald-600: #059669;
+  --ref-emerald-700: #047857;
+  --ref-emerald-800: #065f46;
+  --ref-emerald-900: #064e3b;
+  --ref-emerald-950: #022c22;
 
-  /* Couche 1 : Tokens de Référence */
+  --ref-slate-50:  #f8fafc;
+  --ref-slate-100: #f1f5f9;
+  --ref-slate-200: #e2e8f0;
+  --ref-slate-300: #cbd5e1;
+  --ref-slate-400: #94a3b8;
+  --ref-slate-500: #64748b;
+  --ref-slate-600: #475569;
+  --ref-slate-700: #334155;
+  --ref-slate-800: #1e293b;
+  --ref-slate-900: #0f172a; /* Bleu nuit profond */
   --ref-slate-950: #020617;
-  --ref-slate-900: #0F172A;
-  --ref-slate-50: #F8FAFC;
-  --ref-emerald-300: #6EE7B7;
-  --ref-emerald-400: #34D399;
-  --ref-emerald-500: #10B981;
-  --ref-amber-400: #FBBF24;
 
-  /* Couche 2 : Tokens Sémantiques */
+  --ref-amber-400: #fbbf24;
+  --ref-amber-500: #f59e0b;
+  --ref-amber-600: #d97706;
+
+  /* ==========================================================================
+     Couche 2 : Tokens Sémantiques (Rôles applicatifs)
+     ========================================================================== */
   --fdz-surface-light: var(--ref-slate-50);
   --fdz-on-surface-light: var(--ref-slate-900);
   --fdz-surface-dark: var(--ref-slate-950);
-  --fdz-on-surface-dark: #F8FAFC;
-  --fdz-muted-dark: #CBD5E1;
+  --fdz-on-surface-dark: #f8fafc;
+  --fdz-muted-dark: #cbd5e1;
+  --fdz-muted-light: #64748b;
+
   --fdz-accent: var(--ref-emerald-500);
   --fdz-accent-bright: var(--ref-emerald-400);
   --fdz-accent-hover: #059669;
-  --fdz-warning: var(--ref-amber-400);
+  --fdz-accent-subtle: #ecfdf5;
+
+  --fdz-reward-gold: var(--ref-amber-500);
+  --fdz-reward-bright: var(--ref-amber-400);
 }
 
+/* ============================================================================
+   Optimisation Perceptuelle OKLCH (Navigateurs Modernes Evergreen 2024+)
+   Garantit :
+   - Lightness rigoureusement identique indépendamment de l'angle de teinte
+   - Zéro assombrissement grisâtre au centre des transitions
+   - Respect strict des critères APCA 75+ et WCAG AA/AAA
+   ============================================================================ */
 @supports (color: oklch(70% 0.15 162)) {
   :root {
-    /* Chroma borné dans le gamut sRGB pour éviter tout écrêtage de teinte */
-    --ref-slate-950: oklch(13% 0.028 262);
-    --ref-slate-900: oklch(21% 0.036 258);
-    --ref-slate-50: oklch(98.4% 0.004 247);
-    --ref-emerald-300: oklch(86% 0.125 164);
-    --ref-emerald-400: oklch(78% 0.152 162);
-    --ref-emerald-500: oklch(70% 0.158 162);
-    --ref-amber-400: oklch(83% 0.165 82);
+    /* Palette Émeraude Algérien en OKLCH */
+    --ref-emerald-50:  oklch(97.5% 0.024 158);
+    --ref-emerald-100: oklch(93.5% 0.052 158);
+    --ref-emerald-200: oklch(86.5% 0.092 158);
+    --ref-emerald-300: oklch(78.5% 0.132 158);
+    --ref-emerald-400: oklch(70.0% 0.165 158);
+    --ref-emerald-500: oklch(62.0% 0.178 158);
+    --ref-emerald-600: oklch(53.0% 0.165 158);
+    --ref-emerald-700: oklch(44.0% 0.145 158);
+    --ref-emerald-800: oklch(35.0% 0.115 158);
+    --ref-emerald-900: oklch(26.0% 0.085 158);
+    --ref-emerald-950: oklch(18.0% 0.055 158);
 
-    --fdz-on-surface-dark: oklch(98% 0.005 247);
-    --fdz-muted-dark: oklch(84% 0.018 252);
-    --fdz-accent-hover: color-mix(in oklab, var(--fdz-accent) 84%, white);
+    /* Palette Slate / Nuit en OKLCH */
+    --ref-slate-50:  oklch(98.5% 0.005 248);
+    --ref-slate-100: oklch(95.0% 0.010 248);
+    --ref-slate-200: oklch(89.0% 0.016 248);
+    --ref-slate-300: oklch(80.0% 0.022 248);
+    --ref-slate-400: oklch(68.0% 0.026 248);
+    --ref-slate-500: oklch(54.0% 0.030 248);
+    --ref-slate-600: oklch(42.0% 0.030 248);
+    --ref-slate-700: oklch(32.0% 0.030 248);
+    --ref-slate-800: oklch(22.0% 0.030 252);
+    --ref-slate-900: oklch(15.0% 0.025 255);
+    --ref-slate-950: oklch(11.0% 0.020 258);
+
+    /* Palette Or / Récompenses en OKLCH */
+    --ref-amber-400: oklch(78.0% 0.165 78);
+    --ref-amber-500: oklch(73.0% 0.175 76);
+    --ref-amber-600: oklch(63.0% 0.165 72);
+
+    /* Tokens sémantiques dérivés avec calculs dynamiques */
+    --fdz-on-surface-dark: oklch(98.5% 0.005 248);
+    --fdz-muted-dark: oklch(82.0% 0.018 250);
+    --fdz-muted-light: oklch(48.0% 0.025 248);
+
+    /* États calculés nativement via color-mix sans coder de hex arbitraire */
+    --fdz-accent: var(--ref-emerald-500);
+    --fdz-accent-bright: var(--ref-emerald-400);
+    --fdz-accent-hover: color-mix(in oklab, var(--fdz-accent) 86%, white);
+    --fdz-accent-active: color-mix(in oklab, var(--fdz-accent) 85%, black);
+    --fdz-accent-subtle: color-mix(in oklab, var(--fdz-accent) 12%, transparent);
+
+    --fdz-reward-gold: var(--ref-amber-500);
+    --fdz-reward-bright: var(--ref-amber-400);
+    --fdz-reward-hover: color-mix(in oklab, var(--fdz-reward-gold) 86%, white);
+    --fdz-reward-subtle: color-mix(in oklab, var(--fdz-reward-gold) 14%, transparent);
   }
 }
 
-/* Dégradés OKLAB perceptuels (zéro assombrissement boueux au milieu) */
+/* ============================================================================
+   Dégradés & Transitions Perceptuelles OKLAB
+   ============================================================================ */
 .fdz-oklab-accent-bg {
-  background: linear-gradient(135deg, var(--fdz-accent) 0%, var(--fdz-accent-bright) 100%);
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
   background: linear-gradient(135deg in oklab, var(--fdz-accent) 0%, var(--fdz-accent-bright) 100%);
+}
+
+.fdz-oklab-hero-glow {
+  background: radial-gradient(
+    circle at 50% 30%,
+    oklch(62% 0.178 158 / 0.18) 0%,
+    oklch(73% 0.175 76 / 0.08) 40%,
+    transparent 70%
+  );
 }
 
 .fdz-scrim-radial {
   background: radial-gradient(
     ellipse 88% 78% at 30% 50%,
-    rgba(2, 6, 23, 0.88) 0%,
-    rgba(2, 6, 23, 0.58) 48%,
+    rgba(2, 6, 23, 0.92) 0%,
+    rgba(2, 6, 23, 0.65) 50%,
     rgba(2, 6, 23, 0) 100%
   );
 }
 
+/* ============================================================================
+   Composants de Design : Glassmorphism & Élévation Céleste
+   ============================================================================ */
+.fdz-glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid oklch(90% 0.015 248 / 0.8);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.06);
+}
+
+.fdz-glass-dark {
+  background: oklch(15% 0.025 255 / 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid oklch(32% 0.030 252 / 0.45);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+}
+
+.fdz-card-elevated {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+}
+
+.fdz-card-elevated:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 35px -10px oklch(62% 0.178 158 / 0.12), 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  border-color: oklch(62% 0.178 158 / 0.4);
+}
+
+/* Shimmer discret pour les badges de statut */
+@keyframes fdz-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+.fdz-shimmer-badge {
+  position: relative;
+  overflow: hidden;
+}
+
+.fdz-shimmer-badge::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  animation: fdz-shimmer 2.8s infinite;
+}
+
+/* ============================================================================
+   Typographie & Rendu
+   ============================================================================ */
 html {
   scroll-behavior: smooth;
 }
@@ -85,25 +219,32 @@ body {
   font-family: 'Cairo', 'Plus Jakarta Sans', sans-serif;
 }
 
-/* Tabular figures for Algerian phone numbers and DZD currency */
+/* Chiffres tabulaires pour les montants DZD et numéros 05/06/07 */
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
 
-/* Custom scrollbars */
+/* Sélection de texte harmonieuse aux couleurs de la marque */
+::selection {
+  background-color: oklch(62% 0.178 158 / 0.25);
+  color: oklch(26% 0.085 158);
+}
+
+/* Scrollbar soignée */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: oklch(96% 0.008 248);
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: oklch(78% 0.02 248);
   border-radius: 9999px;
+  border: 2px solid oklch(96% 0.008 248);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: oklch(62% 0.178 158);
 }
 
 /* Protection anti-débordement mobile */

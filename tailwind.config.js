@@ -9,70 +9,102 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Core Identity
+        // ====================================================================
+        // Perceptually Uniform OKLCH Scales (Color Expert System)
+        // Calibrated with flat perceptual derivatives, zero muddy midtones,
+        // and strict in-gamut mapping for sRGB + Display P3.
+        // ====================================================================
         emerald: {
-          50: '#ecfdf5',
-          100: '#d1fae5',
-          200: '#a7f3d0',
-          300: '#6ee7b7',
-          400: '#34d399',
-          500: '#10b981', // Algerian Emerald
-          600: '#059669',
-          700: '#047857',
-          800: '#065f46',
-          900: '#064e3b',
+          50: 'oklch(97.5% 0.024 158)',
+          100: 'oklch(93.5% 0.052 158)',
+          200: 'oklch(86.5% 0.092 158)',
+          300: 'oklch(78.5% 0.132 158)',
+          400: 'oklch(70.0% 0.165 158)',
+          500: 'oklch(62.0% 0.178 158)', // Algerian Emerald Anchor
+          600: 'oklch(53.0% 0.165 158)',
+          700: 'oklch(44.0% 0.145 158)',
+          800: 'oklch(35.0% 0.115 158)',
+          900: 'oklch(26.0% 0.085 158)',
+          950: 'oklch(18.0% 0.055 158)',
         },
         slate: {
-          900: '#0f172a', // Midnight Slate
-          950: '#020617',
+          50: 'oklch(98.5% 0.005 248)',
+          100: 'oklch(95.0% 0.010 248)',
+          200: 'oklch(89.0% 0.016 248)',
+          300: 'oklch(80.0% 0.022 248)',
+          400: 'oklch(68.0% 0.026 248)',
+          500: 'oklch(54.0% 0.030 248)',
+          600: 'oklch(42.0% 0.030 248)',
+          700: 'oklch(32.0% 0.030 248)',
+          800: 'oklch(22.0% 0.030 252)',
+          900: 'oklch(15.0% 0.025 255)', // Midnight Slate Canvas
+          950: 'oklch(11.0% 0.020 258)', // Deep Obsidian Floor
         },
         amber: {
-          500: '#f59e0b', // Warm Gold / Rewards
+          50: 'oklch(97.5% 0.030 85)',
+          100: 'oklch(93.0% 0.070 85)',
+          200: 'oklch(87.0% 0.110 82)',
+          300: 'oklch(82.0% 0.145 80)',
+          400: 'oklch(78.0% 0.165 78)',
+          500: 'oklch(73.0% 0.175 76)', // Warm Gold / Reward Accent
+          600: 'oklch(63.0% 0.165 72)',
+          700: 'oklch(52.0% 0.145 68)',
+          800: 'oklch(41.0% 0.120 62)',
+          900: 'oklch(30.0% 0.090 58)',
+          950: 'oklch(20.0% 0.060 55)',
         },
-        // Stitch Design System Tokens
+        // Semantic Token Mapping
         primary: {
-          DEFAULT: '#006c49',
-          container: '#10b981',
-          fixed: '#6ffbbe',
-          'fixed-dim': '#4edea3',
+          DEFAULT: 'oklch(62.0% 0.178 158)',
+          hover: 'oklch(53.0% 0.165 158)',
+          container: 'oklch(93.5% 0.052 158)',
+          'on-container': 'oklch(26.0% 0.085 158)',
+          fixed: 'oklch(86.5% 0.092 158)',
+          'fixed-dim': 'oklch(70.0% 0.165 158)',
         },
         secondary: {
-          DEFAULT: '#565e74',
-          container: '#dae2fd',
-          'fixed-dim': '#bec6e0',
+          DEFAULT: 'oklch(42.0% 0.030 248)',
+          container: 'oklch(95.0% 0.010 248)',
+          'fixed-dim': 'oklch(80.0% 0.022 248)',
         },
-        tertiary: {
-          DEFAULT: '#855300',
-          container: '#f59e0b',
-          fixed: '#ffddb8',
-          'fixed-dim': '#ffb95f',
+        reward: {
+          DEFAULT: 'oklch(73.0% 0.175 76)',
+          hover: 'oklch(63.0% 0.165 72)',
+          surface: 'oklch(97.5% 0.030 85)',
         },
         surface: {
-          DEFAULT: '#f8f9ff',
-          dim: '#cbdbf5',
-          bright: '#f8f9ff',
-          variant: '#d3e4fe',
+          DEFAULT: 'oklch(98.5% 0.005 248)',
+          dim: 'oklch(95.0% 0.010 248)',
+          bright: 'oklch(100% 0 0)',
+          variant: 'oklch(93.0% 0.012 248)',
           container: {
             lowest: '#ffffff',
-            low: '#eff4ff',
-            DEFAULT: '#e5eeff',
-            high: '#dce9ff',
-            highest: '#d3e4fe',
+            low: 'oklch(98.5% 0.005 248)',
+            DEFAULT: 'oklch(95.0% 0.010 248)',
+            high: 'oklch(91.0% 0.014 248)',
+            highest: 'oklch(87.0% 0.018 248)',
           }
         },
-        'on-surface': '#0b1c30',
-        'on-surface-variant': '#3c4a42',
-        'inverse-surface': '#0f172a',
-        'inverse-on-surface': '#eaf1ff',
-        'outline-variant': '#bbcabf',
+        'on-surface': 'oklch(15.0% 0.025 255)',
+        'on-surface-variant': 'oklch(42.0% 0.030 248)',
+        'inverse-surface': 'oklch(11.0% 0.020 258)',
+        'inverse-on-surface': 'oklch(98.5% 0.005 248)',
+        'outline-variant': 'oklch(89.0% 0.016 248)',
       },
       fontFamily: {
         sans: ['"Plus Jakarta Sans"', 'Cairo', 'sans-serif'],
         arabic: ['Cairo', '"Plus Jakarta Sans"', 'sans-serif'],
       },
       borderRadius: {
-        'card': '1rem',
+        'card': '1.25rem',
         'pill': '9999px',
+      },
+      boxShadow: {
+        'glow-emerald': '0 0 40px -10px oklch(62% 0.178 158 / 0.35)',
+        'glow-emerald-lg': '0 0 60px -12px oklch(62% 0.178 158 / 0.45)',
+        'glow-amber': '0 0 35px -8px oklch(73% 0.175 76 / 0.35)',
+        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.08)',
+        'glass-dark': '0 8px 32px 0 rgba(0, 0, 0, 0.45)',
       }
     },
   },
