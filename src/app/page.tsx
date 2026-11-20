@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Header from '@/components/Header';
+import HeroScrollScrub from '@/components/HeroScrollScrub';
 import Footer from '@/components/Footer';
 import LoyaltyPassSimulator from '@/components/LoyaltyPassSimulator';
 import AlgerianPaymentBadges from '@/components/AlgerianPaymentBadges';
@@ -37,12 +38,17 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-slate-950">
       <Header />
 
-      <main className="flex-1 pt-20">
-        {/* HERO SECTION */}
-        <section className="relative overflow-hidden py-16 lg:py-24 bg-gradient-to-b from-white via-slate-50 to-emerald-50/20">
+      <main className="flex-1">
+        {/* EXPÉRIENCE CINÉMATIQUE SCROLL-SCRUB VIDÉO (PHASES 1 À 5 : GSAP + LENIS + public/hero.mp4) */}
+        <HeroScrollScrub />
+
+        {/* SIMULATEUR INTERACTIF & SECTIONS PRODUIT FIDELITYDZ (AU-DESSUS DU FOND VIDÉO) */}
+        <div className="relative z-20 bg-slate-50">
+        {/* DEMO SIMULATOR HERO SECTION */}
+        <section id="demo" className="relative overflow-hidden py-16 lg:py-24 bg-gradient-to-b from-white via-slate-50 to-emerald-50/20">
           {/* Subtle Ambient Glow */}
           <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[720px] h-[360px] bg-emerald-300/20 rounded-full blur-3xl pointer-events-none"></div>
           <div className="absolute top-1/3 -right-24 w-80 h-80 bg-amber-300/20 rounded-full blur-3xl pointer-events-none"></div>
@@ -477,10 +483,11 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+              </div>
       </main>
 
       <SupportWidget defaultRole="VISITOR" />
-      <Footer />
+      <div className="relative z-20"><Footer /></div>
     </div>
   );
 }
