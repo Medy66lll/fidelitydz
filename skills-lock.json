@@ -61,6 +61,11 @@
       "commit": "a1ccf777d80e812edf23fc8b82bdc17def6143ac",
       "sourceType": "github",
       "skillPath": "skills/application-security-testing/SKILL.md"
+    },
+    "algerian-darja-content-creator": {
+      "source": "local/fidelitydz",
+      "sourceType": "local",
+      "skillPath": "algerian-darja-content-creator/SKILL.md"
     }
   }
 }

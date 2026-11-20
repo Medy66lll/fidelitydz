@@ -35,34 +35,11 @@ function BillingContent() {
   const [lastSubmittedPayment, setLastSubmittedPayment] = useState<SubscriptionPayment | null>(null);
   const [submittingReceipt, setSubmittingReceipt] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-  const [isProcessingChargily, setIsProcessingChargily] = useState(false);
-  const [chargilyMessage, setChargilyMessage] = useState<string | null>(null);
   const [addonCardsPack, setAddonCardsPack] = useState<number>(100);
   const [addonPushPack, setAddonPushPack] = useState<number>(100);
   const [addonOffersPack, setAddonOffersPack] = useState<number>(1);
   const [addonUsersPack, setAddonUsersPack] = useState<number>(1);
   const [addonLocationsPack, setAddonLocationsPack] = useState<number>(1);
-
-  useEffect(() => {
-    const payment = searchParams.get('payment');
-    const simulated = searchParams.get('simulated_chargily');
-    const checkoutId = searchParams.get('checkout_id');
-
-    if ((payment === 'success' || simulated === 'true') && currentMerchant) {
-      db.activateChargilySubscription(currentMerchant.id, checkoutId || `chk_${Date.now()}`);
-      refreshMerchantData();
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-      });
-      setChargilyMessage(
-        isAr
-          ? 'تم تأكيد الدفع بنجاح عبر Chargily Pay وتمديد اشتراكك لمدة 30 يوماً إضافية !'
-          : 'Paiement confirmé par Chargily Pay ! Votre abonnement a été prolongé de 30 jours.'
-      );
-    }
-  }, [searchParams, currentMerchant, isAr, refreshMerchantData]);
 
   const handleCopy = (text: string, fieldName: string) => {
     if (typeof window !== 'undefined') {
@@ -113,34 +90,6 @@ Merci de mettre à jour mes limites sur le serveur Supabase.`;
     const total = 3900 + (Math.max(0, (currentMerchant?.max_cards || 100) - 100) / 500) * 1000 + (Math.max(0, (currentMerchant?.max_push_per_week || 100) - 100) / 300) * 800 + (Math.max(0, (currentMerchant?.max_users || 2) - 2)) * 500 + (Math.max(0, (currentMerchant?.max_active_offers || 3) - 3) / 5) * 500 + (Math.max(0, (currentMerchant?.max_locations || 1) - 1)) * 1500;
     const text = `💳 *NOUVEAU REÇU DE PAIEMENT (${total} DZD)*\n\n🏪 *Commerce :* ${currentMerchant?.business_name}\n📞 *Tél Commerçant :* ${currentMerchant?.phone}\n🏦 *Méthode :* ${payment.payment_method}\n🔢 *Expéditeur :* ${payment.transaction_reference}\n💰 *Montant :* ${total} DZD\n\nMerci de valider mon abonnement sur l'espace Super-Admin FidelityDZ.`;
     return `https://wa.me/${ownerWa}?text=${encodeURIComponent(text)}`;
-  };
-
-  const handleChargilyCheckout = async () => {
-    if (!currentMerchant) return;
-    setIsProcessingChargily(true);
-    setChargilyMessage(null);
-    setFormError(null);
-
-    try {
-      const res = await fetch('/api/chargily/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          merchant_id: currentMerchant.id,
-          merchant_name: currentMerchant.business_name,
-        }),
-      });
-
-      const data = await res.json();
-      if (data.success && data.checkout_url) {
-        window.location.href = data.checkout_url;
-      } else {
-        setFormError(data.error || "Erreur lors de l'initialisation de Chargily Pay");
-        setIsProcessingChargily(false);
-      }
-    } catch {
-      setIsProcessingChargily(false);
-    }
   };
 
   // Soumettre reçu BaridiMob ou CCP vers Supabase + Admin + WhatsApp
@@ -195,13 +144,6 @@ Merci de mettre à jour mes limites sur le serveur Supabase.`;
           Tarif unique : <strong className="text-slate-900">3 900 DZD / mois</strong> tout compris (cartes illimitées, scanner, offres).
         </p>
       </div>
-
-      {chargilyMessage && (
-        <div className="bg-emerald-50 border border-emerald-300 text-emerald-900 p-5 rounded-2xl flex items-center gap-3 shadow-md font-bold text-sm">
-          <CheckCircle2 className="w-6 h-6 text-emerald-600 flex-shrink-0" />
-          <span>{chargilyMessage}</span>
-        </div>
-      )}
 
       {formError && (
         <div className="bg-red-50 border border-red-300 text-red-800 p-4 rounded-2xl text-xs font-bold">
@@ -278,68 +220,14 @@ Merci de mettre à jour mes limites sur le serveur Supabase.`;
         </div>
       </div>
 
-      {/* TWO PAYMENT OPTIONS GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-        {/* OPTION 1: PAIEMENT EN LIGNE INSTANTANÉ (CHARGILY PAY - EDAHABIA / CIB) */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-emerald-500/30 shadow-lg shadow-emerald-500/5 space-y-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
-          
-          <div className="space-y-1 relative z-10">
-            <div className="inline-flex items-center gap-1.5 text-xs font-black text-emerald-800 bg-emerald-50 border border-emerald-200/80 px-3 py-1 rounded-full">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-              <span>{isAr ? 'دفع فوري تلقائي' : 'Instantané & Automatique'}</span>
-            </div>
-            <h3 className="text-xl font-extrabold text-slate-900">
-              {isAr ? 'الدفع بالبطاقة الذهبية / CIB' : 'Paiement par Carte Edahabia / CIB'}
-            </h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              {isAr
-                ? 'الدفع الإلكتروني الآمن عبر Chargily Pay. تفعيل اشتراكك فوري وتلقائي 100% دون الحاجة لإرسال وصل.'
-                : 'Paiement 100% sécurisé via passerelle officielle Chargily Pay. Votre compte est activé instantanément.'}
-            </p>
-          </div>
-
-          <div className="py-2">
-            <AlgerianPaymentBadges />
-          </div>
-
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs">
-            <div className="flex justify-between items-center text-slate-600">
-              <span>Montant à régler :</span>
-              <span className="font-extrabold text-slate-900 text-sm">
-                {3900 + (Math.max(0, (currentMerchant?.max_cards || 100) - 100) / 500) * 1000 + (Math.max(0, (currentMerchant?.max_push_per_week || 100) - 100) / 300) * 800 + (Math.max(0, (currentMerchant?.max_users || 2) - 2)) * 500 + (Math.max(0, (currentMerchant?.max_active_offers || 3) - 3) / 5) * 500 + (Math.max(0, (currentMerchant?.max_locations || 1) - 1)) * 1500} DZD
-              </span>
-            </div>
-            <div className="flex items-center gap-2 text-emerald-700 font-medium text-[11px]">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-              <span>Activation immédiate 24/7 sur le serveur</span>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleChargilyCheckout}
-            disabled={isProcessingChargily}
-            className="w-full py-4 fdz-oklab-accent-bg hover:brightness-105 active:scale-[0.98] text-slate-950 font-black text-sm rounded-xl shadow-lg shadow-emerald-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-          >
-            {isProcessingChargily ? (
-              <span>Initialisation Chargily Pay...</span>
-            ) : (
-              <>
-                <CreditCard className="w-5 h-5" />
-                <span>Payer en ligne via Chargily Pay</span>
-                <ArrowRight className="w-4 h-4 rtl:rotate-180" />
-              </>
-            )}
-          </button>
-        </div>
-
-        {/* OPTION 2: VIREMENT BARIDIMOB / CCP OFFICIEL */}
+      {/* PAIEMENT OFFICIEL PAR VIREMENT BARIDIMOB OU MANDAT CCP */}
+      <div className="max-w-2xl mx-auto items-start">
+        {/* VIREMENT BARIDIMOB / CCP OFFICIEL */}
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-md space-y-5">
           <div className="space-y-1">
             <div className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-full">
               <Building2 className="w-3.5 h-3.5 text-slate-500" />
-              <span>{isAr ? 'تحويل يدوي' : 'Virement BaridiMob / CCP'}</span>
+              <span>{isAr ? 'تحويل رسمي آمن' : 'Virement Officiel BaridiMob / CCP'}</span>
             </div>
             <h3 className="text-xl font-extrabold text-slate-900">
               {t('baridimob_ccp_title')}
@@ -347,6 +235,10 @@ Merci de mettre à jour mes limites sur le serveur Supabase.`;
             <p className="text-xs text-slate-600 leading-relaxed">
               {t('baridimob_instructions')}
             </p>
+          </div>
+
+          <div className="py-1">
+            <AlgerianPaymentBadges />
           </div>
 
           {/* OFFICIAL OWNER DETAILS BOX */}
@@ -490,6 +382,7 @@ Merci de mettre à jour mes limites sur le serveur Supabase.`;
             </form>
           )}
         </div>
+      </div>
       
       {/* SECTION QUOTAS, TARIFS FIXES & MULTI-LOCAUX */}
       <div id="quotas" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
@@ -660,7 +553,7 @@ Merci de mettre à jour mes limites sur le serveur Supabase.`;
             </a>
           </div>
         </div>
-      </div></div>
+      </div>
     </div>
   );
 }

@@ -44,7 +44,7 @@ export const translations = {
     pricing_feature_4: 'Générateur d\'affiche QR de comptoir PDF',
     pricing_feature_5: 'Comptes caissiers avec scanner ultra-rapide',
     pricing_feature_6: 'Support WhatsApp & Téléphone dédié 7j/7',
-    pay_chargily: 'Payer par Carte Edahabia / CIB',
+    pay_chargily: 'Virement BaridiMob / CCP',
     pay_baridimob_ccp: 'Virement BaridiMob / CCP',
 
     // Merchant Dashboard
@@ -120,9 +120,9 @@ export const translations = {
     status_pending: 'Paiement en attente de validation',
     status_expired: 'Abonnement Expiré',
     days_left: 'jours restants',
-    edahabia_cib_title: 'Paiement Automatique Sécurisé (Edahabia / CIB)',
-    edahabia_desc: 'Activation immédiate 24h/24 via la passerelle officielle Chargily Pay V2.',
-    launch_checkout: 'Payer 3 900 DZD avec Chargily Pay',
+    edahabia_cib_title: 'Virement Officiel BaridiMob & CCP',
+    edahabia_desc: 'Règlement simple et sécurisé par virement BaridiMob (RIP 20 chiffres) ou mandat CCP.',
+    launch_checkout: 'Valider mon abonnement (3 900 DZD)',
     baridimob_ccp_title: 'Virement Manuel BaridiMob ou CCP',
     baridimob_instructions: 'Effectuez un virement de 3 900 DZD vers le compte officiel de la plateforme, puis soumettez votre preuve ou référence ci-dessous :',
     owner_title: 'Coordonnées Officielles du Propriétaire',
@@ -215,7 +215,7 @@ export const translations = {
     pricing_feature_4: 'ملصق QR احترافي جاهز للطباعة على الكاونتر',
     pricing_feature_5: 'حسابات كاشير وماسح ضوئي فائق السرعة',
     pricing_feature_6: 'دعم فني مخصص عبر واتساب والهاتف 7/7',
-    pay_chargily: 'الدفع بالبطاقة الذهبية / CIB',
+    pay_chargily: 'تحويل بريدي موب / CCP',
     pay_baridimob_ccp: 'تحويل بريدي موب / CCP',
 
     // Merchant Dashboard
@@ -291,9 +291,9 @@ export const translations = {
     status_pending: 'الدفعة قيد المراجعة والتحقق',
     status_expired: 'انتهى الاشتراك',
     days_left: 'أيام متبقية',
-    edahabia_cib_title: 'الدفع التلقائي الآمن (البطاقة الذهبية / CIB)',
-    edahabia_desc: 'تفعيل فوري للاشتراك على مدار 24 ساعة عبر بوابة شارجيلي باي V2 الرسمية.',
-    launch_checkout: 'دفع 3 900 دج عبر Chargily Pay',
+    edahabia_cib_title: 'التحويل الرسمي عبر بريدي موب و CCP',
+    edahabia_desc: 'تسديد سهل ومؤمن عبر تحويل بريدي موب (RIP 20 رقماً) أو حساب CCP.',
+    launch_checkout: 'تأكيد الاشتراك (3 900 دج)',
     baridimob_ccp_title: 'التحويل اليدوي عبر بريدي موب أو CCP',
     baridimob_instructions: 'قم بتحويل مبلغ 3 900 دج إلى الحساب الرسمي للمنصة ثم ارفع وصل الدفع أو رقم العملية أدناه :',
     owner_title: 'البيانات الرسمية لمالك المنصة',

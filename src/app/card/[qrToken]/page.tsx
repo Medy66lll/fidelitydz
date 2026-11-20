@@ -33,6 +33,7 @@ import {
   Facebook,
   Instagram,
   Music,
+  Smartphone,
 } from 'lucide-react';
 
 export default function CustomerCardPage() {
@@ -287,7 +288,7 @@ export default function CustomerCardPage() {
 
       ctx.fillStyle = '#10B981';
       ctx.font = 'bold 22px sans-serif';
-      ctx.fillText('APPLE / GOOGLE WALLET PASS • FIDELITYDZ', 50, 90);
+      ctx.fillText('CARTE DE FIDÉLITÉ DIGITALE • FIDELITYDZ', 50, 90);
 
       ctx.fillStyle = '#FFFFFF';
       ctx.font = 'bold 44px sans-serif';
@@ -369,7 +370,7 @@ export default function CustomerCardPage() {
       const dataUrl = canvas.toDataURL('image/png');
       const a = document.createElement('a');
       a.href = dataUrl;
-      a.download = `Pass_Wallet_${merchant.slug}_${card.customer_phone}.png`;
+      a.download = `Carte_Fidelite_${merchant.slug}_${card.customer_phone}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -469,8 +470,8 @@ export default function CustomerCardPage() {
       <div className="fixed inset-0 z-50 bg-black text-white flex flex-col justify-between p-4 overflow-y-auto">
         <div className="max-w-sm mx-auto w-full flex items-center justify-between py-2">
           <span className="text-xs font-black uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
-            <Wallet className="w-4 h-4" />
-            <span>Mode Pass Wallet Actif</span>
+            <Maximize2 className="w-4 h-4" />
+            <span>Mode Carte Plein Écran (Caisse)</span>
           </span>
           <button
             type="button"
@@ -519,7 +520,7 @@ export default function CustomerCardPage() {
             className="w-full py-3.5 rounded-2xl bg-emerald-500 text-slate-950 font-black text-xs flex items-center justify-center gap-2"
           >
             <Download className="w-4 h-4" />
-            <span>Enregistrer dans Photos/Wallet</span>
+            <span>Enregistrer la Carte (Image)</span>
           </button>
         </div>
       </div>
@@ -783,6 +784,40 @@ export default function CustomerCardPage() {
               </p>
             </div>
           </button>
+        </div>
+
+        {/* ENREGISTRER SUR L'ÉCRAN D'ACCUEIL DU SMARTPHONE */}
+        <div className="bg-slate-900/90 border border-emerald-500/30 rounded-[1.5rem] p-4 shadow-lg space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
+              <Smartphone className="w-5 h-5" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-xs font-black uppercase text-white tracking-wide">
+                {isAr ? 'احفظ بطاقتك على شاشة هاتفك' : 'Garder ma carte sur mon écran d’accueil'}
+              </h3>
+              <p className="text-[11px] text-slate-400">
+                {isAr
+                  ? 'وصول فوري بدون تطبيق: افتح بطاقتك بنقرة واحدة من شاشة هاتفك الرئيسية.'
+                  : 'Accès en 1 clic : retrouvez vos tampons directement sur votre smartphone.'}
+              </p>
+            </div>
+          </div>
+
+          <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-[11px] text-slate-300 space-y-1.5 leading-relaxed">
+            <p className="flex items-center gap-1.5 font-bold text-slate-200">
+              <span>🍎 Sur iPhone (Safari) :</span>
+            </p>
+            <p className="pl-4 text-slate-400">
+              Appuyez sur l&apos;icône Partager <span className="text-white font-bold">⎋</span> en bas puis sur <strong className="text-emerald-400">« Sur l’écran d’accueil »</strong>.
+            </p>
+            <p className="flex items-center gap-1.5 font-bold text-slate-200 pt-1">
+              <span>🤖 Sur Android (Chrome) :</span>
+            </p>
+            <p className="pl-4 text-slate-400">
+              Appuyez sur les <strong className="text-white">3 points ⋮</strong> en haut puis sur <strong className="text-emerald-400">« Ajouter à l’écran d’accueil »</strong>.
+            </p>
+          </div>
         </div>
 
         {/* MISSION GOOGLE MAPS (Si non réclamée) */}

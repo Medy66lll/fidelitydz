@@ -114,8 +114,8 @@ export default function Footer() {
             </h3>
             <p className="text-xs text-slate-400 font-medium">
               {isAr
-                ? 'دفع فوري عبر البطاقة الذهبية و CIB أو تحويل عبر بريدي موب وحساب CCP.'
-                : 'Règlement instantané via Chargily Pay (Edahabia & CIB) ou virement BaridiMob / CCP.'}
+                ? 'تحويل عبر تطبيق بريدي موب (RIP) أو عبر مكاتب بريد الجزائر (حساب CCP).'
+                : 'Règlement sécurisé par virement BaridiMob (RIP) ou mandat CCP officiel Algérie Poste.'}
             </p>
             <div className="pt-1">
               <AlgerianPaymentBadges size="sm" />

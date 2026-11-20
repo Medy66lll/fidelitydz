@@ -451,8 +451,8 @@ export default function LandingPage() {
                   {
                     qFr: 'Comment s\'effectue le règlement de l\'abonnement (3 900 DZD) ?',
                     qAr: 'كيف يتم تسديد قيمة الاشتراك الشهري (3900 دج) ؟',
-                    aFr: 'Deux modes de paiement algériens sont proposés : (1) Paiement automatique et instantané par carte Edahabia ou CIB via la passerelle officielle Chargily Pay V2. (2) Virement manuel par BaridiMob ou CCP vers le compte officiel de la plateforme, avec activation après vérification du reçu.',
-                    aAr: 'نوفر خيارين للدفع الجزائري : (1) دفع تلقائي وفوري عبر البطاقة الذهبية أو بطاقة CIB عبر بوابة Chargily Pay V2 المعتمدة. (2) أو تحويل يدوي عبر بريدي موب / CCP نحو الحساب الرسمي للمنصة ورفع صورة الوصل للتفعيل السريع.'
+                    aFr: 'Le règlement s\'effectue en toute simplicité par virement BaridiMob (RIP 20 chiffres) ou par versement / mandat CCP Algérie Poste. Dès la transmission de votre preuve de paiement depuis votre espace commerçant, votre abonnement est validé en priorité.',
+                    aAr: 'يتم التسديد بكل سهولة وأمان عبر تحويل بريدي موب (RIP 20 رقم) أو عبر مكاتب بريد الجزائر (حساب CCP). بمجرد إرفاق صورة الوصل من لوحة التحكم، يتم تفعيل اشتراكك وحسابك فوراً وبأولوية.'
                   },
                   {
                     qFr: 'Quel équipement faut-il à la caisse pour scanner ?',

@@ -229,9 +229,9 @@ export default function HeroScrollScrub() {
         ? 'تذكير واتساب بضغطة زر واشتراك بالدينار الجزائري.'
         : 'Relance WhatsApp 1-Clic & Paiement en Dinars.',
       body: isAr
-        ? 'استرجع الزبائن الغائبين (+30 يوماً) وهنئ أصحاب الهدايا عبر واتساب بضغطة واحدة. اشتراك واضح بـ 3900 دج/شهر عبر بريدي موب، CCP أو Chargily Pay.'
-        : 'Filtrez vos clients inactifs (+30 jours), vos VIP ou cadeaux prêts et relancez-les sur WhatsApp en un clic. Abonnement clair à 3 900 DZD/mois via BaridiMob, CCP ou Chargily Pay.',
-      tags: ['WhatsApp 1-Clic', 'Export Excel / CSV', 'BaridiMob • CCP • Chargily'],
+        ? 'استرجع الزبائن الغائبين (+30 يوماً) وهنئ أصحاب الهدايا عبر واتساب بضغطة واحدة. اشتراك واضح بـ 3900 دج/شهر عبر بريدي موب أو حساب CCP.'
+        : 'Filtrez vos clients inactifs (+30 jours), vos VIP ou cadeaux prêts et relancez-les sur WhatsApp en un clic. Abonnement clair à 3 900 DZD/mois via BaridiMob ou mandat CCP.',
+      tags: ['WhatsApp 1-Clic', 'Export Excel / CSV', 'BaridiMob • CCP Officiel'],
     },
   ];
 
@@ -321,7 +321,7 @@ export default function HeroScrollScrub() {
           <p className="mt-5 text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed">
             {isAr
               ? 'اربط زبائنك بمتجرك عبر رمز QR ورقم الهاتف فقط — تذكير واتساب، حماية الصندوق ودفع محلي.'
-              : 'Sans application à télécharger pour vos clients. QR Code en caisse, tampons instantanés, relances WhatsApp et paiement BaridiMob / CCP / Chargily.'}
+              : 'Sans application à télécharger pour vos clients. QR Code en caisse, tampons instantanés, relances WhatsApp et paiement sécurisé BaridiMob / CCP.'}
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">

@@ -354,7 +354,7 @@ export default function CounterPosterPage() {
 
     ctx.fillStyle = isDark ? '#10B981' : '#059669';
     ctx.font = '600 13px sans-serif';
-    ctx.fillText('100% Algérie 🇩🇿  •  Apple Wallet & Google Pass Compatible  •  Support Commerçant Dédié', W / 2, footerY + 62);
+    ctx.fillText('100% Algérie 🇩🇿  •  Enregistrable sur écran d’accueil  •  Sans Application  •  Support Dédié', W / 2, footerY + 62);
 
     return canvas;
   };
@@ -653,7 +653,7 @@ export default function CounterPosterPage() {
               FidelityDZ • Système Privilège de Fidélité Digitale 🇩🇿
             </p>
             <p className="text-[9px] text-emerald-500 font-semibold">
-              Compatible iPhone (Apple Wallet) & Android
+              Enregistrable sur l’écran d’accueil de votre téléphone (iPhone & Android) • Sans application
             </p>
           </div>
         </div>

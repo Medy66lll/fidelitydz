@@ -13,7 +13,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: 'FidelityDZ — N°1 de la Carte de Fidélité Digitale en Algérie',
   description:
-    'Créez votre programme de fidélité digital en 2 minutes. Sans application à télécharger pour vos clients. QR Code, Tampons, Points, Offres VIP et Paiement BaridiMob / CCP / Chargily.',
+    'Créez votre programme de fidélité digital en 2 minutes. Sans application à télécharger pour vos clients. QR Code, Tampons, Points, Offres VIP et Paiement sécurisé BaridiMob / CCP.',
   manifest: '/api/manifest',
   appleWebApp: {
     capable: true,
