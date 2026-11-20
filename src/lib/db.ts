@@ -442,7 +442,7 @@ class FidelityDatabase {
     program: LoyaltyProgram | null;
     offers: PersonalizedOffer[];
   }> {
-    const cleanToken = decodeURIComponent(token || '').trim();
+    const cleanToken = decodeURIComponent(token || '').trim().split('#t=')[0];
     try {
       const res = await fetch(`/api/db?type=card_by_token&token=${encodeURIComponent(cleanToken)}&_t=${Date.now()}`, {
         cache: 'no-store',
@@ -719,8 +719,9 @@ class FidelityDatabase {
 
   getCardByToken(token: string): CustomerCard | undefined {
     const all = this.getCustomerCards();
-    const tUuid = toValidUuid(token);
-    return all.find((c) => c.qr_token === token || c.id === token || c.qr_token === tUuid || c.id === tUuid);
+    const base = decodeURIComponent(token || '').trim().split('#t=')[0];
+    const tUuid = toValidUuid(base);
+    return all.find((c) => c.qr_token === base || c.id === base || c.qr_token === tUuid || c.id === tUuid);
   }
 
   getCardByPhone(merchantId: string, phone: string): CustomerCard | undefined {

@@ -895,7 +895,8 @@ export async function GET(req: NextRequest) {
   }
 
   if (type === 'card_by_token') {
-    const rawToken = sanitizePostgrestFilterValue(searchParams.get('token') || '', 80);
+    const rawParam = (searchParams.get('token') || '').split('#t=')[0].trim();
+    const rawToken = sanitizePostgrestFilterValue(rawParam, 80);
     if (!rawToken) {
       return NextResponse.json({ found: false }, { status: 200 });
     }

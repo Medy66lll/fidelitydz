@@ -34,6 +34,7 @@ import {
   Instagram,
   Music,
   Smartphone,
+  ShieldCheck,
 } from 'lucide-react';
 
 export default function CustomerCardPage() {
@@ -59,6 +60,22 @@ export default function CustomerCardPage() {
   const [googleReviewClaimed, setGoogleReviewClaimed] = useState(false);
   const [notifPermission, setNotifPermission] = useState<string>('default');
   const [livePushOffer, setLivePushOffer] = useState<PersonalizedOffer | null>(null);
+
+  // QR Code Dynamique Anti-Capture (renouvelé chaque minute)
+  const [currentMinuteEpoch, setCurrentMinuteEpoch] = useState<number>(() => Math.floor(Date.now() / 60000));
+  const [secondsUntilRotate, setSecondsUntilRotate] = useState<number>(() => 60 - (Math.floor(Date.now() / 1000) % 60));
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const nowSec = Math.floor(Date.now() / 1000);
+      const nowMin = Math.floor(nowSec / 60);
+      setCurrentMinuteEpoch(nowMin);
+      setSecondsUntilRotate(60 - (nowSec % 60));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const dynamicQrValue = card ? `${card.qr_token}#t=${currentMinuteEpoch}` : '';
 
   useEffect(() => {
     if (typeof window !== 'undefined' && 'Notification' in window) {
@@ -506,8 +523,16 @@ export default function CustomerCardPage() {
             </div>
           </div>
           <div className="bg-white rounded-3xl p-6 text-slate-950 flex flex-col items-center shadow-2xl">
-            <QRCodeSVG value={card.qr_token} size={200} level="H" includeMargin={false} />
+            <QRCodeSVG value={dynamicQrValue || card.qr_token} size={200} level="H" includeMargin={false} />
             <p className="mt-3 font-mono font-black text-base tracking-wider">{card.customer_phone}</p>
+            <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-bold">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+              <span>{isAr ? `رمز ديناميكي مباشر (${secondsUntilRotate}ث)` : `QR Dynamique Anti-Capture (${secondsUntilRotate}s)`}</span>
+            </div>
           </div>
           <div className="text-center text-xs text-amber-300 font-bold">
             🎁 Récompense : {isAr ? program.reward_title_ar : program.reward_title_fr}
@@ -770,17 +795,25 @@ export default function CustomerCardPage() {
             className="w-full relative z-10 bg-white rounded-2xl p-4 flex items-center gap-4 shadow-xl hover:bg-slate-50 transition-colors group text-left"
           >
             <div className="bg-white p-1 rounded-xl shadow-sm border border-slate-100 flex-shrink-0 relative">
-              <QRCodeSVG value={card.qr_token} size={80} level="M" includeMargin={false} fgColor="#0F172A" />
+              <QRCodeSVG value={dynamicQrValue || card.qr_token} size={80} level="M" includeMargin={false} fgColor="#0F172A" />
               <div className="absolute inset-0 bg-slate-900/5 backdrop-blur-[1px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-xl">
                 <Maximize2 className="w-6 h-6 text-slate-900 drop-shadow-md" />
               </div>
             </div>
             <div className="flex-1">
-              <p className="text-[10px] font-black uppercase text-slate-500 mb-1 leading-tight">
-                {isAr ? 'اضغط لتكبير الرمز' : 'Cliquez pour agrandir'}
-              </p>
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-emerald-600 mb-1 leading-tight">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                </span>
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                <span>{isAr ? `رمز مباشر (${secondsUntilRotate}ث)` : `Anti-Capture Direct (${secondsUntilRotate}s)`}</span>
+              </div>
               <p className="text-xs font-bold text-slate-800">
                 {isAr ? program.reward_title_ar : program.reward_title_fr}
+              </p>
+              <p className="text-[10px] text-slate-400 font-medium pt-0.5">
+                {isAr ? 'اضغط لتكبير الرمز' : 'Cliquez pour agrandir'}
               </p>
             </div>
           </button>

@@ -27,6 +27,7 @@ import {
   WifiOff,
   RefreshCw,
   ShieldAlert,
+  ShieldCheck,
   KeyRound,
   Lock,
 } from 'lucide-react';
@@ -44,6 +45,7 @@ export default function CashierScannerPage() {
   const [purchaseAmount, setPurchaseAmount] = useState('1500');
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLiveScanVerified, setIsLiveScanVerified] = useState(false);
 
   // Mode Hors-Ligne (Offline Sync) & Cooldown Anti-Fraude & Mode Caissier
   const [isOnline, setIsOnline] = useState(true);
@@ -138,6 +140,7 @@ export default function CashierScannerPage() {
     setErrorMessage(null);
     setFeedbackMessage(null);
     setCooldownBlockedAction(null);
+    setIsLiveScanVerified(false);
 
     const term = phoneSearch.trim();
     if (!term) return;
@@ -218,6 +221,19 @@ export default function CashierScannerPage() {
                     })
                     .catch(() => {});
 
+                  let liveFresh = false;
+                  if (decodedText.includes('#t=')) {
+                    const epochStr = decodedText.split('#t=')[1];
+                    const minEpoch = parseInt(epochStr, 10);
+                    if (!isNaN(minEpoch)) {
+                      const curMin = Math.floor(Date.now() / 60000);
+                      if (Math.abs(curMin - minEpoch) <= 2) {
+                        liveFresh = true;
+                      }
+                    }
+                  }
+                  setIsLiveScanVerified(liveFresh);
+
                   const fetched = await db.fetchCardByTokenAsync(decodedText);
                   let found = fetched.card || db.getCardByToken(decodedText);
                   if (!found && currentMerchant) {
@@ -228,7 +244,11 @@ export default function CashierScannerPage() {
                     setActiveCard(found);
                     setActiveProgram(db.getProgramByMerchantId(currentMerchant.id));
                     setActiveTab('search');
-                    setFeedbackMessage(t('customer_found'));
+                    setFeedbackMessage(
+                      liveFresh
+                        ? '🛡️ Client en direct : Scan Anti-Capture Validé !'
+                        : t('customer_found')
+                    );
                   } else {
                     setErrorMessage(`QR Code invalide ou appartenant à un autre commerce (${decodedText})`);
                   }
@@ -266,6 +286,7 @@ export default function CashierScannerPage() {
     if (!activeCard) return;
     setErrorMessage(null);
     setCooldownBlockedAction(null);
+    setIsLiveScanVerified(false);
     try {
       const result = db.addStampToCard(activeCard.id, count, { bypassCooldown });
       setActiveCard({ ...result.card });
@@ -311,6 +332,7 @@ export default function CashierScannerPage() {
     if (!activeCard) return;
     setErrorMessage(null);
     setCooldownBlockedAction(null);
+    setIsLiveScanVerified(false);
     const amount = parseInt(purchaseAmount, 10);
     if (isNaN(amount) || amount <= 0) {
       setErrorMessage(isAr ? 'يرجى إدخال مبلغ صحيح' : 'Veuillez saisir un montant valide en DZD');
@@ -669,6 +691,20 @@ export default function CashierScannerPage() {
                 <X className="w-5 h-5" />
               </button>
             </div>
+
+            {isLiveScanVerified ? (
+              <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-2.5 rounded-xl flex items-center gap-2 text-xs font-bold">
+                <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <span>
+                  🛡️ {isAr ? 'مسح مباشر مؤكد (رمز ديناميكي مباشر غير مكرر)' : 'Scan Direct Confirmé • Anti-Capture Validé (Client en direct)'}
+                </span>
+              </div>
+            ) : (
+              <div className="bg-slate-900/60 border border-slate-800 text-slate-400 p-2 rounded-xl flex items-center gap-2 text-[11px] font-semibold">
+                <Clock className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                <span>{isAr ? 'بطاقة ممسوحة أو بحث بالرقم' : 'Validation par carte enregistrée ou numéro'}</span>
+              </div>
+            )}
 
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 text-center space-y-1">

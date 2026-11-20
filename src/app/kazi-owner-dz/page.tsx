@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { db, defaultPlatformSettings } from '@/lib/db';
+import { generateInvoicePdf } from '@/lib/invoicePdf';
 import { SubscriptionPayment, Merchant } from '@/lib/types';
 import LanguageToggle from '@/components/LanguageToggle';
 import confetti from 'canvas-confetti';
@@ -23,6 +24,7 @@ import {
   LogOut,
   Save,
   Copy,
+  FileText,
 } from 'lucide-react';
 
 export default function SuperAdminPage() {
@@ -910,14 +912,37 @@ CREATE POLICY "subscription_payments_all" ON subscription_payments FOR ALL USING
                           {p.amount_dzd} DZD
                         </td>
                         <td className="p-4 sm:px-6">
-                          <button
-                            type="button"
-                            onClick={() => setPreviewReceipt(p)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                            <span>Voir reçu</span>
-                          </button>
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => setPreviewReceipt(p)}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                              <span>Voir reçu</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const m =
+                                  merchants.find((x) => x.id === p.merchant_id) ||
+                                  ({
+                                    id: p.merchant_id,
+                                    business_name: p.merchant_name || 'Commerçant',
+                                    phone: '',
+                                    wilaya: 'Algérie',
+                                    slug: 'client',
+                                    category: 'Commerce',
+                                  } as Merchant);
+                                generateInvoicePdf({ payment: p, merchant: m });
+                              }}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs border border-emerald-200"
+                              title="Télécharger la Facture PDF Officielle"
+                            >
+                              <FileText className="w-3.5 h-3.5 text-emerald-600" />
+                              <span>PDF</span>
+                            </button>
+                          </div>
                         </td>
                         <td className="p-4 sm:px-6 text-right rtl:text-left space-x-2 rtl:space-x-reverse">
                           <button

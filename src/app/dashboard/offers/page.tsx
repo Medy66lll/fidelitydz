@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useMerchant } from '@/context/MerchantContext';
 import { db } from '@/lib/db';
+import { soundFX } from '@/lib/sound';
 import { PersonalizedOffer, TargetSegment } from '@/lib/types';
 import {
   Tag,
@@ -144,8 +145,17 @@ export default function OffersPage() {
     };
     await db.updateOfferAsync(updated);
     setOffers(db.getOffers(currentMerchant.id));
+    soundFX.playReward();
+    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+      try {
+        new Notification(`🔔 ${currentMerchant.business_name} • Offre Spéciale`, {
+          body: offer.title_fr,
+          icon: '/favicon.ico',
+        });
+      } catch {}
+    }
     setBroadcastedOfferId(offer.id);
-    showToast(`Notification envoyée avec succès ! (Il vous reste ${Math.max(0, maxPush - newSentCount)} push cette semaine)`);
+    showToast(`Notification Push envoyée avec succès aux clients ! (Restant : ${Math.max(0, maxPush - newSentCount)} push cette semaine)`);
     setTimeout(() => setBroadcastedOfferId(null), 4000);
   };
 

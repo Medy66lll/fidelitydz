@@ -8,6 +8,7 @@ import AlgerianPaymentBadges from '@/components/AlgerianPaymentBadges';
 import { db, defaultPlatformSettings, generateUuid } from '@/lib/db';
 import { validateUploadedFile } from '@/lib/validation';
 import { SubscriptionPayment, PaymentMethod } from '@/lib/types';
+import { generateInvoicePdf } from '@/lib/invoicePdf';
 import confetti from 'canvas-confetti';
 import {
   CreditCard,
@@ -18,6 +19,8 @@ import {
   Send,
   Building2,
   MessageCircle,
+  FileText,
+  Download,
 } from 'lucide-react';
 
 function BillingContent() {
@@ -217,6 +220,38 @@ Merci de mettre à jour mes limites sur le serveur Supabase.`;
               </span>
             ) : null}
           </p>
+
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={() => {
+                if (!currentMerchant) return;
+                const total =
+                  3900 +
+                  (Math.max(0, (currentMerchant?.max_cards || 100) - 100) / 500) * 1000 +
+                  (Math.max(0, (currentMerchant?.max_push_per_week || 100) - 100) / 300) * 800 +
+                  Math.max(0, (currentMerchant?.max_users || 2) - 2) * 500 +
+                  (Math.max(0, (currentMerchant?.max_active_offers || 3) - 3) / 5) * 500 +
+                  Math.max(0, (currentMerchant?.max_locations || 1) - 1) * 1500;
+                const payment: SubscriptionPayment = lastSubmittedPayment || {
+                  id: generateUuid(),
+                  merchant_id: currentMerchant.id,
+                  merchant_name: currentMerchant.business_name,
+                  amount_dzd: total,
+                  payment_method: 'BARIDIMOB',
+                  transaction_reference: 'CONFIRMÉ-OFFICIEL',
+                  receipt_url: '',
+                  status: 'APPROVED',
+                  created_at: new Date().toISOString(),
+                };
+                generateInvoicePdf({ payment, merchant: currentMerchant });
+              }}
+              className="inline-flex items-center gap-2 py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition-all border border-slate-700 hover:border-slate-600 shadow-sm"
+            >
+              <FileText className="w-4 h-4 text-emerald-400" />
+              <span>{isAr ? '📄 تحميل الفاتورة الرسمية (PDF)' : '📄 Télécharger ma Facture Acquittée (PDF)'}</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -307,6 +342,18 @@ Merci de mettre à jour mes limites sur le serveur Supabase.`;
                 <MessageCircle className="w-4 h-4" />
                 <span>📲 Envoyer aussi la notification + reçu sur WhatsApp Admin</span>
               </a>
+              <button
+                type="button"
+                onClick={() => {
+                  if (currentMerchant && lastSubmittedPayment) {
+                    generateInvoicePdf({ payment: lastSubmittedPayment, merchant: currentMerchant });
+                  }
+                }}
+                className="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs flex items-center justify-center gap-2 shadow-sm transition-all"
+              >
+                <FileText className="w-4 h-4 text-emerald-400" />
+                <span>📄 Télécharger ma Facture Proforma / Reçu (PDF)</span>
+              </button>
               <button
                 type="button"
                 onClick={() => setSubmissionSuccess(false)}
