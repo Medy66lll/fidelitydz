@@ -255,6 +255,36 @@ html, body {
 }
 
 /* ============================================================================
+   Rendu & Contraste des Champs de Saisie (Fix Mobile Safari / Chrome Autofill)
+   Empêche le texte blanc sur fond blanc et force un contraste optimal
+   ============================================================================ */
+input, select, textarea {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Autofill sombre pour les formulaires Dark (Login, Kazi Owner, Modal Caissier) */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #090e1a inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #34d399 !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Autofill clair pour les formulaires Light (Register, Poster, Program) */
+.bg-white input:-webkit-autofill,
+.bg-slate-50 input:-webkit-autofill,
+input.fdz-input-light:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #0f172a !important;
+  caret-color: #059669 !important;
+}
+
+/* ============================================================================
    Impression Affiche Comptoir (A4 / Chevalet de Caisse)
    ============================================================================ */
 @media print {

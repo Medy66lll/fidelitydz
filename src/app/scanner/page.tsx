@@ -588,7 +588,8 @@ export default function CashierScannerPage() {
                   placeholder="Ex: 0555123456"
                   value={phoneSearch}
                   onChange={(e) => setPhoneSearch(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl py-3 px-4 text-white text-base placeholder-slate-600 font-mono tracking-wider tabular-nums outline-none transition-all"
+                  style={{ backgroundColor: '#0f172a', color: '#ffffff' }}
+                  className="w-full bg-[#0f172a] border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl py-3 px-4 text-white text-base placeholder-slate-600 font-mono tracking-wider tabular-nums outline-none transition-all"
                 />
               </div>
               <button
@@ -806,7 +807,8 @@ export default function CashierScannerPage() {
                       min="50"
                       value={purchaseAmount}
                       onChange={(e) => setPurchaseAmount(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 rounded-xl py-2.5 px-3 text-white font-mono text-sm tabular-nums outline-none"
+                      style={{ backgroundColor: '#0f172a', color: '#ffffff' }}
+                      className="w-full bg-[#0f172a] border border-slate-800 focus:border-emerald-500 rounded-xl py-2.5 px-3 text-white font-mono text-sm tabular-nums outline-none"
                     />
                     <span className="absolute inset-y-0 right-3 flex items-center text-xs text-slate-500 font-bold">
                       DZD

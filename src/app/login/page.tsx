@@ -120,7 +120,8 @@ export default function MerchantLoginPage() {
                   placeholder="Ex: 0550123456"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
-                  className="w-full bg-slate-950/80 border border-slate-700/80 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 rounded-xl py-3 pl-10 pr-4 text-sm text-white outline-none font-mono transition-all"
+                  style={{ backgroundColor: '#0b1329', color: '#ffffff' }}
+                  className="w-full bg-[#0b1329] border border-slate-700 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/30 rounded-xl py-3.5 pl-11 pr-4 text-base md:text-sm text-white placeholder-slate-400 outline-none font-mono transition-all"
                 />
               </div>
             </div>
@@ -138,7 +139,8 @@ export default function MerchantLoginPage() {
                   placeholder="•••••••• ou Code PIN 4 chiffres"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-slate-950/80 border border-slate-700/80 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 rounded-xl py-3 pl-10 pr-4 text-sm text-white outline-none transition-all"
+                  style={{ backgroundColor: '#0b1329', color: '#ffffff' }}
+                  className="w-full bg-[#0b1329] border border-slate-700 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/30 rounded-xl py-3.5 pl-11 pr-4 text-base md:text-sm text-white placeholder-slate-400 outline-none transition-all"
                 />
               </div>
             </div>

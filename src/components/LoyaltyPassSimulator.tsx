@@ -161,27 +161,26 @@ export default function LoyaltyPassSimulator({
                       key={i}
                       className={`relative h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
                         isFilled
-                          ? 'shadow-md shadow-emerald-500/25 scale-[1.03]'
-                          : 'border border-dashed border-white/20 bg-white/5 hover:border-white/35'
-                      }`}
-                      style={{
-                        background: isFilled
                           ? isLast || isIntermediateGift
-                            ? 'linear-gradient(135deg, #F59E0B, #D97706)'
-                            : primaryColor
-                          : 'transparent',
-                      }}
+                            ? 'bg-gradient-to-br from-amber-400 to-amber-600 border-2 border-amber-300 shadow-md shadow-amber-500/30 scale-[1.03]'
+                            : 'bg-gradient-to-br from-emerald-400 to-emerald-600 border-2 border-emerald-300 shadow-md shadow-emerald-500/25 scale-[1.03]'
+                          : isLast || isIntermediateGift
+                          ? 'bg-black/35 border-2 border-dashed border-amber-400/60 shadow-inner'
+                          : 'bg-black/30 border-2 border-white/35 shadow-inner'
+                      }`}
                     >
                       {isFilled ? (
                         isLast || isIntermediateGift ? (
                           <Trophy className="w-4 h-4 text-white drop-shadow" />
                         ) : (
-                          <Check className="w-4 h-4 text-white stroke-[3] drop-shadow" />
+                          <Check className="w-4 h-4 text-white stroke-[3.5] drop-shadow" />
                         )
                       ) : isLast || isIntermediateGift ? (
-                        <Gift className="w-4 h-4 text-amber-300/80" />
+                        <Gift className="w-4 h-4 text-amber-300 drop-shadow" />
                       ) : (
-                        <span className="text-[11px] font-black text-white/35 font-mono">{stepNum}</span>
+                        <div className="w-4 h-4 rounded-full border border-white/40 flex items-center justify-center">
+                          <span className="text-[10px] font-black text-white/80 font-mono leading-none">{stepNum}</span>
+                        </div>
                       )}
                     </div>
                   );

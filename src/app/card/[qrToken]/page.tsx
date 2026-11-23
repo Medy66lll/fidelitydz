@@ -730,10 +730,10 @@ export default function CustomerCardPage() {
           )}
 
           {/* SECTION PROGRESSION (TAMPONS/POINTS) */}
-          <div className="relative z-10 bg-slate-900/40 backdrop-blur-md rounded-2xl p-4 border border-white/10 mb-6">
-            <div className="flex justify-between text-[11px] font-bold text-slate-300 mb-3">
+          <div className="relative z-10 bg-black/30 backdrop-blur-xl rounded-2xl p-4 border border-white/20 shadow-inner mb-6">
+            <div className="flex justify-between text-[11px] font-bold text-slate-200 mb-3">
               <span>{program.program_type === 'STAMPS' ? t('stamps_progress') : t('points_balance')}</span>
-              <span className="text-emerald-400">
+              <span className="text-emerald-400 font-extrabold">
                 {program.program_type === 'STAMPS'
                   ? `${card.stamps_balance} / ${program.stamps_required}`
                   : `${card.points_balance} pts`}
@@ -743,35 +743,42 @@ export default function CustomerCardPage() {
             {program.program_type === 'STAMPS' ? (
               <div className="grid grid-cols-5 gap-2.5">
                 {Array.from({ length: program.stamps_required }).map((_, i) => {
+                  const stepNum = i + 1;
                   const isFilled = i < card.stamps_balance;
                   const isLast = i === program.stamps_required - 1;
                   return (
                     <div
                       key={i}
-                      className={`h-12 rounded-xl flex items-center justify-center transition-all ${
+                      className={`relative h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
                         isFilled
                           ? isLast
-                            ? 'shadow-[0_0_14px_rgba(245,158,11,0.45)] ring-1 ring-amber-400/50'
-                            : 'shadow-[0_0_10px_rgba(16,185,129,0.35)] ring-1 ring-emerald-400/40'
-                          : 'border border-dashed border-white/20 bg-slate-900/30'
+                            ? 'bg-gradient-to-br from-amber-400 to-amber-600 border-2 border-amber-300 shadow-[0_0_14px_rgba(245,158,11,0.5)] scale-[1.02]'
+                            : 'bg-gradient-to-br from-emerald-400 to-emerald-600 border-2 border-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.4)] scale-[1.02]'
+                          : isLast
+                          ? 'bg-black/35 border-2 border-dashed border-amber-400/60 shadow-inner'
+                          : 'bg-black/30 border-2 border-white/35 shadow-inner'
                       }`}
-                      style={{
-                        background: isFilled
-                          ? isLast
-                            ? 'linear-gradient(135deg in oklab, #F59E0B, #B45309)'
-                            : `linear-gradient(135deg in oklab, ${program.primary_color || '#10B981'}, #065F46)`
-                          : 'transparent',
-                      }}
                     >
                       {isFilled ? (
                         isLast ? (
-                          <Trophy className="w-5 h-5 text-white drop-shadow-sm" />
+                          <Trophy className="w-5 h-5 text-white drop-shadow-md animate-bounce" />
                         ) : (
-                          <Check className="w-5 h-5 text-white stroke-[3] drop-shadow-sm" />
+                          <Check className="w-5 h-5 text-white stroke-[3.5] drop-shadow-md" />
                         )
                       ) : isLast ? (
-                        <Gift className="w-5 h-5 text-amber-400/40" />
-                      ) : null}
+                        <div className="flex flex-col items-center justify-center">
+                          <Gift className="w-5 h-5 text-amber-300 drop-shadow" />
+                          <span className="text-[8px] font-black text-amber-300 uppercase tracking-tighter leading-none mt-0.5">
+                            Cadeau
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="w-5 h-5 rounded-full border border-white/40 flex items-center justify-center">
+                          <span className="text-[10px] font-black text-white/80 font-mono leading-none">
+                            {stepNum}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   );
                 })}

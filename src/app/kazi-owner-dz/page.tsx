@@ -421,7 +421,8 @@ CREATE POLICY "subscription_payments_all" ON subscription_payments FOR ALL USING
                     placeholder="••••••"
                     value={ownerPinInput}
                     onChange={(e) => setOwnerPinInput(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 focus:border-amber-400 rounded-xl py-3 pl-10 pr-4 text-sm font-mono text-white outline-none"
+                    style={{ backgroundColor: '#0b1329', color: '#ffffff' }}
+                    className="w-full bg-[#0b1329] border border-slate-700 focus:border-amber-400 rounded-xl py-3 pl-10 pr-4 text-sm font-mono text-white outline-none"
                   />
                 </div>
               </div>
@@ -437,7 +438,8 @@ CREATE POLICY "subscription_payments_all" ON subscription_payments FOR ALL USING
                     placeholder="Saisir le mot de passe Admin"
                     value={adminPassInput}
                     onChange={(e) => setAdminPassInput(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 focus:border-amber-400 rounded-xl py-3 pl-10 pr-4 text-sm text-white outline-none"
+                    style={{ backgroundColor: '#0b1329', color: '#ffffff' }}
+                    className="w-full bg-[#0b1329] border border-slate-700 focus:border-amber-400 rounded-xl py-3 pl-10 pr-4 text-sm text-white outline-none"
                   />
                 </div>
               </div>

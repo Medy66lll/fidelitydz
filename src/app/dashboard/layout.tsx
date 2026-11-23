@@ -133,7 +133,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 placeholder="Saisir le mot de passe Gérant..."
                 value={managerUnlockInput}
                 onChange={(e) => setManagerUnlockInput(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl py-3 px-4 text-sm text-white outline-none"
+                style={{ backgroundColor: '#0b1329', color: '#ffffff' }}
+                className="w-full bg-[#0b1329] border border-slate-700 focus:border-emerald-500 rounded-xl py-3 px-4 text-sm text-white outline-none"
               />
             </div>
             <button

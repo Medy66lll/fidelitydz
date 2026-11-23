@@ -183,7 +183,8 @@ export default function CustomerJoinPage() {
                   placeholder="0555 12 34 56"
                   value={phone}
                   onChange={(e) => handlePhoneChange(e.target.value)}
-                  className="w-full bg-slate-950/80 border border-slate-700/80 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 rounded-xl py-3.5 pl-11 rtl:pl-4 rtl:pr-11 text-white text-base placeholder-slate-500 font-mono tracking-wider tabular-nums outline-none transition-all"
+                  style={{ backgroundColor: '#0b1329', color: '#ffffff' }}
+                  className="w-full bg-[#0b1329] border border-slate-700 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/30 rounded-xl py-3.5 pl-11 rtl:pl-4 rtl:pr-11 text-white text-base placeholder-slate-500 font-mono tracking-wider tabular-nums outline-none transition-all"
                 />
               </div>
               <p className="text-[11px] text-slate-400 font-medium">{t('phone_hint')}</p>
@@ -205,7 +206,8 @@ export default function CustomerJoinPage() {
                   placeholder={isAr ? 'مثال: أمين أو سارة' : 'Ex: Amine ou Sara'}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-slate-950/80 border border-slate-700/80 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 rounded-xl py-3.5 pl-11 rtl:pl-4 rtl:pr-11 text-white text-base placeholder-slate-500 outline-none transition-all"
+                  style={{ backgroundColor: '#0b1329', color: '#ffffff' }}
+                  className="w-full bg-[#0b1329] border border-slate-700 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/30 rounded-xl py-3.5 pl-11 rtl:pl-4 rtl:pr-11 text-white text-base placeholder-slate-500 outline-none transition-all"
                 />
               </div>
             </div>
