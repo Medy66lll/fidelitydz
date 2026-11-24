@@ -48,12 +48,15 @@ export default function RegisterMerchantPage() {
 
   const handleNameChange = (val: string) => {
     setBusinessName(val);
-    const generated = val
+    let generated = val
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '');
+    if (!generated && val.trim().length > 0) {
+      generated = 'commerce';
+    }
     setSlug(generated);
   };
 
@@ -363,18 +366,24 @@ export default function RegisterMerchantPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 block">
-                  Lien QR pour vos clients (Slug) <span className="text-emerald-500">*</span>
-                </label>
-                <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono">
-                  <span className="text-slate-400">fidelitydz.com/join/</span>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-700 block">
+                    Lien QR pour vos clients (Slug) <span className="text-emerald-500">*</span>
+                  </label>
+                  <span className="text-[10px] text-slate-400 font-medium">
+                    {isAr ? 'يتم إنشاؤه تلقائياً' : 'Généré automatiquement'}
+                  </span>
+                </div>
+                <div className="flex items-center bg-slate-100/90 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono cursor-not-allowed">
+                  <span className="text-slate-400 select-none">fidelitydz.com/join/</span>
                   <input
                     aria-label="Slug du commerce"
                     type="text"
-                    required
+                    readOnly
+                    tabIndex={-1}
+                    placeholder="nom-du-commerce"
                     value={slug}
-                    onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-                    className="bg-transparent font-bold text-emerald-600 outline-none flex-1 ml-1"
+                    className="bg-transparent font-bold text-emerald-700 outline-none flex-1 ml-1 cursor-not-allowed select-all"
                   />
                 </div>
               </div>

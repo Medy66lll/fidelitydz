@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { MerchantProvider } from '@/context/MerchantContext';
+import JsonLdSchema from '@/components/JsonLdSchema';
 
 export const viewport: Viewport = {
   themeColor: '#10b981',
@@ -47,6 +48,7 @@ export default function RootLayout({
   return (
     <html lang="fr" dir="ltr">
       <body className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+        <JsonLdSchema />
         <LanguageProvider>
           <MerchantProvider>{children}</MerchantProvider>
         </LanguageProvider>

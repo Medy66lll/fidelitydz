@@ -1,0 +1,23 @@
+# FidelityDZ â€” Algerian Digital Loyalty & Customer Retention Platform
+
+> FidelityDZ is Algeria's leading B2B digital loyalty SaaS platform designed for retail shops, restaurants, coffee shops, bakeries, fashion boutiques, and beauty salons across all 58 Wilayas of Algeria.
+> It completely replaces obsolete paper stamp cards with instant zero-download progressive web passes (PWA) stored in the customer's smartphone, accessible via quick QR scan at the cash register.
+
+## Core Capabilities & Features
+- **Zero-App Loyalty Passes**: Customers scan a counter QR code or cashier screen; the digital card opens instantly in mobile browser and can be saved to home screen without downloading any heavy APK or App Store file.
+- **High-Speed Scanner PWA**: Cashiers scan customer QR codes in under 1.2 seconds using any existing Android or iOS smartphone or tablet.
+- **Dynamic Dual Modes**: Supports both digital punch stamps (e.g. 9 stamps = 10th free coffee) and revenue points (e.g. 1 point per 100 DZD spent).
+- **Google 5-Star Review Booster**: Automatically incentivizes customers with a bonus stamp when they post a positive 5-star review on Google Maps.
+- **WhatsApp 1-Click Retention**: Automatically detects customers who have not visited in 30 days and generates personalized reactivation messages with their current stamp balance.
+- **100% Algerian Payment Support**: Integrated with Chargily Pay for online debit card checkout (Carte Edahabia & CIB), plus manual BaridiMob transfer and CCP receipt verification.
+
+## Pricing Plans (Algerian Dinars - DZD)
+- **14-Day Free Trial**: 0 DZD, no credit card required, 14 days full access to test in your store.
+- **Pack Unique Tout Compris**: 3,900 DZD / month. Includes up to 100 active loyalty cards, 100 weekly push notifications, 2 simultaneous cashier/admin devices, 3 active promo offers, 1 main location.
+- **Extensions & Add-ons (A la carte)**: Tailored add-ons available anytime from the merchant dashboard (+500 cards for +1,000 DZD, +300 push for +800 DZD, +1 cashier device for +500 DZD, +1 branch location for +1,500 DZD). Future multi-tier bundles prepared for later expansion.
+
+## URLs & Resources
+- Official Website: https://fidelitydz.vercel.app/
+- Merchant Registration: https://fidelitydz.vercel.app/register
+- Cashier Scanner Web App: https://fidelitydz.vercel.app/scanner
+- Contact & Support: WhatsApp +213 541 53 47 62

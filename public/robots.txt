@@ -1,8 +1,35 @@
+# FidelityDZ AI-Aware Robots.txt
+# Allows full indexing of marketing and documentation for AI search engines while protecting private merchant routes.
+
 User-agent: *
 Allow: /
+Allow: /llms.txt
 Disallow: /api/
 Disallow: /dashboard/
 Disallow: /scanner/
 Disallow: /card/
+
+# AI Citation & Browsing Agents
+User-agent: GPTBot
+Allow: /
+Allow: /llms.txt
+Disallow: /api/
+Disallow: /dashboard/
+
+User-agent: ClaudeBot
+Allow: /
+Allow: /llms.txt
+Disallow: /api/
+Disallow: /dashboard/
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /llms.txt
+Disallow: /api/
+Disallow: /dashboard/
+
+User-agent: Google-Extended
+Allow: /
+Allow: /llms.txt
 
 Sitemap: https://fidelitydz.vercel.app/sitemap.xml

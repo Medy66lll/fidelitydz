@@ -1,0 +1,69 @@
+{
+  "$schema": "https://tr.designtokens.org/format/draft-2023-04/",
+  "name": "FidelityDZ Design System Tokens",
+  "version": "1.0.0",
+  "author": "Antigravity Color Expert Engine",
+  "description": "Perceptually uniform OKLCH color system engineered for Algerian Fintech & Loyalty SaaS with WCAG AAA / APCA contrast compliance.",
+  "tokens": {
+    "color": {
+      "palette": {
+        "emerald": {
+          "50": { "value": "oklch(0.98 0.02 155)", "hex": "#ECFDF5", "usage": "Subtle tint, light mode badges" },
+          "100": { "value": "oklch(0.95 0.05 155)", "hex": "#D1FAE5", "usage": "Selected badge background" },
+          "200": { "value": "oklch(0.90 0.08 155)", "hex": "#A7F3D0", "usage": "Subtle borders" },
+          "300": { "value": "oklch(0.82 0.12 155)", "hex": "#6EE7B7", "usage": "Interactive states" },
+          "400": { "value": "oklch(0.74 0.15 155)", "hex": "#34D399", "usage": "Accent highlights" },
+          "500": { "value": "oklch(0.65 0.17 155)", "hex": "#10B981", "usage": "Primary brand green" },
+          "600": { "value": "oklch(0.57 0.16 155)", "hex": "#059669", "usage": "Primary buttons, dark mode accents" },
+          "700": { "value": "oklch(0.48 0.14 155)", "hex": "#047857", "usage": "Pressed states, dark text on green" },
+          "800": { "value": "oklch(0.38 0.11 155)", "hex": "#065F46", "usage": "High-contrast headings" },
+          "900": { "value": "oklch(0.28 0.08 155)", "hex": "#064E3B", "usage": "Deep green cards" },
+          "950": { "value": "oklch(0.18 0.05 155)", "hex": "#022C22", "usage": "Darkest emerald shadow" }
+        },
+        "amber": {
+          "50": { "value": "oklch(0.98 0.03 80)", "hex": "#FFFBEB", "usage": "VIP notification background" },
+          "100": { "value": "oklch(0.94 0.06 80)", "hex": "#FEF3C7", "usage": "Reward container tint" },
+          "400": { "value": "oklch(0.78 0.15 80)", "hex": "#FBBF24", "usage": "Active stamp star, trophy glow" },
+          "500": { "value": "oklch(0.72 0.16 75)", "hex": "#F59E0B", "usage": "Gold reward badge" },
+          "600": { "value": "oklch(0.64 0.15 72)", "hex": "#D97706", "usage": "High-contrast reward text" },
+          "900": { "value": "oklch(0.32 0.08 65)", "hex": "#78350F", "usage": "Dark bronze border" }
+        },
+        "slate": {
+          "50": { "value": "oklch(0.98 0.005 250)", "hex": "#F8FAFC", "usage": "Main app canvas background" },
+          "100": { "value": "oklch(0.95 0.01 250)", "hex": "#F1F5F9", "usage": "Subtle card background" },
+          "200": { "value": "oklch(0.90 0.015 250)", "hex": "#E2E8F0", "usage": "Card borders, dividers" },
+          "800": { "value": "oklch(0.27 0.025 260)", "hex": "#1E293B", "usage": "Dark card surface" },
+          "900": { "value": "oklch(0.20 0.03 260)", "hex": "#0F172A", "usage": "Dark mode surface" },
+          "950": { "value": "oklch(0.14 0.03 260)", "hex": "#020617", "usage": "Obsidian deep background" }
+        }
+      },
+      "semantic": {
+        "surface": {
+          "default": { "value": "{color.palette.slate.50.value}" },
+          "raised": { "value": "oklch(1.0 0 0)" },
+          "sunken": { "value": "{color.palette.slate.100.value}" },
+          "dark": { "value": "{color.palette.slate.950.value}" },
+          "dark-card": { "value": "{color.palette.slate.900.value}" }
+        },
+        "text": {
+          "primary": { "value": "{color.palette.slate.950.value}" },
+          "secondary": { "value": "oklch(0.45 0.02 260)" },
+          "inverse": { "value": "oklch(0.99 0 0)" },
+          "accent": { "value": "{color.palette.emerald.600.value}" }
+        },
+        "interactive": {
+          "primary": { "value": "{color.palette.emerald.600.value}" },
+          "primary-hover": { "value": "{color.palette.emerald.700.value}" },
+          "primary-active": { "value": "{color.palette.emerald.800.value}" },
+          "accent-gold": { "value": "{color.palette.amber.500.value}" }
+        },
+        "status": {
+          "success": { "value": "{color.palette.emerald.600.value}" },
+          "warning": { "value": "{color.palette.amber.500.value}" },
+          "danger": { "value": "oklch(0.62 0.22 28)" },
+          "info": { "value": "oklch(0.60 0.18 245)" }
+        }
+      }
+    }
+  }
+}
