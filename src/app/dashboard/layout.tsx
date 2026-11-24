@@ -7,7 +7,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { useMerchant } from '@/context/MerchantContext';
 import LanguageToggle from '@/components/LanguageToggle';
 import SupportWidget from '@/components/SupportWidget';
-import { db } from '@/lib/db';
+import { db, FIDELITY_INSTAGRAM_URL, FIDELITY_INSTAGRAM_HANDLE, FIDELITY_WHATSAPP_URL } from '@/lib/db';
 import {
   LayoutDashboard,
   Palette,
@@ -25,6 +25,8 @@ import {
   CheckCircle2,
   AlertTriangle,
   KeyRound,
+  Instagram,
+  MessageCircle,
 } from 'lucide-react';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -423,6 +425,30 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <LogOut className="w-4 h-4" />
             <span>{isAr ? 'تسجيل الخروج' : 'Fermer ma session'}</span>
           </button>
+
+          <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs">
+            <a
+              href={FIDELITY_INSTAGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-pink-400 hover:text-pink-300 font-bold transition text-[11px]"
+              title="Suivez FidelityDZ sur Instagram"
+            >
+              <Instagram className="w-3.5 h-3.5" />
+              <span>{FIDELITY_INSTAGRAM_HANDLE}</span>
+            </a>
+            <a
+              href={FIDELITY_WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 font-bold transition text-[11px]"
+              title="Support WhatsApp"
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+              <span>Support</span>
+            </a>
+          </div>
+
           <div className="flex items-center justify-between pt-1">
             <LanguageToggle />
             <span className="text-[10px] text-slate-500">FidelityDZ v3.0 🇩🇿</span>

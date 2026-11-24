@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useMerchant } from '@/context/MerchantContext';
 import LoyaltyPassSimulator from '@/components/LoyaltyPassSimulator';
-import { LoyaltyProgram, Merchant } from '@/lib/types';
+import { LoyaltyProgram, Merchant, RewardTier } from '@/lib/types';
 import {
   CheckCircle2,
   Save,
@@ -40,7 +40,7 @@ export default function LoyaltyStudioPage() {
   const [socialMaps, setSocialMaps] = useState('');
   const [googleReviewRewardEnabled, setGoogleReviewRewardEnabled] = useState(false);
   const [googleReviewRewardBonus, setGoogleReviewRewardBonus] = useState(1);
-  const [rewardTiers, setRewardTiers] = useState<{ threshold: number; title_fr: string }[]>([]);
+  const [rewardTiers, setRewardTiers] = useState<RewardTier[]>([]);
   const [cashierPin, setCashierPin] = useState('');
   const [scanCooldownMinutes, setScanCooldownMinutes] = useState(15);
   const [savedSuccess, setSavedSuccess] = useState(false);
@@ -433,7 +433,7 @@ export default function LoyaltyStudioPage() {
               <div className="space-y-2 pt-2 border-t border-emerald-200/70">
                 {rewardTiers.map((tier, idx) => (
                   <div key={idx} className="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-emerald-200">
-                    <div className="w-28">
+                    <div className="w-24 sm:w-28 flex-shrink-0">
                       <label className="text-[10px] font-bold text-slate-500 block">
                         Palier ({programType === 'STAMPS' ? 'Tampon N°' : 'Points'})
                       </label>
@@ -449,20 +449,37 @@ export default function LoyaltyStudioPage() {
                         className="w-full bg-slate-50 border border-slate-200 rounded-lg py-1 px-2 text-xs font-mono font-bold"
                       />
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <label className="text-[10px] font-bold text-slate-500 block">
-                        Nom du cadeau débloqué à ce palier
+                        Nom du cadeau (Français)
                       </label>
                       <input
-                        aria-label="Nom du cadeau"
+                        aria-label="Nom du cadeau en français"
                         type="text"
                         value={tier.title_fr}
                         onChange={(e) => {
                           const val = e.target.value;
                           setRewardTiers((prev) => prev.map((t, i) => (i === idx ? { ...t, title_fr: val } : t)));
                         }}
-                        placeholder="Ex: Boisson offerte au 6ème tampon"
+                        placeholder="Ex: Boisson ou Dessert Offert"
                         className="w-full bg-slate-50 border border-slate-200 rounded-lg py-1 px-2.5 text-xs font-semibold"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0 hidden sm:block">
+                      <label className="text-[10px] font-bold text-slate-500 block font-arabic text-right">
+                        اسم الهدية (بالعربية)
+                      </label>
+                      <input
+                        aria-label="Nom du cadeau en arabe"
+                        type="text"
+                        dir="rtl"
+                        value={tier.title_ar || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setRewardTiers((prev) => prev.map((t, i) => (i === idx ? { ...t, title_ar: val } : t)));
+                        }}
+                        placeholder="مثال: مشروب أو تحلية مجانية"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-lg py-1 px-2.5 text-xs font-arabic"
                       />
                     </div>
                     <button

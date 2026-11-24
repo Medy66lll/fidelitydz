@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { MessageCircle, X, Send, HelpCircle, Store, User, Globe } from 'lucide-react';
-import { db } from '@/lib/db';
+import { MessageCircle, X, Send, HelpCircle, Store, User, Globe, Instagram } from 'lucide-react';
+import { db, FIDELITY_INSTAGRAM_URL, FIDELITY_INSTAGRAM_HANDLE } from '@/lib/db';
 
 interface SupportWidgetProps {
   defaultRole?: 'MERCHANT' | 'CUSTOMER' | 'VISITOR';
@@ -181,6 +181,20 @@ export default function SupportWidget({
               <Send className="w-4 h-4" />
               <span>Envoyer au Support FidelityDZ</span>
             </button>
+
+            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+              <span className="font-medium">Communauté & Actualités :</span>
+              <a
+                href={FIDELITY_INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 font-bold text-pink-600 hover:text-pink-700 hover:underline"
+                title="Suivez FidelityDZ sur Instagram"
+              >
+                <Instagram className="w-3.5 h-3.5" />
+                <span>{FIDELITY_INSTAGRAM_HANDLE}</span>
+              </a>
+            </div>
           </form>
         </div>
       ) : (

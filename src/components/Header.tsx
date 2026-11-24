@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { useMerchant } from '@/context/MerchantContext';
 import LanguageToggle from './LanguageToggle';
-import { QrCode, Store, Sparkles, Menu, X, Lock } from 'lucide-react';
+import { QrCode, Store, Sparkles, Menu, X, Lock, Instagram } from 'lucide-react';
 
 export default function Header() {
   const { t, language } = useLanguage();
@@ -61,6 +61,17 @@ export default function Header() {
 
         {/* Action Controls */}
         <div className="flex items-center gap-2 shrink-0">
+          <a
+            href="https://www.instagram.com/fidelity.dz"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Suivre @fidelity.dz sur Instagram"
+            className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-pink-50 hover:bg-pink-100 text-pink-600 hover:text-pink-700 border border-pink-200/80 text-xs font-bold transition-all"
+          >
+            <Instagram className="w-4 h-4" />
+            <span className="hidden xl:inline">@fidelity.dz</span>
+          </a>
+
           <LanguageToggle />
 
           {/* Merchant Login or Dashboard */}
@@ -138,6 +149,16 @@ export default function Header() {
               <Lock className="w-4 h-4 text-emerald-400" />
               <span>{isAuthenticated ? 'Mon Espace Commerçant' : 'Connexion Commerçant'}</span>
             </Link>
+
+            <a
+              href="https://www.instagram.com/fidelity.dz"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-pink-500/10 via-rose-500/10 to-amber-500/10 border border-pink-300 text-pink-700 rounded-xl font-bold text-sm"
+            >
+              <Instagram className="w-4 h-4 text-pink-600" />
+              <span>Suivre @fidelity.dz sur Instagram</span>
+            </a>
           </div>
         </div>
       )}

@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
 import { useMerchant } from '@/context/MerchantContext';
 import LanguageToggle from '@/components/LanguageToggle';
-import { db, generateUuid } from '@/lib/db';
+import { db, generateUuid, FIDELITY_INSTAGRAM_URL, FIDELITY_INSTAGRAM_HANDLE, FIDELITY_WHATSAPP_URL } from '@/lib/db';
 import { Merchant, ALGERIAN_WILAYAS_69 } from '@/lib/types';
 import {
   QrCode,
@@ -21,6 +21,7 @@ import {
   Upload,
   Image as ImageIcon,
   Trash2,
+  Instagram,
 } from 'lucide-react';
 
 export default function RegisterMerchantPage() {
@@ -516,8 +517,29 @@ export default function RegisterMerchantPage() {
         )}
       </main>
 
-      <footer className="text-center py-4 text-xs text-slate-400">
-        FidelityDZ SaaS • Plateforme N°1 en Algérie 🇩🇿
+      <footer className="text-center py-6 text-xs text-slate-500 flex flex-col items-center justify-center gap-2">
+        <p>FidelityDZ SaaS • Plateforme N°1 en Algérie 🇩🇿</p>
+        <div className="flex items-center gap-3 text-xs">
+          <a
+            href={FIDELITY_INSTAGRAM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-pink-600 hover:text-pink-700 font-semibold transition"
+          >
+            <Instagram className="w-3.5 h-3.5" />
+            <span>{FIDELITY_INSTAGRAM_HANDLE}</span>
+          </a>
+          <span>•</span>
+          <a
+            href={FIDELITY_WHATSAPP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-emerald-600 hover:text-emerald-700 font-semibold transition"
+          >
+            <MessageCircle className="w-3.5 h-3.5" />
+            <span>Support WhatsApp</span>
+          </a>
+        </div>
       </footer>
     </div>
   );

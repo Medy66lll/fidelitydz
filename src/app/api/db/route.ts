@@ -1082,11 +1082,15 @@ export async function GET(req: NextRequest) {
     : allPayments.filter((p: any) => allowedMerchantIds.has(p.merchant_id));
   const settings = Array.isArray(settingsRows) && settingsRows.length > 0 ? settingsRows[0] : null;
   let ownerWhatsapp = '213541534762';
+  let ownerInstagram = 'https://www.instagram.com/fidelity.dz';
   if (settings) {
     if (settings.owner_whatsapp) {
       ownerWhatsapp = settings.owner_whatsapp;
     } else if (typeof settings.chargily_mode === 'string' && settings.chargily_mode.includes('|')) {
       ownerWhatsapp = settings.chargily_mode.split('|')[1] || ownerWhatsapp;
+    }
+    if (settings.owner_instagram) {
+      ownerInstagram = settings.owner_instagram;
     }
   }
 
@@ -1095,6 +1099,7 @@ export async function GET(req: NextRequest) {
     error_details: mRes.ok ? null : 'Erreur de connexion au service de données',
     keys_configured: getCandidateKeys().length > 0,
     owner_whatsapp: ownerWhatsapp,
+    owner_instagram: ownerInstagram,
     merchants,
     programs: filterByMerchant(pRows),
     cards: annotatedCards,
@@ -1151,6 +1156,7 @@ export async function POST(req: NextRequest) {
     // Règle 9 : Actions exclusivement réservées au Propriétaire Super-Admin (Mehdi)
     const ownerOnlyActions = new Set([
       'save_owner_whatsapp',
+      'save_owner_instagram',
       'update_payment_and_merchant',
       'delete_merchant',
     ]);
@@ -1532,6 +1538,23 @@ export async function POST(req: NextRequest) {
       );
       logSecurityEvent('ADMIN_ACTION', ip, { action: 'save_owner_whatsapp' }, 'INFO');
       return NextResponse.json({ success: true, owner_whatsapp: cleanWa });
+    }
+
+    if (action === 'save_owner_instagram') {
+      const cleanIg = String(body.owner_instagram || '').trim().slice(0, 150);
+      await sbUpsert(
+        'platform_settings',
+        {
+          id: 1,
+          platform_name: 'FidelityDZ',
+          plan_price_dzd: 3900,
+          trial_days: 14,
+          owner_instagram: cleanIg,
+        },
+        'id'
+      );
+      logSecurityEvent('ADMIN_ACTION', ip, { action: 'save_owner_instagram' }, 'INFO');
+      return NextResponse.json({ success: true, owner_instagram: cleanIg });
     }
 
     if (action === 'increment_push') {

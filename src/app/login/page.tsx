@@ -7,8 +7,8 @@ import { useLanguage } from '@/context/LanguageContext';
 import { useMerchant } from '@/context/MerchantContext';
 import LanguageToggle from '@/components/LanguageToggle';
 import SupportWidget from '@/components/SupportWidget';
-import { db } from '@/lib/db';
-import { QrCode, Lock, Phone, ArrowRight, Store, Sparkles, ShieldCheck } from 'lucide-react';
+import { db, FIDELITY_INSTAGRAM_URL, FIDELITY_INSTAGRAM_HANDLE, FIDELITY_WHATSAPP_URL } from '@/lib/db';
+import { QrCode, Lock, Phone, ArrowRight, Store, Sparkles, ShieldCheck, Instagram, MessageCircle } from 'lucide-react';
 
 export default function MerchantLoginPage() {
   const { language } = useLanguage();
@@ -179,9 +179,32 @@ export default function MerchantLoginPage() {
       </main>
       <SupportWidget defaultRole="MERCHANT" />
 
-      <footer className="text-center py-4 text-xs text-slate-500 flex items-center justify-center gap-1.5 font-medium">
-        <ShieldCheck className="w-4 h-4 text-emerald-400" />
-        <span>Espace Commerçant Sécurisé • FidelityDZ Algérie</span>
+      <footer className="text-center py-6 text-xs text-slate-400 flex flex-col items-center justify-center gap-2 font-medium">
+        <div className="flex items-center gap-1.5">
+          <ShieldCheck className="w-4 h-4 text-emerald-400" />
+          <span>Espace Commerçant Sécurisé • FidelityDZ Algérie</span>
+        </div>
+        <div className="flex items-center gap-3 text-xs">
+          <a
+            href={FIDELITY_INSTAGRAM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-pink-400 hover:text-pink-300 font-semibold transition"
+          >
+            <Instagram className="w-3.5 h-3.5" />
+            <span>{FIDELITY_INSTAGRAM_HANDLE}</span>
+          </a>
+          <span>•</span>
+          <a
+            href={FIDELITY_WHATSAPP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-semibold transition"
+          >
+            <MessageCircle className="w-3.5 h-3.5" />
+            <span>Support WhatsApp</span>
+          </a>
+        </div>
       </footer>
     </div>
   );

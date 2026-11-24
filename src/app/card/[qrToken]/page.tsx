@@ -7,7 +7,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { db } from '@/lib/db';
-import { CustomerCard, Merchant, LoyaltyProgram, PersonalizedOffer } from '@/lib/types';
+import { CustomerCard, Merchant, LoyaltyProgram, PersonalizedOffer, RewardTier } from '@/lib/types';
 import { useLanguage } from '@/context/LanguageContext';
 import LanguageToggle from '@/components/LanguageToggle';
 import SupportWidget from '@/components/SupportWidget';
@@ -60,6 +60,7 @@ export default function CustomerCardPage() {
   const [googleReviewClaimed, setGoogleReviewClaimed] = useState(false);
   const [notifPermission, setNotifPermission] = useState<string>('default');
   const [livePushOffer, setLivePushOffer] = useState<PersonalizedOffer | null>(null);
+  const [selectedTierThreshold, setSelectedTierThreshold] = useState<number | null>(null);
 
   // QR Code Dynamique Anti-Capture (renouvelé chaque minute)
   const [currentMinuteEpoch, setCurrentMinuteEpoch] = useState<number>(() => Math.floor(Date.now() / 60000));
@@ -449,6 +450,48 @@ export default function CustomerCardPage() {
   const isRewardReady =
     !isMerchantExpired && (card.rewards_available > 0 || card.stamps_balance >= program.stamps_required);
 
+  // Calcul exhaustif de tous les paliers de récompense (intermédiaires + final)
+  const allRewardTiers: RewardTier[] = React.useMemo(() => {
+    if (!program) return [];
+    const tiers: RewardTier[] = Array.isArray(program.reward_tiers) ? [...program.reward_tiers] : [];
+    if (program.program_type === 'STAMPS') {
+      const hasFinal = tiers.some((t) => Number(t.threshold) === Number(program.stamps_required));
+      if (!hasFinal && program.stamps_required > 0) {
+        tiers.push({
+          threshold: program.stamps_required,
+          title_fr: program.reward_title_fr || 'Récompense Finale',
+          title_ar: program.reward_title_ar || 'الهدية الكبرى',
+        });
+      }
+    } else {
+      if (tiers.length === 0) {
+        tiers.push(
+          { threshold: 50, title_fr: 'Boisson ou Remise Offerte', title_ar: 'مشروب أو تخفيض هدية' },
+          { threshold: 100, title_fr: program.reward_title_fr || 'Cadeau Fidélité', title_ar: program.reward_title_ar || 'هدية الولاء' }
+        );
+      }
+    }
+    return tiers.sort((a, b) => Number(a.threshold) - Number(b.threshold));
+  }, [program]);
+
+  const tierMap = React.useMemo(() => {
+    const map = new Map<number, RewardTier>();
+    allRewardTiers.forEach((t) => map.set(Number(t.threshold), t));
+    return map;
+  }, [allRewardTiers]);
+
+  const nextUpcomingReward = React.useMemo(() => {
+    if (!card || !program) return null;
+    const currentVal = program.program_type === 'STAMPS' ? card.stamps_balance : card.points_balance;
+    return allRewardTiers.find((t) => currentVal < Number(t.threshold)) || null;
+  }, [allRewardTiers, card, program]);
+
+  const maxPointsScale = React.useMemo(() => {
+    if (!program) return 100;
+    const thresholds = allRewardTiers.map((t) => Number(t.threshold));
+    return Math.max(100, ...thresholds);
+  }, [allRewardTiers, program]);
+
   if (card.is_blocked_by_quota) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white p-4">
@@ -700,40 +743,56 @@ export default function CustomerCardPage() {
             )}
           </div>
 
-          {/* PALIERS MULTI-CADEAUX SUR LA CARTE */}
-          {Array.isArray(program.reward_tiers) && program.reward_tiers.length > 0 && (
-            <div className="relative z-10 mb-4 space-y-1.5 bg-white/10 rounded-2xl p-3.5 border border-white/15">
-              <p className="text-[10px] font-black uppercase tracking-wider text-amber-300">
-                🎁 Vos Paliers de Cadeaux :
-              </p>
-              {program.reward_tiers.map((tier, idx) => {
-                const reached =
-                  program.program_type === 'STAMPS'
-                    ? card.stamps_balance >= tier.threshold
-                    : card.points_balance >= tier.threshold;
-                return (
-                  <div key={idx} className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-white">
-                      • À {tier.threshold} {program.program_type === 'STAMPS' ? 'tampons' : 'points'} : {tier.title_fr}
-                    </span>
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
-                        reached ? 'bg-emerald-400 text-slate-950' : 'bg-white/10 text-slate-300'
-                      }`}
-                    >
-                      {reached ? 'Débloqué !' : 'En cours'}
-                    </span>
-                  </div>
-                );
-              })}
+          {/* BANNIÈRE DYNAMIQUE : PROCHAIN CADEAU À GAGNER */}
+          {nextUpcomingReward ? (
+            <div className="relative z-10 mb-4 bg-gradient-to-r from-amber-500/25 via-emerald-500/20 to-amber-500/25 border border-amber-400/50 rounded-2xl p-3.5 shadow-lg flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center flex-shrink-0 font-black shadow-md shadow-amber-400/30">
+                  <Gift className="w-4 h-4 animate-bounce" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[10px] font-black uppercase tracking-wider text-amber-300 truncate">
+                    {program.program_type === 'STAMPS'
+                      ? isAr
+                        ? `🎁 الهدية القادمة (الختم ${nextUpcomingReward.threshold}) :`
+                        : `🎁 Prochain Cadeau (Tampon ${nextUpcomingReward.threshold}) :`
+                      : isAr
+                      ? `🎁 الهدية القادمة (${nextUpcomingReward.threshold} نقطة) :`
+                      : `🎁 Prochain Cadeau (${nextUpcomingReward.threshold} pts) :`}
+                  </p>
+                  <p className="text-xs font-black text-white truncate">
+                    {isAr && nextUpcomingReward.title_ar ? nextUpcomingReward.title_ar : nextUpcomingReward.title_fr}
+                  </p>
+                </div>
+              </div>
+              <div className="text-right flex-shrink-0">
+                <span className="inline-block px-2.5 py-1 rounded-full bg-amber-400 text-slate-950 font-black text-[10px] shadow-sm tracking-tight">
+                  {program.program_type === 'STAMPS'
+                    ? isAr
+                      ? `باقي ${nextUpcomingReward.threshold - card.stamps_balance} !`
+                      : `Plus que ${nextUpcomingReward.threshold - card.stamps_balance} !`
+                    : isAr
+                    ? `باقي ${nextUpcomingReward.threshold - card.points_balance} pt !`
+                    : `Plus que ${nextUpcomingReward.threshold - card.points_balance} pts !`}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className="relative z-10 mb-4 bg-emerald-500/25 border border-emerald-400/50 rounded-2xl p-3.5 shadow-lg flex items-center gap-2.5 text-xs text-emerald-200">
+              <Trophy className="w-5 h-5 text-amber-300 flex-shrink-0 animate-pulse" />
+              <span className="font-extrabold leading-snug">
+                {isAr
+                  ? '🎉 مبروك ! لقد فتحت جميع الهدايا. قدّم بطاقتك في الصندوق لاستلامها !'
+                  : '🎉 Félicitations ! Vous avez débloqué tous les cadeaux. Réclamez-les en caisse !'}
+              </span>
             </div>
           )}
 
           {/* SECTION PROGRESSION (TAMPONS/POINTS) */}
-          <div className="relative z-10 bg-black/30 backdrop-blur-xl rounded-2xl p-4 border border-white/20 shadow-inner mb-6">
-            <div className="flex justify-between text-[11px] font-bold text-slate-200 mb-3">
+          <div className="relative z-10 bg-black/35 backdrop-blur-xl rounded-2xl p-4 border border-white/20 shadow-inner mb-4">
+            <div className="flex justify-between items-center text-[11px] font-bold text-slate-200 mb-3">
               <span>{program.program_type === 'STAMPS' ? t('stamps_progress') : t('points_balance')}</span>
-              <span className="text-emerald-400 font-extrabold">
+              <span className="text-emerald-400 font-extrabold font-mono text-sm">
                 {program.program_type === 'STAMPS'
                   ? `${card.stamps_balance} / ${program.stamps_required}`
                   : `${card.points_balance} pts`}
@@ -745,31 +804,50 @@ export default function CustomerCardPage() {
                 {Array.from({ length: program.stamps_required }).map((_, i) => {
                   const stepNum = i + 1;
                   const isFilled = i < card.stamps_balance;
-                  const isLast = i === program.stamps_required - 1;
+                  const isLast = stepNum === program.stamps_required;
+                  const tier = tierMap.get(stepNum);
+                  const isGiftSlot = Boolean(tier);
+                  const isSelected = selectedTierThreshold === stepNum;
+
                   return (
-                    <div
+                    <button
                       key={i}
-                      className={`relative h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                      type="button"
+                      onClick={() => {
+                        if (isGiftSlot) {
+                          setSelectedTierThreshold(isSelected ? null : stepNum);
+                        }
+                      }}
+                      className={`relative h-12 rounded-xl flex flex-col items-center justify-center transition-all duration-300 text-left outline-none ${
                         isFilled
-                          ? isLast
+                          ? isLast || isGiftSlot
                             ? 'bg-gradient-to-br from-amber-400 to-amber-600 border-2 border-amber-300 shadow-[0_0_14px_rgba(245,158,11,0.5)] scale-[1.02]'
                             : 'bg-gradient-to-br from-emerald-400 to-emerald-600 border-2 border-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.4)] scale-[1.02]'
-                          : isLast
-                          ? 'bg-black/35 border-2 border-dashed border-amber-400/60 shadow-inner'
+                          : isGiftSlot
+                          ? isSelected
+                            ? 'bg-amber-500/40 border-2 border-amber-300 ring-2 ring-amber-400/50 shadow-lg scale-[1.06]'
+                            : 'bg-black/40 border-2 border-dashed border-amber-400/90 shadow-[0_0_12px_rgba(245,158,11,0.3)] hover:scale-[1.03]'
                           : 'bg-black/30 border-2 border-white/35 shadow-inner'
                       }`}
                     >
                       {isFilled ? (
                         isLast ? (
                           <Trophy className="w-5 h-5 text-white drop-shadow-md animate-bounce" />
+                        ) : isGiftSlot ? (
+                          <div className="flex flex-col items-center">
+                            <Trophy className="w-4 h-4 text-white drop-shadow-md" />
+                            <span className="text-[7px] font-black uppercase tracking-tighter text-white leading-none mt-0.5">
+                              Gagné
+                            </span>
+                          </div>
                         ) : (
                           <Check className="w-5 h-5 text-white stroke-[3.5] drop-shadow-md" />
                         )
-                      ) : isLast ? (
+                      ) : isGiftSlot ? (
                         <div className="flex flex-col items-center justify-center">
-                          <Gift className="w-5 h-5 text-amber-300 drop-shadow" />
-                          <span className="text-[8px] font-black text-amber-300 uppercase tracking-tighter leading-none mt-0.5">
-                            Cadeau
+                          <Gift className="w-5 h-5 text-amber-300 drop-shadow animate-pulse" />
+                          <span className="text-[7.5px] font-black text-amber-300 uppercase tracking-tighter leading-none mt-0.5">
+                            {isLast ? (isAr ? 'كبير' : 'Cadeau') : (isAr ? `ختم ${stepNum}` : `T.${stepNum}`)}
                           </span>
                         </div>
                       ) : (
@@ -779,22 +857,169 @@ export default function CustomerCardPage() {
                           </span>
                         </div>
                       )}
-                    </div>
+
+                      {/* Étoile indicatrice de cadeau sur le coin */}
+                      {isGiftSlot && !isFilled && (
+                        <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-400"></span>
+                        </span>
+                      )}
+                    </button>
                   );
                 })}
               </div>
             ) : (
-              <div className="w-full h-3 bg-slate-900 rounded-full overflow-hidden">
-                <div
-                  className="h-full"
-                  style={{
-                    width: `${Math.min(100, (card.points_balance / 200) * 100)}%`,
-                    backgroundColor: program.primary_color || '#10B981',
-                  }}
-                ></div>
+              /* PROGRESSION EN POINTS AVEC JALONS MULTI-CADEAUX */
+              <div className="space-y-3">
+                <div className="relative w-full h-4 bg-slate-900 rounded-full overflow-hidden p-0.5 border border-white/20">
+                  <div
+                    className="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-400 shadow-sm"
+                    style={{
+                      width: `${Math.min(100, (card.points_balance / maxPointsScale) * 100)}%`,
+                    }}
+                  ></div>
+                </div>
+
+                {/* Jalons de cadeaux sur l'échelle des points */}
+                <div className="flex justify-between items-center text-[10px] text-slate-300 font-mono font-bold">
+                  <span>0 pt</span>
+                  <span className="text-amber-300">{maxPointsScale} pts (Max)</span>
+                </div>
+              </div>
+            )}
+
+            {/* DÉTAIL DU CADEAU QUAND ON CLIQUE SUR UNE CASE CADEAU */}
+            {selectedTierThreshold && tierMap.has(selectedTierThreshold) && (
+              <div className="mt-3 p-3 rounded-xl bg-amber-500/20 border border-amber-400/60 flex items-center justify-between text-xs animate-fade-in">
+                <div className="flex items-center gap-2">
+                  <Gift className="w-4 h-4 text-amber-300 flex-shrink-0" />
+                  <div>
+                    <p className="font-extrabold text-amber-200">
+                      {isAr ? `هدية الختم ${selectedTierThreshold}` : `Cadeau du Tampon N°${selectedTierThreshold}`} :
+                    </p>
+                    <p className="font-black text-white">
+                      {isAr && tierMap.get(selectedTierThreshold)?.title_ar
+                        ? tierMap.get(selectedTierThreshold)!.title_ar
+                        : tierMap.get(selectedTierThreshold)!.title_fr}
+                    </p>
+                    <p className="text-[10px] text-slate-300 mt-0.5">
+                      {card.stamps_balance >= selectedTierThreshold
+                        ? '✅ Ce cadeau est déjà débloqué ! Présentez votre carte en caisse.'
+                        : `🔒 Encore ${selectedTierThreshold - card.stamps_balance} tampon(s) pour débloquer ce cadeau.`}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedTierThreshold(null)}
+                  className="p-1 rounded-lg text-amber-300 hover:text-white"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
             )}
           </div>
+
+          {/* LISTE DÉTAILLÉE DE TOUS LES PALIERS DE CADEAUX (CE QUE VOUS GAGNEZ) */}
+          {allRewardTiers.length > 0 && (
+            <div className="relative z-10 mb-6 bg-black/35 backdrop-blur-xl rounded-2xl p-4 border border-white/20 shadow-inner space-y-2.5">
+              <div className="flex items-center justify-between">
+                <p className="text-[11px] font-black uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>
+                    {isAr
+                      ? `🎁 قائمة الهدايا التي تربحها (${allRewardTiers.length}) :`
+                      : `🎁 Ce que vous gagnez à chaque palier (${allRewardTiers.length}) :`}
+                  </span>
+                </p>
+                <span className="text-[10px] text-slate-300 font-semibold">
+                  {program.program_type === 'STAMPS' ? 'Par Tampon' : 'Par Points'}
+                </span>
+              </div>
+
+              <div className="space-y-2">
+                {allRewardTiers.map((tier, idx) => {
+                  const threshold = Number(tier.threshold);
+                  const reached =
+                    program.program_type === 'STAMPS'
+                      ? card.stamps_balance >= threshold
+                      : card.points_balance >= threshold;
+                  const isNext = nextUpcomingReward && Number(nextUpcomingReward.threshold) === threshold;
+                  const diff =
+                    program.program_type === 'STAMPS'
+                      ? threshold - card.stamps_balance
+                      : threshold - card.points_balance;
+
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() => {
+                        if (program.program_type === 'STAMPS') {
+                          setSelectedTierThreshold(selectedTierThreshold === threshold ? null : threshold);
+                        }
+                      }}
+                      className={`p-2.5 rounded-xl border transition-all flex items-center justify-between gap-2.5 cursor-pointer ${
+                        reached
+                          ? 'bg-emerald-500/15 border-emerald-400/40 text-emerald-200'
+                          : isNext
+                          ? 'bg-amber-500/20 border-amber-400/60 text-amber-200 ring-1 ring-amber-400/40'
+                          : 'bg-white/5 border-white/10 text-slate-300'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div
+                          className={`w-7 h-7 rounded-lg flex items-center justify-center font-black text-xs flex-shrink-0 ${
+                            reached
+                              ? 'bg-emerald-500 text-slate-950'
+                              : isNext
+                              ? 'bg-amber-400 text-slate-950 animate-pulse'
+                              : 'bg-white/10 text-white'
+                          }`}
+                        >
+                          {reached ? '✓' : idx + 1}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="text-[10px] font-mono font-bold text-amber-300 uppercase">
+                              {program.program_type === 'STAMPS' ? `Tampon ${threshold}` : `${threshold} pts`} :
+                            </span>
+                            <span className="font-extrabold text-xs text-white truncate">
+                              {isAr && tier.title_ar ? tier.title_ar : tier.title_fr}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex-shrink-0">
+                        {reached ? (
+                          <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[10px] font-black">
+                            {isAr ? 'تم الفتح ✓' : 'Débloqué ✓'}
+                          </span>
+                        ) : isNext ? (
+                          <span className="px-2.5 py-1 rounded-full bg-amber-400 text-slate-950 text-[10px] font-black shadow-xs">
+                            {program.program_type === 'STAMPS'
+                              ? isAr
+                                ? `باقي ${diff} فقط !`
+                                : `Encore ${diff} !`
+                              : isAr
+                              ? `باقي ${diff} pt !`
+                              : `Encore ${diff} pts !`}
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded-full bg-white/10 text-slate-400 text-[10px] font-bold">
+                            {program.program_type === 'STAMPS'
+                              ? `À ${threshold} T.`
+                              : `À ${threshold} pts`}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* QR CODE CAISSE INTÉGRÉ DANS LA CARTE (Cliquable pour plein écran) */}
           <button
@@ -1023,8 +1248,21 @@ export default function CustomerCardPage() {
         </div>
       </main>
 
-      <footer className="text-center py-6 text-[10px] text-slate-600 font-medium">
-        FidelityDZ • {merchant.business_name}
+      <footer className="text-center py-6 text-xs text-slate-500 font-medium flex flex-col items-center justify-center gap-1.5">
+        <p>FidelityDZ • {merchant.business_name}</p>
+        <div className="flex items-center gap-2 text-[11px]">
+          <span>Plateforme SaaS de Fidélité 🇩🇿</span>
+          <span>•</span>
+          <a
+            href="https://www.instagram.com/fidelity.dz"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-pink-400 hover:text-pink-300 font-bold transition"
+          >
+            <Instagram className="w-3.5 h-3.5" />
+            <span>@fidelity.dz</span>
+          </a>
+        </div>
       </footer>
       <SupportWidget defaultRole="CUSTOMER" merchantName={card.customer_name} merchantPhone={card.customer_phone} />
     </div>

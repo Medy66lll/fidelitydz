@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import AlgerianPaymentBadges from './AlgerianPaymentBadges';
-import { QrCode, Heart } from 'lucide-react';
+import { QrCode, Heart, Instagram, MessageCircle } from 'lucide-react';
+import { db, FIDELITY_INSTAGRAM_URL, FIDELITY_INSTAGRAM_HANDLE, FIDELITY_WHATSAPP_URL } from '@/lib/db';
 
 export default function Footer() {
   const { language } = useLanguage();
@@ -46,6 +47,35 @@ export default function Footer() {
             </p>
             <div className="inline-flex items-center gap-1.5 text-xs text-emerald-300 font-bold bg-emerald-950/80 border border-emerald-800/80 px-3.5 py-1 rounded-full shadow-inner">
               <span>🇩🇿 Fièrement conçu pour l&apos;Algérie</span>
+            </div>
+
+            {/* Réseaux Sociaux & Contact Officiel */}
+            <div className="pt-2 space-y-2">
+              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                {isAr ? 'تابعنا وتواصل معنا :' : 'Rejoignez-nous :'}
+              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <a
+                  href={FIDELITY_INSTAGRAM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-500/15 via-rose-500/15 to-amber-500/15 border border-pink-500/30 text-pink-300 hover:text-white hover:border-pink-500/60 hover:scale-[1.02] transition-all text-xs font-bold"
+                  title="Suivre FidelityDZ sur Instagram"
+                >
+                  <Instagram className="w-4 h-4 text-pink-400" />
+                  <span>{FIDELITY_INSTAGRAM_HANDLE}</span>
+                </a>
+                <a
+                  href={`https://wa.me/${db.getOwnerWhatsapp() || '213541534762'}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 hover:text-white hover:border-emerald-500/60 hover:scale-[1.02] transition-all text-xs font-bold"
+                  title="Contacter le Support WhatsApp"
+                >
+                  <MessageCircle className="w-4 h-4 text-emerald-400" />
+                  <span>WhatsApp</span>
+                </a>
+              </div>
             </div>
           </div>
 

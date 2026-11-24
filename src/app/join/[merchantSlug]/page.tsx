@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { db, normalizeDzPhone } from '@/lib/db';
+import { db, normalizeDzPhone, FIDELITY_INSTAGRAM_URL, FIDELITY_INSTAGRAM_HANDLE } from '@/lib/db';
 import { Merchant, LoyaltyProgram } from '@/lib/types';
 import { useLanguage } from '@/context/LanguageContext';
 import LanguageToggle from '@/components/LanguageToggle';
-import { QrCode, Phone, User, Sparkles, ArrowRight, ShieldCheck } from 'lucide-react';
+import { QrCode, Phone, User, Sparkles, ArrowRight, ShieldCheck, Instagram } from 'lucide-react';
 
 export default function CustomerJoinPage() {
   const params = useParams();
@@ -244,8 +244,18 @@ export default function CustomerJoinPage() {
         </div>
       </main>
 
-      <footer className="text-center py-2 text-[11px] text-slate-500 font-medium relative z-10">
-        Propulsé par FidelityDZ SaaS • Algérie 🇩🇿
+      <footer className="text-center py-4 text-[11px] text-slate-400 font-medium relative z-10 flex items-center justify-center gap-2">
+        <span>Propulsé par FidelityDZ SaaS 🇩🇿</span>
+        <span>•</span>
+        <a
+          href={FIDELITY_INSTAGRAM_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-pink-400 hover:text-pink-300 font-semibold"
+        >
+          <Instagram className="w-3.5 h-3.5" />
+          <span>{FIDELITY_INSTAGRAM_HANDLE}</span>
+        </a>
       </footer>
     </div>
   );

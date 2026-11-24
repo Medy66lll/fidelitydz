@@ -53,6 +53,11 @@ export function normalizeDzPhone(raw: string): string {
   return digits.slice(0, 10);
 }
 
+export const FIDELITY_INSTAGRAM_URL = 'https://www.instagram.com/fidelity.dz';
+export const FIDELITY_INSTAGRAM_HANDLE = '@fidelity.dz';
+export const FIDELITY_WHATSAPP_PHONE = '213541534762';
+export const FIDELITY_WHATSAPP_URL = 'https://wa.me/213541534762';
+
 export const defaultPlatformSettings: PlatformSettings = {
   id: 1,
   platform_name: 'FidelityDZ',
@@ -63,6 +68,7 @@ export const defaultPlatformSettings: PlatformSettings = {
   owner_ccp_number: '41726689',
   owner_ccp_key: '87',
   owner_whatsapp: '213541534762',
+  owner_instagram: 'https://www.instagram.com/fidelity.dz',
   chargily_mode: 'test',
 };
 
@@ -244,6 +250,16 @@ class FidelityDatabase {
     await postApiDb({ action: 'save_owner_whatsapp', owner_whatsapp: formatted });
   }
 
+  getOwnerInstagram(): string {
+    return this.getStorage('owner_instagram', defaultPlatformSettings.owner_instagram || FIDELITY_INSTAGRAM_URL);
+  }
+
+  async saveOwnerInstagram(url: string): Promise<void> {
+    const trimmed = url.trim();
+    this.setStorage('owner_instagram', trimmed);
+    await postApiDb({ action: 'save_owner_instagram', owner_instagram: trimmed });
+  }
+
   getCustomSupabaseKey(): string {
     return this.getStorage('custom_supabase_key', '');
   }
@@ -338,6 +354,9 @@ class FidelityDatabase {
 
       if (data.owner_whatsapp) {
         this.setStorage('owner_whatsapp', data.owner_whatsapp);
+      }
+      if (data.owner_instagram) {
+        this.setStorage('owner_instagram', data.owner_instagram);
       }
 
       const remoteMerchants: Merchant[] = Array.isArray(data.merchants) ? data.merchants : [];

@@ -25,6 +25,7 @@ import {
   Save,
   Copy,
   FileText,
+  Instagram,
 } from 'lucide-react';
 
 export default function SuperAdminPage() {
@@ -38,6 +39,7 @@ export default function SuperAdminPage() {
   const [payments, setPayments] = useState<SubscriptionPayment[]>([]);
   const [merchants, setMerchants] = useState<Merchant[]>([]);
   const [ownerWaInput, setOwnerWaInput] = useState('0550000000');
+  const [ownerIgInput, setOwnerIgInput] = useState('https://www.instagram.com/fidelity.dz');
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
   const [previewReceipt, setPreviewReceipt] = useState<SubscriptionPayment | null>(null);
   const [loadingSync, setLoadingSync] = useState(false);
@@ -59,6 +61,7 @@ export default function SuperAdminPage() {
     setPayments([...db.getPayments()]);
     setMerchants([...db.getMerchants()]);
     setOwnerWaInput(db.getOwnerWhatsapp());
+    setOwnerIgInput(db.getOwnerInstagram());
     setLoadingSync(false);
   };
 
@@ -233,6 +236,13 @@ CREATE POLICY "subscription_payments_all" ON subscription_payments FOR ALL USING
     e.preventDefault();
     await db.saveOwnerWhatsapp(ownerWaInput);
     setActionSuccess(`Numéro WhatsApp Propriétaire (${ownerWaInput}) enregistré sur Supabase !`);
+    setTimeout(() => setActionSuccess(null), 3500);
+  };
+
+  const handleSaveInstagram = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await db.saveOwnerInstagram(ownerIgInput);
+    setActionSuccess(`Compte Instagram Propriétaire (${ownerIgInput}) enregistré !`);
     setTimeout(() => setActionSuccess(null), 3500);
   };
 
@@ -783,6 +793,38 @@ CREATE POLICY "subscription_payments_all" ON subscription_payments FOR ALL USING
             >
               <Save className="w-3.5 h-3.5" />
               <span>Enregistrer N° WhatsApp</span>
+            </button>
+          </div>
+        </form>
+
+        {/* OWNER INSTAGRAM CONFIGURATION BAR */}
+        <form
+          onSubmit={handleSaveInstagram}
+          className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+        >
+          <div className="space-y-1">
+            <h2 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+              <Instagram className="w-4 h-4 text-pink-600" />
+              <span>Compte Instagram Officiel FidelityDZ (Communication & Réseau)</span>
+            </h2>
+            <p className="text-xs text-slate-500">
+              Profil actif : <a href={ownerIgInput} target="_blank" rel="noopener noreferrer" className="text-pink-600 font-bold hover:underline">@fidelity.dz (Cliquez pour ouvrir)</a>
+            </p>
+          </div>
+          <div className="flex items-center gap-2 w-full md:w-auto">
+            <input aria-label="Lien Instagram"
+              type="url"
+              value={ownerIgInput}
+              onChange={(e) => setOwnerIgInput(e.target.value)}
+              placeholder="https://www.instagram.com/fidelity.dz"
+              className="px-3.5 py-2 rounded-xl border border-slate-300 text-xs font-mono font-bold w-full md:w-72"
+            />
+            <button
+              type="submit"
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 hover:brightness-105 text-white font-bold text-xs inline-flex items-center gap-1.5 whitespace-nowrap shadow-sm"
+            >
+              <Save className="w-3.5 h-3.5" />
+              <span>Enregistrer Instagram</span>
             </button>
           </div>
         </form>
