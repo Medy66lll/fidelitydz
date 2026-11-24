@@ -387,11 +387,11 @@ posts = [
   <!-- Footer CTA -->
   <div class="footer-cta">
     <div>
-      <div class="cta-text-fr">Envoyez un DM pour activer votre commerce</div>
-      <div class="cta-text-ar arabic">أرسل رسالة في الخاص (DM) لتفعيل محلك مجاناً</div>
+      <div class="cta-text-fr">Commentez "TEST" ou votre boutique</div>
+      <div class="cta-text-ar arabic">خلّي اسم محلك في تعليق وحنا نتواصلوا معاك في الخاص</div>
     </div>
     <div class="cta-button">
-      <span>Envoyer un DM</span>
+      <span>Commente "TEST"</span>
       <span>➔</span>
     </div>
   </div>
@@ -676,11 +676,11 @@ posts = [
   <!-- Footer CTA -->
   <div class="footer-cta">
     <div>
-      <div class="cta-title">Activez votre boutique</div>
-      <div class="cta-desc arabic">أرسل رسالة في الخاص لتفعيل المنصة في محلك</div>
+      <div class="cta-title">Activez votre boutique gratuitement</div>
+      <div class="cta-desc arabic">اكتب ولايتك في تعليق ونتكفلوا بكلش في محلك</div>
     </div>
     <div class="cta-btn">
-      <span>Envoyer un DM</span>
+      <span>Écris ta Wilaya</span>
       <span>➔</span>
     </div>
   </div>
@@ -930,11 +930,11 @@ posts = [
   <!-- Footer CTA -->
   <div class="footer-cta">
     <div>
-      <div class="cta-title">Activez cette option dans votre boutique</div>
-      <div class="cta-desc arabic">أرسل رسالة في الخاص ونفعلوهالك مباشرة</div>
+      <div class="cta-title">Programme Bêta VIP réservé aux commerces</div>
+      <div class="cta-desc arabic">أكتب "VIP" وفريقنا يتواصل معاك ويركبهالك باطل</div>
     </div>
     <div class="cta-btn">
-      <span>Envoyer un DM</span>
+      <span>Commente "VIP"</span>
       <span>➔</span>
     </div>
   </div>
