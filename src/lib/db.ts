@@ -8,6 +8,7 @@ import {
   LoyaltyTransaction,
   PersonalizedOffer,
   SubscriptionPayment,
+  RewardTier,
 } from './types';
 
 export function generateUuid(): string {
@@ -51,6 +52,30 @@ export function normalizeDzPhone(raw: string): string {
     digits = '0' + digits;
   }
   return digits.slice(0, 10);
+}
+
+export function unpackProgram(prog: LoyaltyProgram | null | undefined): LoyaltyProgram | null {
+  if (!prog) return null;
+  let reward_title_ar = prog.reward_title_ar || 'الهدية العاشرة مجاناً';
+  let reward_tiers: RewardTier[] = Array.isArray(prog.reward_tiers) ? [...prog.reward_tiers] : [];
+
+  if (typeof reward_title_ar === 'string' && reward_title_ar.startsWith('__TIERS__:')) {
+    const [tiersPart, ...realTitleParts] = reward_title_ar.split(':::');
+    reward_title_ar = realTitleParts.join(':::') || 'الهدية العاشرة مجاناً';
+    try {
+      const decoded = decodeURIComponent(tiersPart.slice(10));
+      const parsed = JSON.parse(decoded);
+      if (Array.isArray(parsed) && reward_tiers.length === 0) {
+        reward_tiers = parsed;
+      }
+    } catch {}
+  }
+
+  return {
+    ...prog,
+    reward_title_ar,
+    reward_tiers,
+  };
 }
 
 export const FIDELITY_INSTAGRAM_URL = 'https://www.instagram.com/fidelity.dz';
@@ -364,7 +389,20 @@ class FidelityDatabase {
       this.setStorage('merchants', cleanRemoteMerchants);
 
       if (Array.isArray(data.programs)) {
-        this.setStorage('programs', data.programs);
+        const localProgs = this.getStorage('programs', initialPrograms);
+        const unpackedRemote = data.programs.map((remoteProg: any) => {
+          const unpacked = unpackProgram(remoteProg) || remoteProg;
+          if (!unpacked.reward_tiers || unpacked.reward_tiers.length === 0) {
+            const local = localProgs.find(
+              (lp: any) => lp.id === unpacked.id || lp.merchant_id === unpacked.merchant_id
+            );
+            if (local && Array.isArray(local.reward_tiers) && local.reward_tiers.length > 0) {
+              return { ...unpacked, reward_tiers: local.reward_tiers };
+            }
+          }
+          return unpacked;
+        });
+        this.setStorage('programs', unpackedRemote);
       }
       if (Array.isArray(data.cards)) {
         this.setStorage('customer_cards', data.cards);
@@ -440,7 +478,8 @@ class FidelityDatabase {
         const data = await res.json();
         if (data.found && data.merchant) {
           this.saveMerchantLocalOnly(data.merchant);
-          const prog = data.program || this.getProgramByMerchantId(data.merchant.id);
+          const rawProg = data.program || this.getProgramByMerchantId(data.merchant.id);
+          const prog = unpackProgram(rawProg) || rawProg;
           this.saveProgramLocalOnly(prog);
           return { merchant: data.merchant, program: prog };
         }
@@ -471,9 +510,10 @@ class FidelityDatabase {
         if (data.found && data.card) {
           this.saveCardLocalOnly(data.card);
           if (data.merchant) this.saveMerchantLocalOnly(data.merchant);
-          if (data.program) this.saveProgramLocalOnly(data.program);
+          if (data.program) this.saveProgramLocalOnly(unpackProgram(data.program) || data.program);
           const m = data.merchant || this.getMerchantById(data.card.merchant_id) || null;
-          const p = data.program || (m ? this.getProgramByMerchantId(m.id) : null);
+          const rawProg = data.program || (m ? this.getProgramByMerchantId(m.id) : null);
+          const p = unpackProgram(rawProg) || rawProg;
           const rawOffers: PersonalizedOffer[] =
             Array.isArray(data.offers) && data.offers.length > 0 ? data.offers : this.getOffersForCard(data.card);
           return {
@@ -632,7 +672,7 @@ class FidelityDatabase {
     const mUuid = toValidUuid(merchantId);
     const list = this.getStorage('programs', initialPrograms);
     const found = list.find((p) => p.merchant_id === merchantId || p.merchant_id === mUuid);
-    if (found) return found;
+    if (found) return unpackProgram(found) || found;
 
     const newProg: LoyaltyProgram = {
       id: toValidUuid(`prog-${mUuid}`),
@@ -645,6 +685,7 @@ class FidelityDatabase {
       welcome_bonus: 1,
       primary_color: '#10B981',
       background_color: '#0F172A',
+      reward_tiers: [],
     };
     list.push(newProg);
     this.setStorage('programs', list);
@@ -652,24 +693,49 @@ class FidelityDatabase {
   }
 
   private saveProgramLocalOnly(program: LoyaltyProgram): void {
+    const unpacked = unpackProgram(program) || program;
     const list = this.getStorage('programs', initialPrograms);
-    const index = list.findIndex((p) => p.id === program.id || p.merchant_id === program.merchant_id);
+    const index = list.findIndex((p) => p.id === unpacked.id || p.merchant_id === unpacked.merchant_id);
     if (index >= 0) {
-      list[index] = program;
+      list[index] = unpacked;
     } else {
-      list.push(program);
+      list.push(unpacked);
     }
     this.setStorage('programs', list);
   }
 
   saveProgram(program: LoyaltyProgram): void {
+    const unpacked = unpackProgram(program) || program;
     const fixed: LoyaltyProgram = {
-      ...program,
-      id: toValidUuid(program.id),
-      merchant_id: toValidUuid(program.merchant_id),
+      ...unpacked,
+      id: toValidUuid(unpacked.id),
+      merchant_id: toValidUuid(unpacked.merchant_id),
+      reward_tiers: Array.isArray(unpacked.reward_tiers) ? unpacked.reward_tiers : [],
     };
     this.saveProgramLocalOnly(fixed);
     postApiDb({ action: 'save_program', program: fixed });
+  }
+
+  async saveProgramAsync(program: LoyaltyProgram): Promise<{ success: boolean; program?: LoyaltyProgram }> {
+    const unpacked = unpackProgram(program) || program;
+    const fixed: LoyaltyProgram = {
+      ...unpacked,
+      id: toValidUuid(unpacked.id),
+      merchant_id: toValidUuid(unpacked.merchant_id),
+      reward_tiers: Array.isArray(unpacked.reward_tiers) ? unpacked.reward_tiers : [],
+    };
+    this.saveProgramLocalOnly(fixed);
+    try {
+      const res = await postApiDb({ action: 'save_program', program: fixed });
+      if (res && res.program) {
+        const unpackedRes = unpackProgram(res.program) || res.program;
+        this.saveProgramLocalOnly(unpackedRes);
+        return { success: true, program: unpackedRes };
+      }
+      return { success: Boolean(res && res.success), program: fixed };
+    } catch {
+      return { success: false, program: fixed };
+    }
   }
 
   getCustomerCards(merchantId?: string): CustomerCard[] {

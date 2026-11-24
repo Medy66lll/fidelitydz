@@ -130,8 +130,10 @@ CREATE TABLE IF NOT EXISTS loyalty_programs (
   reward_title_ar TEXT NOT NULL DEFAULT 'الهدية العاشرة مجاناً',
   welcome_bonus INT DEFAULT 1,
   primary_color TEXT DEFAULT '#10B981',
-  background_color TEXT DEFAULT '#0F172A'
+  background_color TEXT DEFAULT '#0F172A',
+  reward_tiers JSONB DEFAULT '[]'::jsonb
 );
+ALTER TABLE loyalty_programs ADD COLUMN IF NOT EXISTS reward_tiers JSONB DEFAULT '[]'::jsonb;
 
 CREATE TABLE IF NOT EXISTS customer_cards (
   id TEXT PRIMARY KEY,

@@ -19,8 +19,8 @@ interface MerchantContextType {
   switchMerchant: (slugOrId: string) => void;
   loginMerchantSession: (merchant: Merchant) => void;
   logoutMerchantSession: () => void;
-  updateProgram: (newProg: LoyaltyProgram) => void;
-  updateMerchant: (newMerchant: Merchant) => void;
+  updateProgram: (newProg: LoyaltyProgram) => Promise<void>;
+  updateMerchant: (newMerchant: Merchant) => Promise<void>;
   allMerchants: Merchant[];
 }
 
@@ -206,17 +206,20 @@ export function MerchantProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const updateProgram = (newProg: LoyaltyProgram) => {
-    db.saveProgram(newProg);
+  const updateProgram = async (newProg: LoyaltyProgram) => {
     setProgram({ ...newProg });
+    const res = await db.saveProgramAsync(newProg);
+    if (res?.program) {
+      setProgram({ ...res.program });
+    }
   };
 
-  const updateMerchant = (newMerchant: Merchant) => {
-    db.saveMerchant(newMerchant);
+  const updateMerchant = async (newMerchant: Merchant) => {
     setCurrentMerchant({ ...newMerchant });
     setAllMerchants((prev) =>
       prev.map((m) => (m.id === newMerchant.id || m.slug === newMerchant.slug ? newMerchant : m))
     );
+    await db.saveMerchant(newMerchant);
   };
 
   const refreshMerchantData = async () => {

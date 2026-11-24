@@ -44,6 +44,7 @@ export default function LoyaltyStudioPage() {
   const [cashierPin, setCashierPin] = useState('');
   const [scanCooldownMinutes, setScanCooldownMinutes] = useState(15);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -143,46 +144,53 @@ export default function LoyaltyStudioPage() {
     }
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!currentMerchant || !program) return;
+    if (!currentMerchant || !program || isSaving) return;
 
-    const updatedProg: LoyaltyProgram = {
-      ...program,
-      program_type: programType,
-      stamps_required: stampsRequired,
-      points_per_100dzd: pointsRatio,
-      reward_title_fr: rewardTitleFr,
-      reward_title_ar: rewardTitleAr,
-      welcome_bonus: welcomeBonus,
-      primary_color: primaryColor,
-      background_color: backgroundColor,
-      social_instagram: socialInstagram.trim(),
-      social_facebook: socialFacebook.trim(),
-      social_tiktok: socialTiktok.trim(),
-      social_maps: socialMaps.trim(),
-      google_review_reward_enabled: googleReviewRewardEnabled,
-      google_review_reward_bonus: Number(googleReviewRewardBonus) || 1,
-      reward_tiers: rewardTiers,
-    };
-    updateProgram(updatedProg);
+    setIsSaving(true);
+    try {
+      const updatedProg: LoyaltyProgram = {
+        ...program,
+        program_type: programType,
+        stamps_required: stampsRequired,
+        points_per_100dzd: pointsRatio,
+        reward_title_fr: rewardTitleFr,
+        reward_title_ar: rewardTitleAr,
+        welcome_bonus: welcomeBonus,
+        primary_color: primaryColor,
+        background_color: backgroundColor,
+        social_instagram: socialInstagram.trim(),
+        social_facebook: socialFacebook.trim(),
+        social_tiktok: socialTiktok.trim(),
+        social_maps: socialMaps.trim(),
+        google_review_reward_enabled: googleReviewRewardEnabled,
+        google_review_reward_bonus: Number(googleReviewRewardBonus) || 1,
+        reward_tiers: rewardTiers,
+      };
+      await updateProgram(updatedProg);
 
-    const updatedMerchant: Merchant = {
-      ...currentMerchant,
-      logo_url: logoUrl,
-      social_instagram: socialInstagram.trim(),
-      social_facebook: socialFacebook.trim(),
-      social_tiktok: socialTiktok.trim(),
-      social_maps: socialMaps.trim(),
-      google_review_reward_enabled: googleReviewRewardEnabled,
-      google_review_reward_bonus: Number(googleReviewRewardBonus) || 1,
-      cashier_pin: cashierPin.trim(),
-      scan_cooldown_minutes: Number(scanCooldownMinutes ?? 15),
-    };
-    updateMerchant(updatedMerchant);
+      const updatedMerchant: Merchant = {
+        ...currentMerchant,
+        logo_url: logoUrl,
+        social_instagram: socialInstagram.trim(),
+        social_facebook: socialFacebook.trim(),
+        social_tiktok: socialTiktok.trim(),
+        social_maps: socialMaps.trim(),
+        google_review_reward_enabled: googleReviewRewardEnabled,
+        google_review_reward_bonus: Number(googleReviewRewardBonus) || 1,
+        cashier_pin: cashierPin.trim(),
+        scan_cooldown_minutes: Number(scanCooldownMinutes ?? 15),
+      };
+      await updateMerchant(updatedMerchant);
 
-    setSavedSuccess(true);
-    setTimeout(() => setSavedSuccess(false), 3000);
+      setSavedSuccess(true);
+      setTimeout(() => setSavedSuccess(false), 3000);
+    } catch {
+      // Erreur réseau gérée gracieusement
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const colorPresets = [
@@ -802,10 +810,13 @@ export default function LoyaltyStudioPage() {
           <div className="pt-4 border-t border-slate-100 flex justify-end">
             <button
               type="submit"
-              className="px-6 py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-2"
+              disabled={isSaving}
+              className={`px-6 py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-2 ${
+                isSaving ? 'opacity-70 cursor-not-allowed' : ''
+              }`}
             >
-              <Save className="w-4 h-4" />
-              <span>{t('save_changes')}</span>
+              <Save className={`w-4 h-4 ${isSaving ? 'animate-spin' : ''}`} />
+              <span>{isSaving ? (isAr ? 'جاري الحفظ...' : 'Enregistrement...') : t('save_changes')}</span>
             </button>
           </div>
         </form>

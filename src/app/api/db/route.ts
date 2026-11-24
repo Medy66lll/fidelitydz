@@ -539,6 +539,38 @@ function unpackMerchantFromDb(row: any) {
 function packProgramForDb(p: any, merchantUuid: string) {
   const pColor = /^#[0-9A-Fa-f]{6}$/.test(String(p.primary_color || '')) ? p.primary_color : '#10B981';
   const bgColor = /^#[0-9A-Fa-f]{6}$/.test(String(p.background_color || '')) ? p.background_color : '#0F172A';
+
+  let cleanTiers: any[] = [];
+  if (Array.isArray(p.reward_tiers)) {
+    cleanTiers = p.reward_tiers
+      .filter((t: any) => t && Number(t.threshold) > 0)
+      .map((t: any) => ({
+        threshold: Math.max(1, Math.min(1000, Math.floor(Number(t.threshold)))),
+        title_fr: sanitizeString(t.title_fr || '', 100),
+        title_ar: sanitizeString(t.title_ar || '', 100),
+      }));
+  }
+
+  // Si reward_title_ar contenait déjà un conteneur __TIERS__, on extrait le titre réel et préserve les tiers si non spécifiés
+  let rawTitleAr = String(p.reward_title_ar || 'الهدية العاشرة مجاناً');
+  if (rawTitleAr.startsWith('__TIERS__:')) {
+    const parts = rawTitleAr.split(':::');
+    const existingTiersEncoded = parts[0].slice(10);
+    rawTitleAr = parts.slice(1).join(':::') || 'الهدية العاشرة مجاناً';
+    if (!Array.isArray(p.reward_tiers) && existingTiersEncoded) {
+      try {
+        const parsed = JSON.parse(decodeURIComponent(existingTiersEncoded));
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          cleanTiers = parsed;
+        }
+      } catch {}
+    }
+  }
+  const cleanTitleAr = sanitizeString(rawTitleAr, 120);
+  const packedTitleAr = cleanTiers.length > 0
+    ? `__TIERS__:${encodeURIComponent(JSON.stringify(cleanTiers))}:::${cleanTitleAr}`
+    : cleanTitleAr;
+
   return {
     id: ensureUuid(p.id || `prog-${merchantUuid}`),
     merchant_id: merchantUuid,
@@ -546,10 +578,34 @@ function packProgramForDb(p: any, merchantUuid: string) {
     stamps_required: Math.max(4, Math.min(50, Math.floor(Number(p.stamps_required) || 10))),
     points_per_100dzd: Math.max(1, Math.min(100, Math.floor(Number(p.points_per_100dzd) || 1))),
     reward_title_fr: sanitizeString(p.reward_title_fr || '10ème Offert', 120),
-    reward_title_ar: sanitizeString(p.reward_title_ar || 'الهدية العاشرة مجاناً', 120),
+    reward_title_ar: packedTitleAr,
     welcome_bonus: Math.max(0, Math.min(10, Math.floor(Number(p.welcome_bonus ?? 1)))),
     primary_color: pColor,
     background_color: bgColor,
+  };
+}
+
+function unpackProgramFromDb(p: any) {
+  if (!p) return null;
+  let reward_title_ar = p.reward_title_ar || 'الهدية العاشرة مجاناً';
+  let reward_tiers: any[] = Array.isArray(p.reward_tiers) ? p.reward_tiers : [];
+
+  if (typeof reward_title_ar === 'string' && reward_title_ar.startsWith('__TIERS__:')) {
+    const [tiersPart, ...realTitleParts] = reward_title_ar.split(':::');
+    reward_title_ar = realTitleParts.join(':::') || 'الهدية العاشرة مجاناً';
+    try {
+      const decoded = decodeURIComponent(tiersPart.slice(10));
+      const parsed = JSON.parse(decoded);
+      if (Array.isArray(parsed)) {
+        reward_tiers = parsed;
+      }
+    } catch {}
+  }
+
+  return {
+    ...p,
+    reward_title_ar,
+    reward_tiers,
   };
 }
 
@@ -889,7 +945,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ found: false }, { status: 200 });
     }
     const progRows = await sbSelect('loyalty_programs', `merchant_id=eq.${encodeURIComponent(merchant.id)}&limit=1`);
-    const program = progRows && progRows.length > 0 ? progRows[0] : null;
+    const program = progRows && progRows.length > 0 ? unpackProgramFromDb(progRows[0]) : null;
     const safePublicMerchant = sanitizeMerchantForPublicCustomer(merchant);
     return NextResponse.json({ found: true, merchant: safePublicMerchant, program }, { status: 200 });
   }
@@ -923,7 +979,7 @@ export async function GET(req: NextRequest) {
       ),
     ]);
     const merchant = mRows && mRows.length > 0 ? unpackMerchantFromDb(mRows[0]) : null;
-    const program = pRows && pRows.length > 0 ? pRows[0] : null;
+    const program = pRows && pRows.length > 0 ? unpackProgramFromDb(pRows[0]) : null;
     const safeMerchant = sanitizeMerchantForPublicCustomer(merchant);
     const claimedGoogle =
       Array.isArray(txRows) && txRows.some((t: any) => t.action_type === 'GOOGLE_REVIEW_BONUS');
@@ -1101,7 +1157,7 @@ export async function GET(req: NextRequest) {
     owner_whatsapp: ownerWhatsapp,
     owner_instagram: ownerInstagram,
     merchants,
-    programs: filterByMerchant(pRows),
+    programs: filterByMerchant(Array.isArray(pRows) ? pRows.map(unpackProgramFromDb) : []),
     cards: annotatedCards,
     offers: filterByMerchant(Array.isArray(oRows) ? oRows.map(unpackOfferFromDb) : []),
     payments,
@@ -1833,7 +1889,7 @@ export async function POST(req: NextRequest) {
       if (program) {
         const dbProg = packProgramForDb(program, dbMerchant.id);
         await sbUpsert('loyalty_programs', dbProg, 'id');
-        savedProg = dbProg;
+        savedProg = unpackProgramFromDb(dbProg);
       }
 
       const freshToken = !isOwnerAdmin
@@ -1862,9 +1918,10 @@ export async function POST(req: NextRequest) {
       }
       const dbProg = packProgramForDb(program, mUuid);
       const pRes = await sbUpsert('loyalty_programs', dbProg, 'id');
+      const returnedRow = Array.isArray(pRes.data) && pRes.data[0] ? pRes.data[0] : dbProg;
       return NextResponse.json({
         success: pRes.ok,
-        program: Array.isArray(pRes.data) && pRes.data[0] ? pRes.data[0] : dbProg,
+        program: unpackProgramFromDb(returnedRow),
       });
     }
 
@@ -1922,7 +1979,7 @@ export async function POST(req: NextRequest) {
           sbSelect('loyalty_programs', `merchant_id=eq.${encodeURIComponent(mId)}&limit=1`),
         ]);
         const merchantObj = mRows && mRows.length > 0 ? unpackMerchantFromDb(mRows[0]) : null;
-        const progObj = pRows && pRows.length > 0 ? pRows[0] : null;
+        const progObj = pRows && pRows.length > 0 ? unpackProgramFromDb(pRows[0]) : null;
         if (!merchantObj || !merchantObj.google_review_reward_enabled) {
           return NextResponse.json(
             { success: false, error: 'Bonus Google Maps non activé pour ce commerce.' },
@@ -2034,10 +2091,11 @@ export async function POST(req: NextRequest) {
       }
 
       const pRows = await sbSelect('loyalty_programs', `merchant_id=eq.${encodeURIComponent(merchant.id)}&limit=1`);
-      let program = pRows && pRows.length > 0 ? pRows[0] : null;
+      let program = pRows && pRows.length > 0 ? unpackProgramFromDb(pRows[0]) : null;
       if (!program) {
-        program = packProgramForDb({}, merchant.id);
-        await sbUpsert('loyalty_programs', program, 'id');
+        const rawProg = packProgramForDb({}, merchant.id);
+        await sbUpsert('loyalty_programs', rawProg, 'id');
+        program = unpackProgramFromDb(rawProg);
       }
 
       const allMerchantCards = await sbSelect(
