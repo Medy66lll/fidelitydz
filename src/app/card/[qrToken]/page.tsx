@@ -84,6 +84,49 @@ export default function CustomerCardPage() {
     }
   }, []);
 
+  // Calcul exhaustif de tous les paliers de récompense (intermédiaires + final) - Toujours au niveau racine des hooks
+  const allRewardTiers: RewardTier[] = React.useMemo(() => {
+    if (!program) return [];
+    const tiers: RewardTier[] = Array.isArray(program.reward_tiers) ? [...program.reward_tiers] : [];
+    if (program.program_type === 'STAMPS') {
+      const stampsReq = Math.max(1, Number(program.stamps_required || 10));
+      const hasFinal = tiers.some((t) => Number(t.threshold) === stampsReq);
+      if (!hasFinal && stampsReq > 0) {
+        tiers.push({
+          threshold: stampsReq,
+          title_fr: program.reward_title_fr || 'Récompense Finale',
+          title_ar: program.reward_title_ar || 'الهدية الكبرى',
+        });
+      }
+    } else {
+      if (tiers.length === 0) {
+        tiers.push(
+          { threshold: 50, title_fr: 'Boisson ou Remise Offerte', title_ar: 'مشروب أو تخفيض هدية' },
+          { threshold: 100, title_fr: program.reward_title_fr || 'Cadeau Fidélité', title_ar: program.reward_title_ar || 'هدية الولاء' }
+        );
+      }
+    }
+    return tiers.sort((a, b) => Number(a.threshold) - Number(b.threshold));
+  }, [program]);
+
+  const tierMap = React.useMemo(() => {
+    const map = new Map<number, RewardTier>();
+    allRewardTiers.forEach((t) => map.set(Number(t.threshold), t));
+    return map;
+  }, [allRewardTiers]);
+
+  const nextUpcomingReward = React.useMemo(() => {
+    if (!card || !program) return null;
+    const currentVal = program.program_type === 'STAMPS' ? Number(card.stamps_balance || 0) : Number(card.points_balance || 0);
+    return allRewardTiers.find((t) => currentVal < Number(t.threshold)) || null;
+  }, [allRewardTiers, card, program]);
+
+  const maxPointsScale = React.useMemo(() => {
+    if (!program) return 100;
+    const thresholds = allRewardTiers.map((t) => Number(t.threshold));
+    return Math.max(100, ...thresholds);
+  }, [allRewardTiers, program]);
+
   const triggerPhoneNotification = (title: string, body: string, tag: string) => {
     const iconUrl = `/api/icon?token=${encodeURIComponent(qrToken)}`;
     soundFX.playReward();
@@ -450,48 +493,6 @@ export default function CustomerCardPage() {
   const isRewardReady =
     !isMerchantExpired && (card.rewards_available > 0 || card.stamps_balance >= program.stamps_required);
 
-  // Calcul exhaustif de tous les paliers de récompense (intermédiaires + final)
-  const allRewardTiers: RewardTier[] = React.useMemo(() => {
-    if (!program) return [];
-    const tiers: RewardTier[] = Array.isArray(program.reward_tiers) ? [...program.reward_tiers] : [];
-    if (program.program_type === 'STAMPS') {
-      const hasFinal = tiers.some((t) => Number(t.threshold) === Number(program.stamps_required));
-      if (!hasFinal && program.stamps_required > 0) {
-        tiers.push({
-          threshold: program.stamps_required,
-          title_fr: program.reward_title_fr || 'Récompense Finale',
-          title_ar: program.reward_title_ar || 'الهدية الكبرى',
-        });
-      }
-    } else {
-      if (tiers.length === 0) {
-        tiers.push(
-          { threshold: 50, title_fr: 'Boisson ou Remise Offerte', title_ar: 'مشروب أو تخفيض هدية' },
-          { threshold: 100, title_fr: program.reward_title_fr || 'Cadeau Fidélité', title_ar: program.reward_title_ar || 'هدية الولاء' }
-        );
-      }
-    }
-    return tiers.sort((a, b) => Number(a.threshold) - Number(b.threshold));
-  }, [program]);
-
-  const tierMap = React.useMemo(() => {
-    const map = new Map<number, RewardTier>();
-    allRewardTiers.forEach((t) => map.set(Number(t.threshold), t));
-    return map;
-  }, [allRewardTiers]);
-
-  const nextUpcomingReward = React.useMemo(() => {
-    if (!card || !program) return null;
-    const currentVal = program.program_type === 'STAMPS' ? card.stamps_balance : card.points_balance;
-    return allRewardTiers.find((t) => currentVal < Number(t.threshold)) || null;
-  }, [allRewardTiers, card, program]);
-
-  const maxPointsScale = React.useMemo(() => {
-    if (!program) return 100;
-    const thresholds = allRewardTiers.map((t) => Number(t.threshold));
-    return Math.max(100, ...thresholds);
-  }, [allRewardTiers, program]);
-
   if (card.is_blocked_by_quota) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white p-4">
@@ -801,10 +802,11 @@ export default function CustomerCardPage() {
 
             {program.program_type === 'STAMPS' ? (
               <div className="grid grid-cols-5 gap-2.5">
-                {Array.from({ length: program.stamps_required }).map((_, i) => {
+                {Array.from({ length: Math.max(1, Math.min(30, Number(program.stamps_required || 10))) }).map((_, i) => {
+                  const safeReq = Math.max(1, Math.min(30, Number(program.stamps_required || 10)));
                   const stepNum = i + 1;
-                  const isFilled = i < card.stamps_balance;
-                  const isLast = stepNum === program.stamps_required;
+                  const isFilled = i < Number(card.stamps_balance || 0);
+                  const isLast = stepNum === safeReq;
                   const tier = tierMap.get(stepNum);
                   const isGiftSlot = Boolean(tier);
                   const isSelected = selectedTierThreshold === stepNum;
