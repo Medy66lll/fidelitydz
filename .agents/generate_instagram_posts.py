@@ -387,11 +387,11 @@ posts = [
   <!-- Footer CTA -->
   <div class="footer-cta">
     <div>
-      <div class="cta-text-fr">Écrivez "TEST" en commentaire</div>
-      <div class="cta-text-ar arabic">علّق بكلمة "TEST" ويوصلك الرابط في الخاص</div>
+      <div class="cta-text-fr">Envoyez un DM pour activer votre commerce</div>
+      <div class="cta-text-ar arabic">أرسل رسالة في الخاص (DM) لتفعيل محلك مجاناً</div>
     </div>
     <div class="cta-button">
-      <span>14 Jours Gratuits</span>
+      <span>Envoyer un DM</span>
       <span>➔</span>
     </div>
   </div>
@@ -677,10 +677,10 @@ posts = [
   <div class="footer-cta">
     <div>
       <div class="cta-title">Activez votre boutique</div>
-      <div class="cta-desc arabic">أرسل رسالة في الخاص لتجربة المنصة في محلك</div>
+      <div class="cta-desc arabic">أرسل رسالة في الخاص لتفعيل المنصة في محلك</div>
     </div>
     <div class="cta-btn">
-      <span>Lien en Bio</span>
+      <span>Envoyer un DM</span>
       <span>➔</span>
     </div>
   </div>
@@ -931,10 +931,10 @@ posts = [
   <div class="footer-cta">
     <div>
       <div class="cta-title">Activez cette option dans votre boutique</div>
-      <div class="cta-desc arabic">أكتب "GOOGLE" في التعليقات ونبعثولك التفاصيل</div>
+      <div class="cta-desc arabic">أرسل رسالة في الخاص ونفعلوهالك مباشرة</div>
     </div>
     <div class="cta-btn">
-      <span>14 Jours Gratuits</span>
+      <span>Envoyer un DM</span>
       <span>➔</span>
     </div>
   </div>

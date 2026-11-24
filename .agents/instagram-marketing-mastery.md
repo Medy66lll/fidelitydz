@@ -6,24 +6,35 @@
 
 ---
 
-## 1. Optimisation du Profil & Bio Haute Conversion (Bio Architecture)
+## 1. Optimisation du Profil & Bio Haute Conversion (Strictement ≤ 150 Caractères)
 
+> **Stratégie Spécifique : Zéro Lien Public dans la Bio**  
+> L'objectif pendant cette phase de test et d'onboarding sur-mesure est de rediriger chaque commerçant vers les **Messages Privés (DM)** pour configurer son compte et lui installer la plateforme en direct.
+
+### Version Bio A (Français - 144 caractères) :
 ```text
-ðŸ‡©ðŸ‡¿ FidelityDZ â€” Carte de FidÃ©litÃ© Digitale
-âš¡ Modernisez votre commerce en AlgÃ©rie | 0 App Ã  installer
-ðŸ“² Vos clients scannent et gardent leur carte dans leur smartphone
-ðŸŽ  +68% de clients fidÃ¨les qui reviennent chez vous
-ðŸŽ‰ 14 Jours d'Essai Gratuit (0 CB requise)
-â¬‡ï¸  CrÃ©ez votre carte en 60 secondes :
-ðŸ”— fidelitydz.vercel.app/register
+🇩🇿 N°1 de la fidélité digitale
+📲 Carte dans le tél | 0 App
+📈 +68% de clients fidèles
+🎁 14 jours d'essai gratuit
+📩 DM pour activer votre boutique
 ```
 
-### Highlights Covers (Les 5 Stories Ã  la Une)
-1. **ðŸ’¡ C'est quoi ?** : PrÃ©sentation animÃ©e en 3 slides du concept (adieu la carte en carton, bonjour le pass smartphone).
-2. **âš¡ En Caisse** : VidÃ©os rÃ©elles de scans au comptoir en 1.2 seconde sur diffÃ©rents tÃ©lÃ©phones.
-3. **â­’ Avis CommerÃ§ants** : Captures de messages WhatsApp de gÃ©rants satisfaits (Alger, Oran, SÃ©tif).
-4. **ðŸ’° Tarifs & Packs** : PrÃ©sentation claire du forfait tout compris Ã  3,900 DZD / mois avec paiement BaridiMob / Edahabia.
-5. **ðŸŽ  Essai 14j** : Story avec sticker lien direct vers la page d'inscription.
+### Version Bio B (Darija - 138 caractères) :
+```text
+🇩🇿 N°1 de la fidélité digitale
+📲 كارت في الهاتف | 0 تطبيق
+📈 زبائن أوفياء يرجعوا لمحلك
+🎁 14 يوم تجربة مجانية
+📩 أرسل DM في الخاص لتفعيل محلك
+```
+
+### Highlights Covers (Les 5 Stories à la Une)
+1. **💡 C'est quoi ?** : Présentation du concept en 3 slides (la carte digitale dans le smartphone).
+2. **⚡ En Caisse** : Vidéos réelles de scans au comptoir en 1.2 seconde.
+3. **⭐ Avis** : Retours et captures de conversations de commerçants ravis.
+4. **🛠️ Installation** : Explication de comment on installe la plateforme pour le commerçant en 5 minutes.
+5. **📩 Activer mon Shop** : Story invitant à envoyer un DM direct pour tester la plateforme gratuitement.
 
 ---
 
@@ -71,22 +82,22 @@ Fond Sombre & Vert Ã‰meraude  Fond Blanc / CrÃ¨me & Vert    Fond Vert Ã‰
 - **Slide 3 :** *Â« Le systÃ¨me FidelityDZ : rÃ©compensez les avis positifs Â»* -> Proposez +1 tampon cadeau automatique pour chaque avis laissÃ©.
 - **Slide 4 :** *Â« Un flux rÃ©gulier d'avis vÃ©rifiÃ©s Â»* -> Votre commerce monte en premiÃ¨re position dans votre wilaya.
 - **Slide 5 :** *Â« RÃ©sultat : plus de visibilitÃ© = plus de nouveaux clients. Â»*
-- **Slide 6 :** *Â« Enregistrez ce post pour l'appliquer dans votre boutique ! Lien dans la bio @fidelity.dz Â»*
+- **Slide 6 :** *« Enregistrez ce post ! Envoyez-nous un DM pour activer cette option gratuitement dans votre boutique @fidelity.dz »*
 
 ---
 
-## 5. Scripts de Reels Viraux (PrÃªts pour Tournage Smartphone)
+## 5. Scripts de Reels Viraux (Prêts pour Tournage Smartphone)
 
-### Reel 1 : "La VÃ©ritÃ© sur les Cartes en Papier" (DurÃ©e : 28s)
-- **Cadrage :** Face camÃ©ra dynamique au comptoir d'un magasin.
+### Reel 1 : "La Vérité sur les Cartes en Papier" (Durée : 28s)
+- **Cadrage :** Face caméra dynamique au comptoir d'un magasin.
 - **Hook (0-3s) :** *(En jetant une carte en carton sur la table)*  
-  *Â« Si vous donnez encore cette carte Ã  vos clients en AlgÃ©rie... vous jetez votre argent par la fenÃªtre ! Â»*
-- **DÃ©veloppement (3-18s) :**  
-  *Â« Pourquoi ? Parce que 80% des clients la perdent dans une autre veste, ou la jettent. RÃ©sultat : ils ne reviennent pas.  
-  Mais regardez Ã§a : avec FidelityDZ, le client scanne votre QR code avec son tÃ©lÃ©phone... ZÃ©ro application Ã  tÃ©lÃ©charger ! La carte s'affiche direct avec ses tampons et son cadeau. Â»*
+  *« Si vous donnez encore cette carte à vos clients en Algérie... vous jetez votre argent par la fenêtre ! »*
+- **Développement (3-18s) :**  
+  *« Pourquoi ? Parce que 80% des clients la perdent dans une autre veste, ou la jettent. Résultat : ils ne reviennent pas.  
+  Mais regardez ça : avec FidelityDZ, le client scanne votre QR code avec son téléphone... Zéro application à télécharger ! La carte s'affiche direct avec ses tampons et son cadeau. »*
 - **Conclusion & CTA (18-28s) :**  
-  *Â« En 1 seconde Ã  la caisse, vous fidÃ©lisez votre client pour toujours.  
-  Envie de moderniser votre commerce ? Essayez FidelityDZ gratuitement pendant 14 jours. Lien en bio ! Â»*
+  *« En 1 seconde à la caisse, vous fidélisez votre client pour toujours.  
+  Envie de tester dans votre commerce ? Envoyez-nous un DM en privé pour qu'on vous active votre compte gratuitement ! »*
 
 ---
 
