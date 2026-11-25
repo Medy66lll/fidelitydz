@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import AlgerianPaymentBadges from './AlgerianPaymentBadges';
-import { QrCode, Heart, Instagram, MessageCircle } from 'lucide-react';
-import { db, FIDELITY_INSTAGRAM_URL, FIDELITY_INSTAGRAM_HANDLE, FIDELITY_WHATSAPP_URL } from '@/lib/db';
+import { QrCode, Heart, Instagram, MessageCircle, Mail } from 'lucide-react';
+import { db, FIDELITY_INSTAGRAM_URL, FIDELITY_INSTAGRAM_HANDLE, FIDELITY_WHATSAPP_URL, FIDELITY_CONTACT_EMAIL } from '@/lib/db';
 
 export default function Footer() {
   const { language } = useLanguage();
@@ -74,6 +74,14 @@ export default function Footer() {
                 >
                   <MessageCircle className="w-4 h-4 text-emerald-400" />
                   <span>WhatsApp</span>
+                </a>
+                <a
+                  href={`mailto:${FIDELITY_CONTACT_EMAIL}`}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-300 hover:text-white hover:border-blue-500/60 hover:scale-[1.02] transition-all text-xs font-bold"
+                  title="Envoyer un e-mail à l'équipe FidelityDZ"
+                >
+                  <Mail className="w-4 h-4 text-blue-400" />
+                  <span>{FIDELITY_CONTACT_EMAIL}</span>
                 </a>
               </div>
             </div>

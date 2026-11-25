@@ -437,7 +437,7 @@ stories = [
             </div>
 
             <div class="arabic" style="font-size: 36px; font-weight: 900; color: #FDE68A;">
-              إطبع البلاكة تاعك وحطها فوق الكاسة ديركت !
+              إطبع الملصق وحطو فوق طاولة الاستقبال أو الكاونتر !
             </div>
           </div>
 
@@ -621,7 +621,7 @@ stories = [
             </div>
 
             <div class="arabic" style="font-size: 36px; font-weight: 900; color: #93C5FD;">
-              ماكانش تيليشارجمون.. يسكاني الكود بالكاميرا برك !
+              بدون أي تطبيق أو تحميل.. يمسح الكود بكاميرا الهاتف فقط !
             </div>
           </div>
 
@@ -772,7 +772,7 @@ stories = [
             </div>
 
             <div class="arabic" style="font-size: 36px; font-weight: 900; color: #6EE7B7;">
-              بأي تلفون عندك فالكاسة تخدم ديركت بلا ما تشري والو !
+              بأي هاتف أو تابلت عندك تخدم مباشرة بدون شراء أي جهاز !
             </div>
           </div>
 
@@ -1097,7 +1097,7 @@ stories = [
             </div>
 
             <div class="arabic" style="font-size: 36px; font-weight: 900; color: #6EE7B7;">
-              الكادو ما يقدر يديه الزبون حتى يفوت عليك فالكاسة !
+              الهدية مؤمنة 100%.. ما يستلمها الزبون إلا بعد التحقق عند الدفع !
             </div>
           </div>
 

@@ -624,7 +624,7 @@ posts = [
   <!-- Headline -->
   <div class="headline-section">
     <div class="hero-title">1.2 Seconde <span>Chrono</span> en Caisse</div>
-    <div class="hero-subtitle-ar arabic">سكاني الزبون في ثانية واحدة بلا ما تعطل لاكاس</div>
+    <div class="hero-subtitle-ar arabic">مسح فوري بالهاتف في ثانية واحدة بدون أي انتظار</div>
   </div>
 
   <!-- Mockup Phone Viewfinder -->

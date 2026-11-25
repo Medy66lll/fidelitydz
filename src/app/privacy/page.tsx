@@ -36,7 +36,7 @@ export default function PrivacyPolicyPage() {
             </p>
             <h2 className="text-base font-bold text-slate-900">3. Droits d&apos;accès et de suppression</h2>
             <p>
-              Conformément à la réglementation en vigueur, chaque utilisateur ou commerçant peut demander la consultation, la modification ou la suppression intégrale de ses données à tout moment via notre support officiel.
+              Conformément à la réglementation en vigueur (Loi 18-07 relative à la protection des données), chaque utilisateur ou commerçant peut demander la consultation, la modification ou la suppression intégrale de ses données à tout moment en nous contactant directement par e-mail à : <a href="mailto:fidelitydz.service@gmail.com" className="text-emerald-600 font-bold hover:underline">fidelitydz.service@gmail.com</a>.
             </p>
           </div>
         </div>

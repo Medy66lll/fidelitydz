@@ -82,6 +82,7 @@ export const FIDELITY_INSTAGRAM_URL = 'https://www.instagram.com/fidelity.dz';
 export const FIDELITY_INSTAGRAM_HANDLE = '@fidelity.dz';
 export const FIDELITY_WHATSAPP_PHONE = '213541534762';
 export const FIDELITY_WHATSAPP_URL = 'https://wa.me/213541534762';
+export const FIDELITY_CONTACT_EMAIL = 'fidelitydz.service@gmail.com';
 
 export const defaultPlatformSettings: PlatformSettings = {
   id: 1,
@@ -94,6 +95,7 @@ export const defaultPlatformSettings: PlatformSettings = {
   owner_ccp_key: '87',
   owner_whatsapp: '213541534762',
   owner_instagram: 'https://www.instagram.com/fidelity.dz',
+  owner_email: 'fidelitydz.service@gmail.com',
   chargily_mode: 'test',
 };
 
@@ -283,6 +285,16 @@ class FidelityDatabase {
     const trimmed = url.trim();
     this.setStorage('owner_instagram', trimmed);
     await postApiDb({ action: 'save_owner_instagram', owner_instagram: trimmed });
+  }
+
+  getOwnerEmail(): string {
+    return this.getStorage('owner_email', defaultPlatformSettings.owner_email || FIDELITY_CONTACT_EMAIL);
+  }
+
+  async saveOwnerEmail(email: string): Promise<void> {
+    const trimmed = email.trim().toLowerCase();
+    this.setStorage('owner_email', trimmed);
+    await postApiDb({ action: 'save_owner_email', owner_email: trimmed });
   }
 
   getCustomSupabaseKey(): string {

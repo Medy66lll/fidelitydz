@@ -9,6 +9,7 @@ export default function JsonLdSchema() {
         '@id': 'https://fidelitydz.vercel.app/#software',
         'name': 'FidelityDZ',
         'url': 'https://fidelitydz.vercel.app',
+        'email': 'fidelitydz.service@gmail.com',
         'applicationCategory': 'BusinessApplication',
         'operatingSystem': 'Web, Android, iOS',
         'offers': [

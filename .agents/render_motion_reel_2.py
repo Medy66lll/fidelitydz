@@ -324,7 +324,7 @@ html_template = f"""
       </div>
 
       <div class="arabic" style="font-size: 38px; font-weight: 900; color: #FCA5A5; margin-top: 20px;">
-        ضيعت وقتك ووقت الزبون فلكاسة ؟
+        تضيع الوقت والزبائن في الانتظار عند الدفع ؟
       </div>
     </div>
 
@@ -371,7 +371,7 @@ html_template = f"""
       </div>
 
       <div class="arabic" style="font-size: 38px; font-weight: 900; color: #6EE7B7; margin-top: 25px;">
-        سكاني برك.. الكاسة تجري بلا تبطال !
+        مسح سريع بالهاتف.. تسجيل فوري بدون أي انتظار !
       </div>
     </div>
 

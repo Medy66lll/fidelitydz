@@ -83,6 +83,7 @@ export interface PlatformSettings {
   owner_ccp_key: string;
   owner_whatsapp?: string;
   owner_instagram?: string;
+  owner_email?: string;
   chargily_mode: 'test' | 'live';
 }
 

@@ -35,3 +35,9 @@ yarn-error.log*
 next-env.d.ts
 scratch/
 
+# Local Marketing & Video Assets (Keep on local PC, not in git/Vercel)
+public/instagram/
+video_production_5styles/
+.agents/skills/
+
+
